@@ -1,0 +1,3 @@
+[submodule "snudeep"]
+	path = snudeep
+	url = https://github.com/kjw0612/snudeep.git
