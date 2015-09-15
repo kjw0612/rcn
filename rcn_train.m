@@ -5,21 +5,23 @@ function [net, info] = rcn_train(net, imdb, getBatch, varargin)
 %    It can be used with different datasets by providing a suitable
 %    getBatch function.
 
-opts.sfs = [2 3 4];
+opts.problems = {struct('type', 'SR', 'sf', 3)};
+
 opts.train = [] ;
 opts.val = [] ;
 opts.numEpochs = 10000;
 opts.batchSize = 64 ;
-opts.useGpu = true ;
+opts.useGpu = false ;
 opts.learningRate = 0.0005; %3759 - 0.00001, before that 0.0001
 opts.continue = true ;
-opts.expDir = fullfile('data','exp_sfree') ;
+opts.expDir = fullfile('data','exp_free') ;
+opts.evalDir = fullfile('data','Set5');
 opts.conserveMemory = false ;
 opts.sync = false ;
 opts.prefetch = false ;
 opts.weightDecay = 0.0001 ;
 opts.momentum = 0.9 ;
-opts.errorType = 'euclidean' ;
+opts.errorType = 'euclidean';
 opts.plotDiagnostics = false ;
 opts.pad = 10;
 opts.resid = 1;
@@ -35,13 +37,6 @@ if isnan(opts.train), opts.train = [] ; end
 % -------------------------------------------------------------------------
 %                                                    Network initialization
 % -------------------------------------------------------------------------
-
-fid = fopen(fullfile(opts.expDir, 'best.mat'));
-max_psnr = 0;
-if fid ~= -1
-    load(fullfile(opts.expDir, 'best.mat'), 'max_psnr');
-    fclose(fid);
-end
 
 for i=1:numel(net.layers)
     if strcmp(net.layers{i}.type,'conv')
@@ -104,6 +99,11 @@ info.val.objective = [] ;
 info.val.error = [] ;
 info.val.topFiveError = [] ;
 info.val.speed = [] ;
+evalLog = cell(numel(opts.problems),1);
+for problem_iter = 1:numel(opts.problems)
+    evalLog{problem_iter}.base = [];
+    evalLog{problem_iter}.ours = [];
+end
 
 lr = 0 ;
 res = [] ;
@@ -229,63 +229,6 @@ for epoch=1:opts.numEpochs
         end
     end % next batch
     
-    % Evaluation on SR dataset
-    fid = fopen(opts.fname,'w');
-    fprintf(fid, 'Epoch: %d\n', epoch);
-    %        fprintf('\n');
-    f_lst = dir('data/Set5/*.*');
-    psnr_bic_tot = 0;
-    psnr_srcnn_tot = 0;
-    for sf=opts.sfs
-        psnr_bic = 0;
-        psnr_srcnn = 0;
-        for f_ind = 3:size(f_lst,1)
-            im = imread(['data/Set5/' f_lst(f_ind).name]);
-            im = rgb2ycbcr(im);
-            im = im(:,:,1);
-            imhigh = modcrop(im, sf);
-            imhigh = single(imhigh)/255;
-
-            imlow = imresize(imhigh, 1/sf, 'bicubic');
-            imlow = imresize(imlow, size(imhigh), 'bicubic');
-            imlow = max(16.0/255, min(235.0/255, imlow));
-            imlow = gpuArray(imlow);
-            net2.layers = net.layers(1:end-1);
-            
-            res2 = vl_simplenn(net2, imlow, [], [], 'disableDropout', true, 'conserveMemory', true) ;
-
-            impred = shave(res2(end).x, [sf, sf]);
-            imlow = shave(imlow, [sf, sf]);
-            imlow = imlow(opts.pad+1:end-opts.pad,opts.pad+1:end-opts.pad);
-            if opts.resid, impred = impred+imlow; end
-            imlow = uint8(imlow*255);
-
-            imhigh = shave(uint8(imhigh * 255), [sf, sf]);
-            %            imlow = shave(uint8(imlow * 255), [sf, sf]);
-            impred = uint8(impred * 255);
-            imhigh = imhigh(opts.pad+1:end-opts.pad,opts.pad+1:end-opts.pad);
-            %            impred = impred+imlow;
-            if f_ind == 3
-                imshow(impred);
-            end
-            psnr_bic = psnr_bic + compute_psnr(imhigh,imlow);
-            psnr_srcnn = psnr_srcnn +compute_psnr(imhigh,impred);
-        end;
-        psnr_bic = psnr_bic / (size(f_lst,1) - 2);
-        psnr_srcnn = psnr_srcnn / (size(f_lst,1) - 2);
-        psnr_bic_tot = psnr_bic_tot + psnr_bic;
-        psnr_srcnn_tot = psnr_srcnn_tot + psnr_srcnn;
-        fprintf(fid,'%f   %f   %f   sf:%f\n', psnr_srcnn-psnr_bic, psnr_bic, psnr_srcnn, sf);
-    end
-    psnr_bic_tot = psnr_bic_tot / numel(opts.sfs);
-    psnr_srcnn_tot = psnr_srcnn_tot / numel(opts.sfs);
-    fclose(fid);
-    
-    if max_psnr < gather(psnr_srcnn_tot)
-        max_psnr = gather(psnr_srcnn_tot);
-        max_path = fullfile(opts.expDir, 'best.mat');
-        save(max_path, 'net', 'info', 'epoch', 'opts', 'max_psnr');
-    end;
     % evaluation on validation set
     for t=1:opts.batchSize:numel(val)
         batch_time = tic ;
@@ -319,21 +262,36 @@ for epoch=1:opts.numEpochs
         fprintf('\n') ;
     end
     
+    [eval_base, eval_ours] = evalTest(epoch, opts, net);
+    
+    % save max
+    max_path = fullfile(opts.expDir, 'best.mat');
+    fid = fopen(max_path);
+    max_eval = 0;
+    if fid ~= -1
+        load(max_path, 'max_eval');
+        fclose(fid);
+    end
+    if max_eval < mean(gather(eval_ours))
+        max_eval = mean(gather(eval_ours));
+        save(max_path, 'net', 'info', 'epoch', 'opts', 'max_eval');
+    end
+    
     % save
     info.train.objective(end) = info.train.objective(end) / numel(train) ;
-%    info.train.error(end) = info.train.error(end) / numel(train)  ;
-    info.train.error(end) = gather(psnr_bic_tot);
+    info.train.error(end) = info.train.error(end) / numel(train) ;
+    %info.train.error(end) = gather(eval_base);
     info.train.topFiveError(end) = info.train.topFiveError(end) / numel(train) ;
     info.train.speed(end) = numel(train) / info.train.speed(end) ;
     info.val.objective(end) = info.val.objective(end) / numel(val) ;
-%    info.val.error(end) = info.val.error(end) / numel(val) ;
-    info.val.error(end) = gather(psnr_srcnn_tot);
+    info.val.error(end) = info.val.error(end) / numel(val) ;
+    %info.val.error(end) = gather(eval_ours);
     info.val.topFiveError(end) = info.val.topFiveError(end) / numel(val) ;
     info.val.speed(end) = numel(val) / info.val.speed(end) ;
     save(modelPath(epoch), 'net', 'info') ;
     
     sfigure(1) ; clf ;
-    subplot(1,2,1) ;
+    subplot(2,numel(opts.problems),1) ;
     %skip several epochs for better visualization
     plot(1:epoch, info.train.objective(1:end), 'k') ; hold on ;
     plot(1:epoch, info.val.objective(1:end), 'b') ;
@@ -342,27 +300,35 @@ for epoch=1:opts.numEpochs
     h=legend('train', 'val') ;
     set(h,'color','none');
     title('objective') ;
-    subplot(1,2,2) ;
-    switch opts.errorType
-        case 'multiclass'
-            plot(1:epoch, info.train.error, 'k') ; hold on ;
-            plot(1:epoch, info.train.topFiveError, 'k--') ;
-            plot(1:epoch, info.val.error, 'b') ;
-            plot(1:epoch, info.val.topFiveError, 'b--') ;
-            h=legend('train','train-5','val','val-5') ;
-        case 'binary'
-            plot(1:epoch, info.train.error, 'k') ; hold on ;
-            plot(1:epoch, info.val.error, 'b') ;
-            h=legend('train','val') ;
-        case 'euclidean'
-            plot(1:epoch, info.train.error(1:end), 'k') ; hold on ;
-            plot(1:epoch, info.val.error(1:end), 'b') ;
-            h=legend('Bicubic', 'SFFSR') ;
+    
+    for problem_iter = 1:numel(opts.problems)
+        subplot(2,numel(opts.problems),problem_iter+numel(opts.problems)) ;
+        %switch opts.errorType
+        %    case 'multiclass'
+        %        plot(1:epoch, info.train.error, 'k') ; hold on ;
+        %        plot(1:epoch, info.train.topFiveError, 'k--') ;
+        %        plot(1:epoch, info.val.error, 'b') ;
+        %        plot(1:epoch, info.val.topFiveError, 'b--') ;
+        %        h=legend('train','train-5','val','val-5') ;
+        %    case 'binary'
+        %        plot(1:epoch, info.train.error, 'k') ; hold on ;
+        %        plot(1:epoch, info.val.error, 'b') ;
+        %        h=legend('train','val') ;
+        %    case 'euclidean'
+        %        plot(1:epoch, info.train.error(1:end), 'k') ; hold on ;
+        %        plot(1:epoch, info.val.error(1:end), 'b') ;
+        %        h=legend('Baseline', 'Ours') ;
+        %end
+        evalLog{problem_iter}.base(end+1) = eval_base(problem_iter);
+        evalLog{problem_iter}.ours(end+1) = eval_ours(problem_iter);
+        plot(1:epoch, evalLog{problem_iter}.base, 'k') ; hold on ;
+        plot(1:epoch, evalLog{problem_iter}.ours, 'b') ;
+        h=legend('Baseline', 'Ours') ;
+        grid on ;
+        xlabel('training epoch') ; ylabel('error') ;
+        set(h,'color','none') ;
+        title(['Evaluation of ',opts.problems{problem_iter}.type]);
     end
-    grid on ;
-    xlabel('training epoch') ; ylabel('error') ;
-    set(h,'color','none') ;
-    title('error') ;
     drawnow ;
     print(1, modelFigPath, '-dpdf') ;
 end
@@ -393,7 +359,9 @@ switch opts.errorType
         info.error(end) = info.error(end) + sum(error(:))/n ;
 end
 
+% -------------------------------------------------------------------------
 function h = sfigure(h)
+% -------------------------------------------------------------------------
 % SFIGURE  Create figure window (minus annoying focus-theft).
 %
 % Usage is identical to figure.
@@ -411,3 +379,98 @@ if nargin>=1
 else
     h = figure;
 end
+
+% -------------------------------------------------------------------------
+function [eval_base, eval_ours] = evalTest(epoch, opts, net)
+% -------------------------------------------------------------------------    
+% Evaluation
+fid = fopen(opts.fname,'w');
+fprintf(fid, 'Epoch: %d\n', epoch);
+f_lst = dir(opts.evalDir);
+eval_base = zeros(numel(opts.problems),1);
+eval_ours = zeros(numel(opts.problems),1);
+
+f_n = 0;
+printPic = true;
+for f_iter = 1:numel(f_lst)
+    f_info = f_lst(f_iter);
+    if f_info.isdir, continue; end
+    f_n = f_n + 1;
+    im = imread(fullfile(opts.evalDir, f_info.name));
+    im = rgb2ycbcr(im);
+    im = im(:,:,1);
+
+    if printPic && f_n==1, imwrite(im, 'GT.bmp'); end
+    
+    for problem_iter = 1:numel(opts.problems)
+        problem = opts.problems{problem_iter};
+        
+        % preprocess
+        switch problem.type
+            case 'SR'
+                imhigh = modcrop(im, problem.sf);
+                imhigh = single(imhigh)/255;
+                imlow = imresize(imhigh, 1/problem.sf, 'bicubic');
+                imlow = imresize(imlow, size(imhigh), 'bicubic');
+                imlow = max(16.0/255, min(235.0/255, imlow));
+            case 'JPEG'
+                imhigh = single(im)/255;
+                imwrite(imhigh, 'data/_temp.jpg', 'Quality', problem.q);
+                imlow = imread('data/_temp.jpg');
+                imlow = single(imlow)/255;
+                delete('data/_temp.jpg');
+            case 'DENOISE'
+                imhigh = single(im)/255;
+                imlow = single(imnoise(imhigh, 'gaussian', 0, problem.v));
+        end
+        if opts.useGpu
+            imlow = gpuArray(imlow);
+        end
+        
+        % predict
+        net2.layers = net.layers(1:end-1);
+        res2 = vl_simplenn(net2, imlow, [], [], 'disableDropout', true, 'conserveMemory', true) ;
+        impred = res2(end).x;
+        
+        % post process
+        switch problem.type
+            case 'SR'
+                impred = shave(impred, [problem.sf, problem.sf]);
+                imhigh = shave(imhigh, [problem.sf, problem.sf]);
+                imlow = shave(imlow, [problem.sf, problem.sf]);
+            case 'JPEG'
+                %
+            case 'DENOISE'
+                %
+        end
+        imhigh = imhigh(opts.pad+1:end-opts.pad,opts.pad+1:end-opts.pad);
+        imlow = imlow(opts.pad+1:end-opts.pad,opts.pad+1:end-opts.pad);
+        if opts.resid, impred = impred+imlow; end
+        impred = uint8(impred * 255);
+        imlow = uint8(imlow * 255);
+        imhigh = uint8(imhigh * 255);
+        
+        % evaluate
+        evalType = 'PSNR';
+        if isfield(problem, 'evalType')
+            evalType = problem.evalType;
+        end
+        switch evalType
+            case 'PSNR'
+                eval_base(problem_iter) = eval_base(problem_iter) + compute_psnr(imhigh,imlow);
+                eval_ours(problem_iter) = eval_ours(problem_iter) + compute_psnr(imhigh,impred);
+        end
+        
+        if printPic && f_n == 1
+            imwrite(imlow,  strcat(problem.type,'_low.bmp'));
+            imwrite(impred, strcat(problem.type,'_pred.bmp'));
+        end
+    end
+end
+for problem_iter = 1:numel(opts.problems) 
+    problem = opts.problems{problem_iter};
+    eval_base(problem_iter) = eval_base(problem_iter) / f_n;
+    eval_ours(problem_iter) = eval_ours(problem_iter) / f_n;
+    fprintf(fid,'%f\t%f\t%f\t%s\n', eval_ours(problem_iter)-eval_base(problem_iter), eval_base(problem_iter), eval_ours(problem_iter), problem.type);
+end
+fclose(fid);
