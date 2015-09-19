@@ -302,8 +302,8 @@ for epoch=1:opts.numEpochs
     
     for problem_iter = 1:numel(opts.problems)
         subplot(2,numel(opts.problems),problem_iter+numel(opts.problems)) ;
-        info.test.error{problem_iter}.base(end+1) = eval_base(problem_iter);
-        info.test.error{problem_iter}.ours(end+1) = eval_ours(problem_iter);
+        info.test.error{problem_iter}.base(end+1) = gather(eval_base(problem_iter));
+        info.test.error{problem_iter}.ours(end+1) = gather(eval_ours(problem_iter));
         plot(1:epoch, info.test.error{problem_iter}.base, 'k') ; hold on ;
         plot(1:epoch, info.test.error{problem_iter}.ours, 'b') ;
         h=legend('Baseline', 'Ours') ;
