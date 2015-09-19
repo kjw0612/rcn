@@ -11,7 +11,7 @@ opts.train = [] ;
 opts.val = [] ;
 opts.numEpochs = 10000;
 opts.batchSize = 64 ;
-opts.useGpu = false ;
+opts.useGpu = true ;
 opts.learningRate = 0.0005; %3759 - 0.00001, before that 0.0001
 opts.continue = true ;
 opts.expDir = fullfile('data','exp_free') ;
@@ -27,6 +27,7 @@ opts.pad = 10;
 opts.resid = 1;
 opts.fname = 'result.txt'; % result to write such as PSNRs
 opts.gradRange = 10000;
+opts.useBnorm = false;
 opts = vl_argparse(opts, varargin) ;
 
 if ~exist(opts.expDir, 'dir'), mkdir(opts.expDir) ; end
@@ -99,10 +100,10 @@ info.val.objective = [] ;
 info.val.error = [] ;
 info.val.topFiveError = [] ;
 info.val.speed = [] ;
-evalLog = cell(numel(opts.problems),1);
+info.test.error = cell(numel(opts.problems),1);
 for problem_iter = 1:numel(opts.problems)
-    evalLog{problem_iter}.base = [];
-    evalLog{problem_iter}.ours = [];
+    info.test.error{problem_iter}.base = [];
+    info.test.error{problem_iter}.ours = [];
 end
 
 lr = 0 ;
@@ -280,12 +281,10 @@ for epoch=1:opts.numEpochs
     % save
     info.train.objective(end) = info.train.objective(end) / numel(train) ;
     info.train.error(end) = info.train.error(end) / numel(train) ;
-    %info.train.error(end) = gather(eval_base);
     info.train.topFiveError(end) = info.train.topFiveError(end) / numel(train) ;
     info.train.speed(end) = numel(train) / info.train.speed(end) ;
     info.val.objective(end) = info.val.objective(end) / numel(val) ;
     info.val.error(end) = info.val.error(end) / numel(val) ;
-    %info.val.error(end) = gather(eval_ours);
     info.val.topFiveError(end) = info.val.topFiveError(end) / numel(val) ;
     info.val.speed(end) = numel(val) / info.val.speed(end) ;
     save(modelPath(epoch), 'net', 'info') ;
@@ -303,26 +302,10 @@ for epoch=1:opts.numEpochs
     
     for problem_iter = 1:numel(opts.problems)
         subplot(2,numel(opts.problems),problem_iter+numel(opts.problems)) ;
-        %switch opts.errorType
-        %    case 'multiclass'
-        %        plot(1:epoch, info.train.error, 'k') ; hold on ;
-        %        plot(1:epoch, info.train.topFiveError, 'k--') ;
-        %        plot(1:epoch, info.val.error, 'b') ;
-        %        plot(1:epoch, info.val.topFiveError, 'b--') ;
-        %        h=legend('train','train-5','val','val-5') ;
-        %    case 'binary'
-        %        plot(1:epoch, info.train.error, 'k') ; hold on ;
-        %        plot(1:epoch, info.val.error, 'b') ;
-        %        h=legend('train','val') ;
-        %    case 'euclidean'
-        %        plot(1:epoch, info.train.error(1:end), 'k') ; hold on ;
-        %        plot(1:epoch, info.val.error(1:end), 'b') ;
-        %        h=legend('Baseline', 'Ours') ;
-        %end
-        evalLog{problem_iter}.base(end+1) = eval_base(problem_iter);
-        evalLog{problem_iter}.ours(end+1) = eval_ours(problem_iter);
-        plot(1:epoch, evalLog{problem_iter}.base, 'k') ; hold on ;
-        plot(1:epoch, evalLog{problem_iter}.ours, 'b') ;
+        info.test.error{problem_iter}.base(end+1) = eval_base(problem_iter);
+        info.test.error{problem_iter}.ours(end+1) = eval_ours(problem_iter);
+        plot(1:epoch, info.test.error{problem_iter}.base, 'k') ; hold on ;
+        plot(1:epoch, info.test.error{problem_iter}.ours, 'b') ;
         h=legend('Baseline', 'Ours') ;
         grid on ;
         xlabel('training epoch') ; ylabel('error') ;

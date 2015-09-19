@@ -25,6 +25,7 @@ opts.gradRange = 1e-4;
 opts.sync = true;
 opts.dataDir = 'data/91'; % 'data/291' for bsds 
 opts.filterSize = 64;% number of filters
+opts.useBnorm = true;
 opts = vl_argparse(opts, varargin);
 
 exp_name = 'exp';
@@ -32,11 +33,11 @@ for problem_iter = 1:numel(opts.problems)
     problem = opts.problems{problem_iter};
     switch problem.type
         case 'SR'
-            exp_name = strcat('_', exp_name, 'S', num2str(problem.sf));
+            exp_name = strcat(exp_name, '_S', num2str(problem.sf));
         case 'JPEG'
-            exp_name = strcat('_', exp_name, 'J', num2str(problem.q));
+            exp_name = strcat(exp_name, '_J', num2str(problem.q));
         case 'DENOISE'
-            exp_name = strcat('_', exp_name, 'N', num2str(problem.v));
+            exp_name = strcat(exp_name, '_N', num2str(problem.v));
     end
 end
 exp_name = sprintf('%s_resid%d_depth%d', exp_name, opts.resid, opts.depth);
@@ -68,42 +69,7 @@ else
 end
 
 % define net
-net.layers = {} ;
-if opts.depth > 1
-    net.layers{end+1} = struct('type', 'conv', ...
-                               'filters',sqrt(2/9)*randn(3,3,1,opts.filterSize, 'single'), ...
-                               'biases', zeros(1, opts.filterSize, 'single'), ...
-                               'stride', 1, ...
-                               'pad', 1);
-    net.layers{end+1} = struct('type', 'relu');
-end
-for i=1:opts.depth - 2
-    net.layers{end+1} = struct('type', 'conv', ...
-                               'filters', sqrt(2/9/opts.filterSize)*randn(3,3,opts.filterSize,opts.filterSize, 'single'), ...
-                               'biases', zeros(1, opts.filterSize, 'single'), ...
-                               'stride', 1, ...
-                               'pad', 1) ;
-    net.layers{end+1} = struct('type', 'relu');
-end
-if opts.resid
-    bias_diff = 0; %if diff, it's centered aroun zero
-else
-    bias_diff = 0.5; % if not diff, it's centered around 0.5 which is the average DC.
-end;
-if opts.depth > 1
-    net.layers{end+1} = struct('type', 'conv', ...
-                               'filters', 0.001*sqrt(2/9/opts.filterSize)*randn(3,3,opts.filterSize,1, 'single'),...
-                               'biases', bias_diff + zeros(1,1,'single'), ...
-                               'stride', 1, ...
-                               'pad', 1);
-else
-    net.layers{end+1} = struct('type', 'conv', ...
-                               'filters', 0.001*sqrt(2/9/1)*randn(3,3,1,1, 'single'),...
-                               'biases', bias_diff + zeros(1,1,'single'), ...
-                               'stride', 1, ...
-                               'pad', 1);
-end
-net.layers{end+1} = struct('type', 'euclidloss') ;
+net = rcn_init(opts);
 
 opts = rmfield(opts, {'depth', 'filterSize', 'dataDir'}); % remove irrelavant fields
 [net, info] = rcn_train(net, imdb, @getBatch, opts) ;
