@@ -40,7 +40,7 @@ net.layers{end+1} = struct('type', 'euclidloss') ;
 % optionally switch to batch normalization
 if opts.useBnorm
     d = 1;
-    while d < numel(net.layers)
+    while d+1 < numel(net.layers)
         if strcmp(net.layers{d}.type,'conv')
             net = insertBnorm(net, d);
         end

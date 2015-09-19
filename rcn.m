@@ -29,6 +29,9 @@ opts.useBnorm = true;
 opts = vl_argparse(opts, varargin);
 
 exp_name = 'exp';
+if opts.useBnorm
+    exp_name = 'exp_bn';
+end
 for problem_iter = 1:numel(opts.problems)
     problem = opts.problems{problem_iter};
     switch problem.type
@@ -43,7 +46,7 @@ end
 exp_name = sprintf('%s_resid%d_depth%d', exp_name, opts.resid, opts.depth);
 opts.expDir = fullfile('data/exp',exp_name);
 
-rep=20;
+rep=25;
 opts.learningRate = [0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)];%*0.99 .^ (0:500);
 opts.gradRange = 1e-4;
 if ~exist('data/result', 'dir'), mkdir('data/result'); end

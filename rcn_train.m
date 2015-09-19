@@ -408,6 +408,7 @@ for f_iter = 1:numel(f_lst)
         end
         if opts.useGpu
             imlow = gpuArray(imlow);
+            imhigh = gpuArray(imhigh);
         end
         
         % predict
@@ -440,13 +441,13 @@ for f_iter = 1:numel(f_lst)
         end
         switch evalType
             case 'PSNR'
-                eval_base(problem_iter) = eval_base(problem_iter) + compute_psnr(imhigh,imlow);
-                eval_ours(problem_iter) = eval_ours(problem_iter) + compute_psnr(imhigh,impred);
+                eval_base(problem_iter) = eval_base(problem_iter) + gather(compute_psnr(imhigh,imlow));
+                eval_ours(problem_iter) = eval_ours(problem_iter) + gather(compute_psnr(imhigh,impred));
         end
         
         if printPic && f_n == 1
-            imwrite(imlow,  strcat(problem.type,'_low.bmp'));
-            imwrite(impred, strcat(problem.type,'_pred.bmp'));
+            imwrite(gather(imlow),  strcat(problem.type,'_low.bmp'));
+            imwrite(gather(impred), strcat(problem.type,'_pred.bmp'));
         end
     end
 end
