@@ -113,6 +113,11 @@ for epoch=1:opts.numEpochs
     stats.train(epoch) = stats__.train ;
     stats.val(epoch) = stats__.val ;
   end
+  
+  if numel(opts.gpus)>0, net.move('gpu'); end
+  [baseline_psnr, stats.test(epoch)] = evalTest(epoch, opts, net);
+  net.reset();
+  if numel(opts.gpus)>0, net.move('cpu'); end 
 
   % save
   if ~evaluateMode
@@ -137,7 +142,7 @@ for epoch=1:opts.numEpochs
       imhigh = []; imlow = []; impred = [];
   end
   
-  figure(1) ; clf ;
+  sfigure(1) ; clf ;
   values = [] ;
   leg = {} ;
   for s = {'train', 'val'}
@@ -148,14 +153,15 @@ for epoch=1:opts.numEpochs
       values(end+1,:) = [stats.(s).(f)] ;
     end
   end
-  subplot(2,3,1) ; plot(1:epoch, values') ;
+  subplot(1,2,1) ; plot(1:epoch, values') ;
   legend(leg{:}) ; xlabel('epoch') ; ylabel('metric') ;
-  subplot(2,3,2) ; semilogy(1:epoch, values') ;
-  legend(leg{:}) ; xlabel('epoch') ; ylabel('metric') ;
+  grid on;
+  subplot(1,2,2) ; plot(1:epoch, [repmat(baseline_psnr, 1, epoch); stats.test]') ;
+  legend({'Baseline (Set5)', 'Ours (Set5)'}) ; xlabel('epoch') ; ylabel('PSNR') ;
   grid on ;
-  subplot(2,3,4) ; imshow(imhigh);
-  subplot(2,3,5) ; imshow(imlow);
-  subplot(2,3,6) ; imshow(impred);
+%   subplot(2,3,4) ; imshow(imhigh);
+%   subplot(2,3,5) ; imshow(imlow);
+%   subplot(2,3,6) ; imshow(impred);
   drawnow ;
   print(1, modelFigPath, '-dpdf') ;
 end
@@ -354,3 +360,118 @@ function [net, stats] = loadState(fileName)
 % -------------------------------------------------------------------------
 load(fileName, 'net', 'stats') ;
 net = dagnn.DagNN.loadobj(net) ;
+
+% -------------------------------------------------------------------------
+function [eval_base, eval_ours] = evalTest(epoch, opts, net)
+% -------------------------------------------------------------------------    
+% Evaluation
+%fid = fopen(opts.fname,'w');
+%fprintf(fid, 'Epoch: %d\n', epoch);
+f_lst = dir(opts.evalDir);
+eval_base = zeros(numel(opts.problems),1);
+eval_ours = zeros(numel(opts.problems),1);
+
+f_n = 0;
+printPic = true;
+for f_iter = 1:numel(f_lst)
+    f_info = f_lst(f_iter);
+    if f_info.isdir, continue; end
+    f_n = f_n + 1;
+    im = imread(fullfile(opts.evalDir, f_info.name));
+    im = rgb2ycbcr(im);
+    im = im(:,:,1);
+
+    if printPic && f_n==1, imwrite(im, 'GT.bmp'); end
+    
+    for problem_iter = 1:numel(opts.problems)
+        problem = opts.problems{problem_iter};
+        
+        % preprocess
+        switch problem.type
+            case 'SR'
+                imhigh = modcrop(im, problem.sf);
+                imhigh = single(imhigh)/255;
+                imlow = imresize(imhigh, 1/problem.sf, 'bicubic');
+                imlow = imresize(imlow, size(imhigh), 'bicubic');
+                imlow = max(16.0/255, min(235.0/255, imlow));
+            case 'JPEG'
+                imhigh = single(im)/255;
+                imwrite(imhigh, 'data/_temp.jpg', 'Quality', problem.q);
+                imlow = imread('data/_temp.jpg');
+                imlow = single(imlow)/255;
+                delete('data/_temp.jpg');
+            case 'DENOISE'
+                imhigh = single(im)/255;
+                imlow = single(imnoise(imhigh, 'gaussian', 0, problem.v));
+        end
+        if numel(opts.gpus) > 0
+            imlow = gpuArray(imlow);
+            imhigh = gpuArray(imhigh);
+        end
+        
+        % predict
+        inputs = {'input', imlow, 'label', imhigh };
+        net.eval(inputs);
+        impred = net.layers(end).block.lastPred;
+        
+        % post process
+        switch problem.type
+            case 'SR'
+                impred = shave(impred, [problem.sf, problem.sf]);
+                imhigh = shave(imhigh, [problem.sf, problem.sf]);
+                imlow = shave(imlow, [problem.sf, problem.sf]);
+            case 'JPEG'
+                %
+            case 'DENOISE'
+                %
+        end
+        imhigh = imhigh(opts.pad+1:end-opts.pad,opts.pad+1:end-opts.pad);
+        imlow = imlow(opts.pad+1:end-opts.pad,opts.pad+1:end-opts.pad);
+        if opts.resid, impred = impred+imlow; end
+        impred = uint8(impred * 255);
+        imlow = uint8(imlow * 255);
+        imhigh = uint8(imhigh * 255);
+        
+        % evaluate
+        evalType = 'PSNR';
+        if isfield(problem, 'evalType')
+            evalType = problem.evalType;
+        end
+        switch evalType
+            case 'PSNR'
+                eval_base(problem_iter) = eval_base(problem_iter) + gather(compute_psnr(imhigh,imlow));
+                eval_ours(problem_iter) = eval_ours(problem_iter) + gather(compute_psnr(imhigh,impred));
+        end
+        
+        if printPic && f_n == 1
+            imwrite(gather(imlow),  strcat(problem.type,'_low.bmp'));
+            imwrite(gather(impred), strcat(problem.type,'_pred.bmp'));
+        end
+    end
+end
+for problem_iter = 1:numel(opts.problems) 
+    problem = opts.problems{problem_iter};
+    eval_base(problem_iter) = eval_base(problem_iter) / f_n;
+    eval_ours(problem_iter) = eval_ours(problem_iter) / f_n;
+%    fprintf(fid,'%f\t%f\t%f\t%s\n', eval_ours(problem_iter)-eval_base(problem_iter), eval_base(problem_iter), eval_ours(problem_iter), problem.type);
+end
+%fclose(fid);
+
+function h = sfigure(h)
+% SFIGURE  Create figure window (minus annoying focus-theft).
+%
+% Usage is identical to figure.
+%
+% Daniel Eaton, 2005
+%
+% See also figure
+
+if nargin>=1
+    if ishandle(h)
+        set(0, 'CurrentFigure', h);
+    else
+        h = figure(h);
+    end
+else
+    h = figure;
+end                                                                                                                                                     

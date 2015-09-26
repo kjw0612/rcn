@@ -18,7 +18,7 @@ end
 %% Set Options
 opts.problems = {struct('type', 'SR', 'sf', 3)};
 %opts.problems = {struct('type', 'SR', 'sf', 3), struct('type', 'JPEG', 'q', 20), struct('type', 'DENOISE', 'v', 0.001)};
-opts.gpus = [];
+opts.gpus = 1;
 opts.resid = 1;
 opts.depth = 10; % 10 optimal
 opts.filterSize = 64;
