@@ -25,7 +25,7 @@ opts.gradRange = 1e-4;
 opts.sync = true;
 opts.dataDir = 'data/91'; % 'data/291' for bsds 
 opts.filterSize = 64;% number of filters
-opts.useBnorm = true;
+opts.useBnorm = false;
 opts = vl_argparse(opts, varargin);
 
 exp_name = 'exp';
