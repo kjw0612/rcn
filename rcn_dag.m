@@ -1,4 +1,4 @@
-function [net, info] = rcn(varargin)
+function [net, info] = rcn_dag(varargin)
 
 % Image Restoration Network
 % Author: Jiwon Kim (jiwon@alum.mit.edu), Jonghyuk
@@ -54,6 +54,7 @@ opts.train.sync = true;
 opts.train.expDir = opts.expDir;
 opts.train.gpus = opts.gpus;
 opts.train.numSubBatches = 1 ;
+opts.train.testPath = fullfile('data', 'Set5', 'baby_GT.bmp');
 
 opts = vl_argparse(opts, varargin);
 

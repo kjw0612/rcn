@@ -33,6 +33,7 @@ opts.pad = 0;
 opts.resid = 1;
 opts.gradRange = 10000;
 opts.useBnorm = false;
+opts.testPath = [];
 opts = vl_argparse(opts, varargin) ;
 
 if ~exist(opts.expDir, 'dir'), mkdir(opts.expDir) ; end
@@ -118,6 +119,24 @@ for epoch=1:opts.numEpochs
     saveState(modelPath(epoch), net, stats) ;
   end
 
+  % test
+  if numel(opts.testPath) > 0
+      im = imread(opts.testPath);
+      im = rgb2ycbcr(im);
+      im = im(:,:,1);
+      sf = 5;
+      imhigh = modcrop(im, sf);
+      imhigh = single(imhigh)/255;
+      imlow = imresize(imhigh, 1/sf, 'bicubic');
+      imlow = imresize(imlow, size(imhigh), 'bicubic');
+      imlow = max(16.0/255, min(235.0/255, imlow));
+      inputs = {'input', imlow,'label', imhigh};
+      net.eval(inputs);
+      impred = imlow + net.layers(end).block.lastPred;
+  else
+      imhigh = []; imlow = []; impred = [];
+  end
+  
   figure(1) ; clf ;
   values = [] ;
   leg = {} ;
@@ -129,11 +148,14 @@ for epoch=1:opts.numEpochs
       values(end+1,:) = [stats.(s).(f)] ;
     end
   end
-  subplot(1,2,1) ; plot(1:epoch, values') ;
+  subplot(2,3,1) ; plot(1:epoch, values') ;
   legend(leg{:}) ; xlabel('epoch') ; ylabel('metric') ;
-  subplot(1,2,2) ; semilogy(1:epoch, values') ;
+  subplot(2,3,2) ; semilogy(1:epoch, values') ;
   legend(leg{:}) ; xlabel('epoch') ; ylabel('metric') ;
   grid on ;
+  subplot(2,3,4) ; imshow(imhigh);
+  subplot(2,3,5) ; imshow(imlow);
+  subplot(2,3,6) ; imshow(impred);
   drawnow ;
   print(1, modelFigPath, '-dpdf') ;
 end
@@ -233,9 +255,6 @@ net.move('cpu') ;
 function state = accumulate_gradients(state, net, opts, batchSize, mmap)
 % -------------------------------------------------------------------------
 for i=1:numel(net.params)
-  thisDecay = opts.weightDecay * net.params(i).weightDecay ;
-  thisLR = state.learningRate * net.params(i).learningRate ;
-
   if ~isempty(mmap)
     tmp = zeros(size(mmap.Data(labindex).(net.params(i).name)), 'single') ;
     for g = setdiff(1:numel(mmap.Data), labindex)
@@ -243,15 +262,17 @@ for i=1:numel(net.params)
     end
     net.params(i).der = net.params(i).der + tmp ;
   end
-  
-  mult = 1 / batchSize;
+  lr = state.learningRate;
+  mult = lr * net.params(i).learningRate / batchSize;
   net.params(i).der = min(max(net.params(i).der, -opts.gradRange/mult), opts.gradRange/mult);
-
+  thisDecay = opts.weightDecay * net.params(i).weightDecay ;
+  
   state.momentum{i} = opts.momentum * state.momentum{i} ...
-    - thisDecay * net.params(i).value ...
-    - (1 / batchSize) * net.params(i).der ;
-
-  net.params(i).value = net.params(i).value + thisLR * state.momentum{i} ;
+    - lr * net.params(i).learningRate * ...
+      thisDecay * net.params(i).value ...
+    - lr * net.params(i).learningRate * (1 / batchSize) * net.params(i).der ;
+  
+  net.params(i).value = net.params(i).value + state.momentum{i};
 end
 
 % -------------------------------------------------------------------------
