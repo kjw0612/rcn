@@ -71,7 +71,8 @@ else
 end
 
 net = rcn_init_dag(opts);
-net = dagnn.DagNN.fromSimpleNN(net) ;
+net.initParams();
+%net = dagnn.DagNN.fromSimpleNN(net) ;
 %net.addLayer('error', dagnn.Loss('loss', 'classerror'), ...
 %             {'prediction','label'}, 'error') ;
 
