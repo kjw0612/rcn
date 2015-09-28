@@ -24,7 +24,8 @@ opts.expDir = fullfile('data','exp_free') ;
 opts.evalDir = fullfile('data','Set5');
 opts.prefetch = false ;
 opts.momentum = 0.9 ;
-opts.derOutputs = {'objective', 1} ;
+opts.derOutputs = {'objective', 1};
+%opts.derOutputs = {'objective', 1, 'objective2', 1} ;
 opts.conserveMemory = false ;
 opts.sync = false ;
 opts.memoryMapFile = fullfile(tempdir, 'matconvnet.bin') ;
@@ -125,7 +126,7 @@ for epoch=1:opts.numEpochs
   end
 
   % test
-  if numel(opts.testPath) > 0
+  if 0 && numel(opts.testPath) > 0
       im = imread(opts.testPath);
       im = rgb2ycbcr(im);
       im = im(:,:,1);
@@ -157,7 +158,8 @@ for epoch=1:opts.numEpochs
   legend(leg{:}) ; xlabel('epoch') ; ylabel('metric') ;
   grid on;
   subplot(1,2,2) ; plot(1:epoch, [repmat(baseline_psnr, 1, epoch); stats.test]') ;
-  legend({'Baseline (Set5)', 'Ours (Set5)'}) ; xlabel('epoch') ; ylabel('PSNR') ;
+%   legend({'Baseline (Set5)', 'Ours (Set5)'}) ;
+xlabel('epoch') ; ylabel('PSNR') ;
   grid on ;
 %   subplot(2,3,4) ; imshow(imhigh);
 %   subplot(2,3,5) ; imshow(imlow);
@@ -404,15 +406,21 @@ for f_iter = 1:numel(f_lst)
                 imhigh = single(im)/255;
                 imlow = single(imnoise(imhigh, 'gaussian', 0, problem.v));
         end
+        imlow_small = imresize(imlow, [10 10], 'bicubic');
+        imlow_new =zeros([size(imhigh,1) size(imhigh,2) 101], 'single');
+        imlow_new(:,:,1) = imlow;
+        imlow_new(:,:,2:101) = repmat(reshape(imlow_small(:), [1 1 100]), [size(imhigh,1) size(imhigh,2)]);
         if numel(opts.gpus) > 0
-            imlow = gpuArray(imlow);
+            imlow_new = gpuArray(imlow_new);
             imhigh = gpuArray(imhigh);
         end
         
         % predict
-        inputs = {'input', imlow, 'label', imhigh };
+        inputs = {'input', imlow_new, 'label', imhigh };
+        net.vars(net.getVarIndex('prediction')).precious = true;
         net.eval(inputs);
-        impred = net.layers(end).block.lastPred;
+        impred = net.vars(net.getVarIndex('prediction')).value;%layers().block.lastPred;
+        net.vars(net.getVarIndex('prediction')).precious = false;
         
         % post process
         switch problem.type

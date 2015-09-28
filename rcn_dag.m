@@ -18,10 +18,10 @@ end
 %% Set Options
 opts.problems = {struct('type', 'SR', 'sf', 3)};
 %opts.problems = {struct('type', 'SR', 'sf', 3), struct('type', 'JPEG', 'q', 20), struct('type', 'DENOISE', 'v', 0.001)};
-opts.gpus = 1;
+opts.gpus = 2;
 opts.resid = 1;
 opts.depth = 10; % 10 optimal
-opts.filterSize = 64;
+opts.filterSize = 128;
 opts.pad = 0;
 opts.useBnorm = false;
 exp_name = 'exp';
@@ -45,8 +45,8 @@ opts.dataDir = fullfile('data', '91');
 opts.imdbPath = fullfile(opts.expDir, 'imdb.mat');
 
 opts.train.batchSize = 64;
-rep = 20;
-opts.train.learningRate = [0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)];%*0.99 .^ (0:500);
+rep = 40;
+opts.train.learningRate = [0.1*ones(1,10) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)];%*0.99 .^ (0:500);
 opts.train.numEpochs = numel(opts.train.learningRate);
 opts.train.continue = 0;
 opts.train.gradRange = 1e-4;
@@ -72,6 +72,15 @@ end
 
 net = rcn_init_dag(opts);
 net = dagnn.DagNN.fromSimpleNN(net) ;
+% 
+% block = dagnn.Conv('size', [3 3 64 1], 'hasBias', true);
+% block.pad = 1;
+% net.addLayer('layer40', block , {'x20'}, {'prediction2'}, {'layer40f', 'layer40b'});
+% net.params(end-1).value = net.params(39).value;
+% net.params(end).alue = net.params(40).value;
+% net.addLayer('loss2', dagnn.EuclidLoss, {'prediction2', 'label'}, {'objective2'}, {});
+net.print
+
 %net.addLayer('error', dagnn.Loss('loss', 'classerror'), ...
 %             {'prediction','label'}, 'error') ;
 
@@ -121,7 +130,7 @@ for f_iter = 1:numel(f_lst)
 end
 
 imsuba = zeros(nPatches, ps-pad*2, ps-pad*2);
-imsublowa = zeros(nPatches, ps, ps);
+imsublowa = zeros(nPatches, ps, ps, 101);
 ind = 0;
 for f_iter = 1:numel(f_lst)
     f_info = f_lst(f_iter);
@@ -149,6 +158,7 @@ for f_iter = 1:numel(f_lst)
                 imhigh = single(im)/255;
                 imlow = single(imnoise(imhigh, 'gaussian', 0, problem.v));
         end
+        imlow_small = imresize(imlow, [10 10], 'bicubic');
         if diff, imhigh=imhigh-imlow; end;
         for j = 1:stride:size(imhigh,1)-ps+1
             for k = 1:stride:size(imhigh,2)-ps+1
@@ -156,22 +166,23 @@ for f_iter = 1:numel(f_lst)
                 imsublow = imlow(j:j+ps-1,k:k+ps-1);
                 ind = ind + 1;
                 imsuba(ind,:,:,:)=imsub;
-                imsublowa(ind,:,:,:)=imsublow;
+                imsublowa(ind,:,:,1)=imsublow;
+                imsublowa(ind,:,:,2:101)=repmat(reshape(imlow_small(:), [1 1 100]), [ps ps]);
             end
         end
     end
 end
 
 fprintf('Total Subimages %d\n', ind);
-imsuba = imsuba(1:ind,:,:);
-imsublowa = imsublowa(1:ind,:,:);
+imsuba = imsuba(1:ind,:,:,:);
+imsublowa = imsublowa(1:ind,:,:,:);
 
 s = randperm(ind); %shuffle
 imsuba = imsuba(s,:,:);
-imsublowa = imsublowa(s,:,:);
+imsublowa = imsublowa(s,:,:,:);
 
 imsuba = reshape(imsuba, ind, ps-2*pad, ps-2*pad, 1);
-imsublowa = reshape(imsublowa, ind, ps, ps, 1);
+imsublowa = reshape(imsublowa, ind, ps, ps, 101);
 imsuba = permute(imsuba, [2 3 4 1]);
 imsublowa = permute(imsublowa, [2 3 4 1]);
 imdb.images.data = single(imsublowa);
