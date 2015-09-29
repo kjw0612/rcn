@@ -18,7 +18,7 @@ end
 %% Set Options
 opts.problems = {struct('type', 'SR', 'sf', 3)};
 %opts.problems = {struct('type', 'SR', 'sf', 3), struct('type', 'JPEG', 'q', 20), struct('type', 'DENOISE', 'v', 0.001)};
-opts.gpus = 1;
+opts.gpus = 2;
 opts.resid = 1;
 opts.depth = 10; % 10 optimal
 opts.filterSize = 64;
@@ -62,7 +62,7 @@ opts = vl_argparse(opts, varargin);
 %                                                         Prepare data
 % --------------------------------------------------------------------
 
-if exist(opts.imdbPath, 'file')
+if 0 && exist(opts.imdbPath, 'file')
   imdb = load(opts.imdbPath) ;
 else
   imdb = getRcnImdb(opts.dataDir, opts.problems, opts.depth, opts.pad, opts.resid);
@@ -121,13 +121,24 @@ for f_iter = 1:numel(f_lst)
     end
 end
 
+opts=edgesTrain();                % default options (good settings)
+opts.modelDir='models/';          % model will be in models/forest
+opts.modelFnm='modelBsds';        % model name
+opts.nPos=5e5; opts.nNeg=5e5;     % decrease to speedup training
+opts.useParfor=0;                 % parallelize if sufficient memory
+
+dirname = pwd;
+tic, model=edgesTrain(opts); toc; % will load model if already trained
+cd(dirname)
+
 imsuba = zeros(nPatches, ps-pad*2, ps-pad*2);
-imsublowa = zeros(nPatches, ps, ps);
+imsublowa = zeros(nPatches, ps, ps, 2);
 ind = 0;
 for f_iter = 1:numel(f_lst)
     f_info = f_lst(f_iter);
     if f_info.isdir, continue; end
     im = imread(fullfile(dataDir, f_info.name));
+    im_orig = im;
     im = rgb2ycbcr(im);
     im = im(:,:,1);
     
@@ -151,13 +162,16 @@ for f_iter = 1:numel(f_lst)
                 imlow = single(imnoise(imhigh, 'gaussian', 0, problem.v));
         end
         if diff, imhigh=imhigh-imlow; end;
-        for j = 1:stride:size(imhigh,1)-ps+1
+        imedge = edgesDetect(imresize(imresize(im_orig, 1/problem.sf), size(imhigh)),model);
+       for j = 1:stride:size(imhigh,1)-ps+1
             for k = 1:stride:size(imhigh,2)-ps+1
                 imsub = imhigh(j+pad:j+ps-1-pad,k+pad:k+ps-1-pad);
                 imsublow = imlow(j:j+ps-1,k:k+ps-1);
+                imsubedge = imedge(j:j+ps-1,k:k+ps-1);
                 ind = ind + 1;
                 imsuba(ind,:,:,:)=imsub;
-                imsublowa(ind,:,:,:)=imsublow;
+                imsublowa(ind,:,:,1)=imsublow;
+                imsublowa(ind,:,:,2)=imsubedge;
             end
         end
     end
@@ -169,10 +183,10 @@ imsublowa = imsublowa(1:ind,:,:);
 
 s = randperm(ind); %shuffle
 imsuba = imsuba(s,:,:);
-imsublowa = imsublowa(s,:,:);
+imsublowa = imsublowa(s,:,:,:);
 
 imsuba = reshape(imsuba, ind, ps-2*pad, ps-2*pad, 1);
-imsublowa = reshape(imsublowa, ind, ps, ps, 1);
+imsublowa = reshape(imsublowa, ind, ps, ps, 2);
 imsuba = permute(imsuba, [2 3 4 1]);
 imsublowa = permute(imsublowa, [2 3 4 1]);
 imdb.images.data = single(imsublowa);

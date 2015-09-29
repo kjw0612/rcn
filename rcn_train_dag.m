@@ -125,7 +125,7 @@ for epoch=1:opts.numEpochs
   end
 
   % test
-  if numel(opts.testPath) > 0
+  if 0&numel(opts.testPath) > 0
       im = imread(opts.testPath);
       im = rgb2ycbcr(im);
       im = im(:,:,1);
@@ -371,6 +371,15 @@ f_lst = dir(opts.evalDir);
 eval_base = zeros(numel(opts.problems),1);
 eval_ours = zeros(numel(opts.problems),1);
 
+
+opts2=edgesTrain();                % default options (good settings)
+opts2.modelDir='models/';          % model will be in models/forest
+opts2.modelFnm='modelBsds';        % model name
+
+dirname = pwd;
+tic, model=edgesTrain(opts2); toc; % will load model if already trained
+cd(dirname)
+
 f_n = 0;
 printPic = true;
 for f_iter = 1:numel(f_lst)
@@ -378,6 +387,7 @@ for f_iter = 1:numel(f_lst)
     if f_info.isdir, continue; end
     f_n = f_n + 1;
     im = imread(fullfile(opts.evalDir, f_info.name));
+    im_orig = im;
     im = rgb2ycbcr(im);
     im = im(:,:,1);
 
@@ -404,13 +414,14 @@ for f_iter = 1:numel(f_lst)
                 imhigh = single(im)/255;
                 imlow = single(imnoise(imhigh, 'gaussian', 0, problem.v));
         end
+    imedge = edgesDetect(imresize(imresize(im_orig, 1/problem.sf), size(imhigh)),model);
         if numel(opts.gpus) > 0
             imlow = gpuArray(imlow);
             imhigh = gpuArray(imhigh);
         end
         
         % predict
-        inputs = {'input', imlow, 'label', imhigh };
+        inputs = {'input', cat(3, imlow, imedge), 'label', imhigh };
         net.eval(inputs);
         impred = net.layers(end).block.lastPred;
         
