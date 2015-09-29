@@ -18,7 +18,7 @@ end
 %% Set Options
 opts.problems = {struct('type', 'SR', 'sf', 3)};
 %opts.problems = {struct('type', 'SR', 'sf', 3), struct('type', 'JPEG', 'q', 20), struct('type', 'DENOISE', 'v', 0.001)};
-opts.gpus = 1;
+opts.gpus = 2;
 opts.resid = 1;
 opts.depth = 10; % 10 optimal
 opts.filterSize = 64;
@@ -62,7 +62,7 @@ opts = vl_argparse(opts, varargin);
 %                                                         Prepare data
 % --------------------------------------------------------------------
 
-if exist(opts.imdbPath, 'file')
+if 0 && exist(opts.imdbPath, 'file')
   imdb = load(opts.imdbPath) ;
 else
   imdb = getRcnImdb(opts.dataDir, opts.problems, opts.depth, opts.pad, opts.resid);

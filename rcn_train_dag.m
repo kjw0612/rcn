@@ -24,7 +24,11 @@ opts.expDir = fullfile('data','exp_free') ;
 opts.evalDir = fullfile('data','Set5');
 opts.prefetch = false ;
 opts.momentum = 0.9 ;
-opts.derOutputs = {'objective', 1} ;
+opts.derOutputs = {'objective', 1};
+for i =5:9
+    opts.derOutputs{end+1}=sprintf('objective%d', i);
+    opts.derOutputs{end+1}=0.2;
+end
 opts.conserveMemory = false ;
 opts.sync = false ;
 opts.memoryMapFile = fullfile(tempdir, 'matconvnet.bin') ;
