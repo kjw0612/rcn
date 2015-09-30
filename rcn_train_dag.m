@@ -23,7 +23,7 @@ opts.continue = false ;
 opts.expDir = fullfile('data','exp_free') ;
 opts.evalDir = fullfile('data','Set5');
 opts.prefetch = false ;
-opts.momentum = 0.95 ;
+opts.momentum = 0.9 ;
 opts.derOutputs = {'objective', 1} ;
 opts.conserveMemory = false ;
 opts.sync = false ;
@@ -157,7 +157,8 @@ for epoch=1:opts.numEpochs
   legend(leg{:}) ; xlabel('epoch') ; ylabel('metric') ;
   grid on;
   subplot(1,2,2) ; plot(1:epoch, [repmat(baseline_psnr, 1, epoch); stats.test]') ;
-  legend({'Baseline (Set5)', 'Ours (Set5)'}) ; xlabel('epoch') ; ylabel('PSNR') ;
+  %legend({'Baseline (Set5)', 'Ours (Set5)'}) ; 
+  xlabel('epoch') ; ylabel('PSNR') ;
   grid on ;
 %   subplot(2,3,4) ; imshow(imhigh);
 %   subplot(2,3,5) ; imshow(imlow);

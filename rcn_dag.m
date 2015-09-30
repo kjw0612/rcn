@@ -21,7 +21,7 @@ opts.problems = {struct('type', 'SR', 'sf', 3)};
 opts.gpus = 2;
 opts.resid = 1;
 opts.depth = 10; % 10 optimal
-opts.filterSize = 64*2;
+opts.filterSize = 64;
 opts.pad = 0;
 opts.useBnorm = false;
 exp_name = 'exp';
@@ -45,11 +45,11 @@ opts.dataDir = fullfile('data', '91');
 opts.imdbPath = fullfile(opts.expDir, 'imdb.mat');
 
 opts.train.batchSize = 64;
-rep = 20*4;
-opts.train.learningRate = [0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)];%*0.99 .^ (0:500);
+rep = 20*100;
+opts.train.learningRate = 0.01*[0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)];%*0.99 .^ (0:500);
 opts.train.numEpochs = numel(opts.train.learningRate);
-opts.train.continue = 0;
-opts.train.gradRange = 1e-4;
+opts.train.continue = 1;
+opts.train.gradRange =  1e-4;
 opts.train.sync = true;
 opts.train.expDir = opts.expDir;
 opts.train.gpus = opts.gpus;
@@ -62,7 +62,7 @@ opts = vl_argparse(opts, varargin);
 %                                                         Prepare data
 % --------------------------------------------------------------------
 
-if 0 &exist(opts.imdbPath, 'file')
+if exist(opts.imdbPath, 'file')
   imdb = load(opts.imdbPath) ;
 else
   imdb = getRcnImdb(opts.dataDir, opts.problems, opts.depth, opts.pad, opts.resid);
