@@ -45,11 +45,11 @@ opts.dataDir = fullfile('data', '91');
 opts.imdbPath = fullfile(opts.expDir, 'imdb.mat');
 
 opts.train.batchSize = 64;
-rep = 20*100;
-opts.train.learningRate = 0.01*[0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)];%*0.99 .^ (0:500);
+rep = 20;
+opts.train.learningRate = [0.1*ones(1,rep) 0.01*ones(1,rep*10) 0.001*ones(1,rep*100) 0.0001*ones(1,rep*1000)];%*0.99 .^ (0:500);
 opts.train.numEpochs = numel(opts.train.learningRate);
 opts.train.continue = 1;
-opts.train.gradRange =  1e-4;
+opts.train.gradRange =  0.01*1e-4;
 opts.train.sync = true;
 opts.train.expDir = opts.expDir;
 opts.train.gpus = opts.gpus;

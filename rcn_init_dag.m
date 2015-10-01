@@ -12,10 +12,10 @@ if opts.useBnorm
 end
 for i = 2 : opts.depth - 1
     convBlock = dagnn.Conv('size', [3,3,opts.filterSize,opts.filterSize], 'hasBias', true, 'init', [1, 0], 'pad', 1);
-    net.addLayer(['conv',num2str(i)], convBlock, {['x',num2str(x)]}, {['x',num2str(x+1)]}, {['filters2'], ['biases2']});
-    x = x + 1;
-%         net.addLayer(['dropout',num2str(i)], dagnn.DropOut('rate', 0.2), {['x',num2str(x)]}, {['x',num2str(x+1)]}, {}) ;
+    net.addLayer(['conv',num2str(i)], convBlock, {['x',num2str(x)]}, {['x',num2str(x+1)]}, {sprintf('filters%d', 2), sprintf('biases%d', 2)});
 %     x = x + 1;
+%         net.addLayer(['dropout',num2str(i)], dagnn.DropOut('rate', 0.1), {['x',num2str(x)]}, {['x',num2str(x+1)]}, {}) ;
+    x = x + 1;
     net.addLayer(['relu',num2str(i)], dagnn.ReLU(), {['x',num2str(x)]}, {['x',num2str(x+1)]}, {}) ;
     x = x + 1;
     if opts.useBnorm
