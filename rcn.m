@@ -5,8 +5,8 @@ run(fullfile(fileparts(mfilename('fullpath')),...
   'snudeep', 'matlab', 'vl_setupnn.m')) ;
 
 %% Prepare data
-if ~exist('data', 'dir'), mkdir('data'); end
-if ~exist('data/91', 'dir')
+if ~exist('./data', 'dir'), mkdir('data'); end
+if ~exist('./data/91', 'dir')
     url = 'https://www.dropbox.com/s/sngf409t615mq9c/sr_data_91_291.zip?dl=1';
     fprintf('Downloading images : %s\n', url);
     unzip(url, 'data');
