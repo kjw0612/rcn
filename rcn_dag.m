@@ -27,6 +27,7 @@ opts.problems = {struct('type', 'SR', 'sf', 3)};
 opts.gpus = 2;
 opts.resid = 1;
 opts.recursive = 1;
+opts.dropout = 1;
 opts.depth = 10; % 10 optimal5
 opts.filterSize = 64;
 opts.pad = 0;
@@ -53,6 +54,7 @@ opts.imdbPath = fullfile(opts.expDir, 'imdb.mat');
 
 opts.train.batchSize = 64;
 rep = 20;
+if opts.dropout, rep = rep * 5; end
 opts.train.learningRate = [0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)];%*0.99 .^ (0:500);
 opts.train.numEpochs = numel(opts.train.learningRate);
 opts.train.continue = 0;
