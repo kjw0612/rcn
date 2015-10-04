@@ -150,7 +150,8 @@ for epoch=start+1:opts.numEpochs
   legend(leg{:}) ; xlabel('epoch') ; ylabel('metric') ;
   grid on;
   subplot(1,2,2) ; plot(1:epoch, [repmat(baseline_psnr, 1, epoch); stats.test]') ;
-  legend({'Baseline (Set5)', 'Ours (Set5)'}) ; xlabel('epoch') ; ylabel('PSNR') ;
+  %legend({'Baseline (Set5)', 'Ours (Set5)'}) ; 
+  xlabel('epoch') ; ylabel('PSNR') ; title(sprintf('Best PSNR : %f', max(stats.test)));
   grid on ;
 %   subplot(2,3,4) ; imshow(imhigh);
 %   subplot(2,3,5) ; imshow(imlow);
@@ -212,6 +213,9 @@ for t=1:opts.batchSize:numel(subset)
 
     if strcmp(mode, 'train')
       net.accumulateParamDers = 1;%(s ~= 1) ;
+      for i=1:numel(net.params)
+          net.params(i).der = [];
+      end  
       net.eval(inputs, opts.derOutputs) ;
     else
       net.eval(inputs) ;
