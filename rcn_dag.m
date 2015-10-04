@@ -9,9 +9,15 @@ run(fullfile(fileparts(mfilename('fullpath')),...
 if ~exist('data', 'dir'), mkdir('data'); end
 if ~exist('data/91', 'dir')
     url = 'https://www.dropbox.com/s/sngf409t615mq9c/sr_data_91_291.zip?dl=1';
-    fprintf('Downloading images : %s\n', url);
+    fprintf('Downloading images (91 and BSDS200) : %s\n', url);
     unzip(url, 'data');
     fprintf('Images Prepared. Two folders 91 and 291 (91+BSDS200)\n');
+end
+if ~exist('data/Set5', 'dir')
+    url = 'https://www.dropbox.com/s/v7ffhhoodo0xstv/Set5.zip?dl=1';
+    fprintf('Downloading images (Set5) : %s\n', url);
+    unzip(url, 'data');
+    fprintf('Images Prepared. Set5\n');
 end
 
 
