@@ -1,33 +1,29 @@
-function [net, info] = rcn(varargin)
+function [net, info] = rcn_dag(varargin)
+
 % Image Restoration Network
 % Author: Jiwon Kim (jiwon@alum.mit.edu), Jonghyuk
 run(fullfile(fileparts(mfilename('fullpath')),...
   'snudeep', 'matlab', 'vl_setupnn.m')) ;
 
-%% Prepare data
-if ~exist('./data', 'dir'), mkdir('data'); end
-if ~exist('./data/91', 'dir')
+%% Download data
+if ~exist('data', 'dir'), mkdir('data'); end
+if ~exist('data/91', 'dir')
     url = 'https://www.dropbox.com/s/sngf409t615mq9c/sr_data_91_291.zip?dl=1';
     fprintf('Downloading images : %s\n', url);
     unzip(url, 'data');
     fprintf('Images Prepared. Two folders 91 and 291 (91+BSDS200)\n');
 end
 
+
 %% Set Options
-%opts.problems = {struct('type', 'SR', 'sf', 3)};
-%opts.problems = {struct('type', 'JPEG', 'q', 20)};
-%opts.problems = {struct('type', 'DENOISE', 'v', 0.001)};
-opts.problems = {struct('type', 'SR', 'sf', 3), struct('type', 'JPEG', 'q', 20), struct('type', 'DENOISE', 'v', 0.001)};
+opts.problems = {struct('type', 'SR', 'sf', 3)};
+%opts.problems = {struct('type', 'SR', 'sf', 3), struct('type', 'JPEG', 'q', 20), struct('type', 'DENOISE', 'v', 0.001)};
+opts.gpus = 1;
 opts.resid = 1;
 opts.depth = 10; % 10 optimal
-opts.continue =0;
-opts.gradRange = 1e-4;
-opts.sync = true;
-opts.dataDir = 'data/91'; % 'data/291' for bsds 
-opts.filterSize = 64;% number of filters
-opts.useBnorm = true;
-opts = vl_argparse(opts, varargin);
-
+opts.filterSize = 64;
+opts.pad = 0;
+opts.useBnorm = false;
 exp_name = 'exp';
 if opts.useBnorm
     exp_name = 'exp_bn';
@@ -44,40 +40,57 @@ for problem_iter = 1:numel(opts.problems)
     end
 end
 exp_name = sprintf('%s_resid%d_depth%d', exp_name, opts.resid, opts.depth);
-opts.expDir = fullfile('data/exp',exp_name);
+opts.expDir = fullfile('data','exp',exp_name);
+opts.dataDir = fullfile('data', '91');
+opts.imdbPath = fullfile(opts.expDir, 'imdb.mat');
 
-rep=25;
-opts.learningRate = [0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)];%*0.99 .^ (0:500);
-opts.gradRange = 1e-4;
-if ~exist('data/result', 'dir'), mkdir('data/result'); end
-opts.fname = sprintf('data/result/%s.txt',exp_name);
-if opts.depth <= 20
-    opts.batchSize = 64;
+opts.train.batchSize = 64;
+rep = 20;
+opts.train.learningRate = [0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)];%*0.99 .^ (0:500);
+opts.train.numEpochs = numel(opts.train.learningRate);
+opts.train.continue = 0;
+opts.train.gradRange = 1e-4;
+opts.train.sync = true;
+opts.train.expDir = opts.expDir;
+opts.train.gpus = opts.gpus;
+opts.train.numSubBatches = 1 ;
+opts.train.testPath = fullfile('data', 'Set5', 'baby_GT.bmp');
+
+opts = vl_argparse(opts, varargin);
+
+% --------------------------------------------------------------------
+%                                                         Prepare data
+% --------------------------------------------------------------------
+
+if exist(opts.imdbPath, 'file')
+  imdb = load(opts.imdbPath) ;
 else
-    opts.batchSize = 32;
-end;
-
-opts.weightDecay = 0.0001;
-
-opts.numEpochs = numel(opts.learningRate);
-opts.pad = 0;
-opts.plotDiagnostics = 0 ;
-
-if ~exist('data/trainData', 'dir'), mkdir('data/trainData'); end
-if ~opts.continue || ~exist(sprintf('data/trainData/%s.mat',exp_name),'file')
-    imdb = generateData(opts.dataDir, opts.problems, opts.depth, opts.pad, opts.resid);
-    save(sprintf('data/trainData/%s.mat',exp_name), 'imdb');
-else
-    load(sprintf('data/trainData/%s.mat',exp_name));
+  imdb = getRcnImdb(opts.dataDir, opts.problems, opts.depth, opts.pad, opts.resid);
+  mkdir(opts.expDir) ;
+  save(opts.imdbPath, '-struct', 'imdb') ;
 end
 
-% define net
-net = rcn_init(opts);
+net = rcn_init_dag(opts);
+net.initParams();
+%net = dagnn.DagNN.fromSimpleNN(net) ;
+%net.addLayer('error', dagnn.Loss('loss', 'classerror'), ...
+%             {'prediction','label'}, 'error') ;
 
-opts = rmfield(opts, {'depth', 'filterSize', 'dataDir'}); % remove irrelavant fields
-[net, info] = rcn_train(net, imdb, @getBatch, opts) ;
+% --------------------------------------------------------------------
+%                                                                Train
+% --------------------------------------------------------------------
 
-function imdb = generateData(dataDir, problems, depth, pad, diff)
+info = rcn_train_dag(net, imdb, @getBatch, ...
+                     opts.train, ...
+                     'val', find(imdb.images.set == 3)) ;
+
+% --------------------------------------------------------------------
+function inputs = getBatch(imdb, batch)
+% --------------------------------------------------------------------
+inputs = {'input', imdb.images.data(:,:,:,batch), ...
+          'label', imdb.images.labels(:,:,:,batch)} ;
+
+function imdb = getRcnImdb(dataDir, problems, depth, pad, diff)
 f_lst = dir(fullfile(dataDir, '*.*'));
 ps = (2*depth+1); % patch size
 stride = ps;%ps - 2*pad;
@@ -165,9 +178,5 @@ imsublowa = permute(imsublowa, [2 3 4 1]);
 imdb.images.data = single(imsublowa);
 imdb.images.labels = single(imsuba);
 val_size = floor(ind * 0.01);
-imdb.images.set = [ones(1, ind-val_size) 2*ones(1, val_size)];
-% --------------------------------------------------------------------
-function [im, labels] = getBatch(imdb, batch)
-% --------------------------------------------------------------------
-im = imdb.images.data(:,:,:,batch) ;
-labels = imdb.images.labels(:,:,:,batch) ;
+imdb.images.set = [ones(1, ind-val_size) 3*ones(1, val_size)];
+imdb.meta.sets = {'train', 'val', 'test'} ;
