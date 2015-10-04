@@ -24,7 +24,7 @@ end
 %% Set Options
 opts.problems = {struct('type', 'SR', 'sf', 3)};
 %opts.problems = {struct('type', 'SR', 'sf', 3), struct('type', 'JPEG', 'q', 20), struct('type', 'DENOISE', 'v', 0.001)};
-opts.gpus = 1;
+opts.gpus = 2;
 opts.resid = 1;
 opts.depth = 10; % 10 optimal
 opts.filterSize = 64;
@@ -91,10 +91,15 @@ info = rcn_train_dag(net, imdb, @getBatch, ...
                      'val', find(imdb.images.set == 3)) ;
 
 % --------------------------------------------------------------------
-function inputs = getBatch(imdb, batch)
+function inputs = getBatch(opts, imdb, batch)
 % --------------------------------------------------------------------
-inputs = {'input', imdb.images.data(:,:,:,batch), ...
+if numel(opts.gpus) > 0
+    inputs = {'input', gpuArray(imdb.images.data(:,:,:,batch)), ...
+          'label', gpuArray(imdb.images.labels(:,:,:,batch))} ;
+else
+    inputs = {'input', imdb.images.data(:,:,:,batch), ...
           'label', imdb.images.labels(:,:,:,batch)} ;
+end
 
 function imdb = getRcnImdb(dataDir, problems, depth, pad, diff)
 f_lst = dir(fullfile(dataDir, '*.*'));

@@ -72,23 +72,16 @@ end
 %                                                        Train and validate
 % -------------------------------------------------------------------------
 
-for epoch=1:opts.numEpochs
+modelPath = @(ep) fullfile(opts.expDir, sprintf('net-epoch-%d.mat', ep));
+modelFigPath = fullfile(opts.expDir, 'net-train.pdf') ;
 
-  % fast-forward to last checkpoint
-  modelPath = @(ep) fullfile(opts.expDir, sprintf('net-epoch-%d.mat', ep));
-  modelFigPath = fullfile(opts.expDir, 'net-train.pdf') ;
-  if opts.continue
-    if exist(modelPath(epoch),'file')
-      if epoch == opts.numEpochs
-        [net, stats] = loadState(modelPath(epoch)) ;
-      end
-      continue ;
-    end
-    if epoch > 1
-      fprintf('resuming by loading epoch %d\n', epoch-1) ;
-      [net, stats] = loadState(modelPath(epoch-1)) ;
-    end
-  end
+start = opts.continue * findLastCheckpoint(opts.expDir) ;
+if start >= 1
+  fprintf('resuming by loading epoch %d\n', start) ;
+  [net, stats] = loadState(modelPath(start)) ;
+end
+
+for epoch=start+1:opts.numEpochs
 
   % train one epoch
   state.epoch = epoch ;
@@ -204,7 +197,7 @@ for t=1:opts.batchSize:numel(subset)
     num = num + numel(batch) ;
     if numel(batch) == 0, continue ; end
 
-    inputs = state.getBatch(state.imdb, batch) ;
+    inputs = state.getBatch(opts, state.imdb, batch) ;
 
     if opts.prefetch
       if s == opts.numSubBatches
@@ -218,7 +211,7 @@ for t=1:opts.batchSize:numel(subset)
     end
 
     if strcmp(mode, 'train')
-      net.paramDersAccumulate = (s ~= 1) ;
+      net.accumulateParamDers = 1;%(s ~= 1) ;
       net.eval(inputs, opts.derOutputs) ;
     else
       net.eval(inputs) ;
@@ -474,4 +467,12 @@ if nargin>=1
     end
 else
     h = figure;
-end                                                                                                                                                     
+end      
+
+% -------------------------------------------------------------------------
+function epoch = findLastCheckpoint(modelDir)
+% -------------------------------------------------------------------------
+list = dir(fullfile(modelDir, 'net-epoch-*.mat')) ;
+tokens = regexp({list.name}, 'net-epoch-([\d]+).mat', 'tokens') ;
+epoch = cellfun(@(x) sscanf(x{1}{1}, '%d'), tokens) ;
+epoch = max([epoch 0]) ;                                                                                                                                               
