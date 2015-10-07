@@ -11,6 +11,8 @@ function stats = rcn_train_dag(net, imdb, getBatch, varargin)
 
 opts.problems = {struct('type', 'SR', 'sf', 3)};
 
+opts.dropout = 0;
+opts.recursive = 1;
 opts.train = [] ;
 opts.val = [] ;
 opts.gpus = [] ;
@@ -151,7 +153,7 @@ for epoch=start+1:opts.numEpochs
   grid on;
   subplot(1,2,2) ; plot(1:epoch, [repmat(baseline_psnr, 1, epoch); stats.test]') ;
   %legend({'Baseline (Set5)', 'Ours (Set5)'}) ; 
-  xlabel('epoch') ; ylabel('PSNR') ; title(sprintf('Best PSNR : %f', max(stats.test)));
+  xlabel('epoch') ; ylabel('PSNR') ; title(sprintf('Best PSNR (dropout: %d, recursive: %d) : %f',opts.dropout, opts.recursive,  max(stats.test)));
   grid on ;
 %   subplot(2,3,4) ; imshow(imhigh);
 %   subplot(2,3,5) ; imshow(imlow);
