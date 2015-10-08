@@ -27,9 +27,9 @@ opts.problems = {struct('type', 'SR', 'sf', 3)};
 opts.gpus = 2;
 opts.resid = 1;
 opts.recursive = 1;
-opts.dropout = 1;
+opts.dropout = 0;
 opts.depth = 10; % 10 optimal5
-opts.filterSize = 512;
+opts.filterSize = 64;
 opts.pad = 0;
 opts.useBnorm = false;
 exp_name = 'exp';
@@ -47,7 +47,7 @@ for problem_iter = 1:numel(opts.problems)
             exp_name = strcat(exp_name, '_N', num2str(problem.v));
     end
 end
-exp_name = sprintf('%s_resid%d_depth%d', exp_name, opts.resid, opts.depth);
+exp_name = sprintf('multi_obj_%s_resid%d_depth%d', exp_name, opts.resid, opts.depth);
 opts.expDir = fullfile('data','exp',exp_name);
 opts.dataDir = fullfile('data', '91');
 opts.imdbPath = fullfile(opts.expDir, 'imdb.mat');
@@ -57,7 +57,7 @@ rep = 20;
 if opts.dropout, rep = rep * 5; end
 opts.train.learningRate = [0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)];%*0.99 .^ (0:500);
 opts.train.numEpochs = numel(opts.train.learningRate);
-opts.train.continue = 1;
+opts.train.continue = 0;
 opts.train.gradRange = 1e-4;
 opts.train.sync = true;
 opts.train.expDir = opts.expDir;
@@ -73,15 +73,15 @@ opts = vl_argparse(opts, varargin);
 %                                                         Prepare data
 % --------------------------------------------------------------------
 
-if exist(opts.imdbPath, 'file')
+if exist(opts.imdbPath, 'file') & 0
   imdb = load(opts.imdbPath) ;
 else
   imdb = getRcnImdb(opts.dataDir, opts.problems, opts.depth, opts.pad, opts.resid);
   mkdir(opts.expDir) ;
-  save(opts.imdbPath, '-struct', 'imdb') ;
+  %save(opts.imdbPath, '-struct', 'imdb') ;
 end
 
-net = rcn_init_dag(opts);
+[net, opts.train.derOutputs] = rcn_init_dag(opts);
 net.initParams();
 %net = dagnn.DagNN.fromSimpleNN(net) ;
 %net.addLayer('error', dagnn.Loss('loss', 'classerror'), ...
@@ -108,8 +108,8 @@ end
 
 function imdb = getRcnImdb(dataDir, problems, depth, pad, diff)
 f_lst = dir(fullfile(dataDir, '*.*'));
-ps = (2*depth+1); % patch size
-stride = ps;%ps - 2*pad;
+ps = 2*depth+1; % patch size
+stride = ps;%31;%ps - 2*pad;
 
 nPatches = 0;
 for f_iter = 1:numel(f_lst)
