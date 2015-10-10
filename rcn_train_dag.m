@@ -272,12 +272,16 @@ for i=1:numel(net.params)
   net.params(i).der = min(max(net.params(i).der, -opts.gradRange/mult), opts.gradRange/mult);
   thisDecay = opts.weightDecay * net.params(i).weightDecay ;
   
+  momentum_prev = state.momentum{i};
   state.momentum{i} = opts.momentum * state.momentum{i} ...
     - lr * net.params(i).learningRate * ...
       thisDecay * net.params(i).value ...
     - lr * net.params(i).learningRate * (1 / batchSize) * net.params(i).der ;
   
-  net.params(i).value = net.params(i).value + state.momentum{i};
+  %Nesterov
+  net.params(i).value = net.params(i).value ...
+                        - opts.momentum * momentum_prev ...
+                        + (1 + opts.momentum) * state.momentum{i};
 end
 
 % -------------------------------------------------------------------------
