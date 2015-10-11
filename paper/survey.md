@@ -7,6 +7,8 @@
   - [2015] (#2015)
   - [2014] (#2014)
   - [Older] (#older)
+ - [Image Restoration] (#image-restoration)
+  - [2015] (#2015)
   
 ## Super Resolution
 ### 2015
@@ -70,6 +72,23 @@
 * Image Denoising and Inpainting with Deep Neural Networks (2012) [[Paper](http://papers.nips.cc/paper/4686-image-denoising-and-inpainting-with-deep-neural-networks.pdf)]
  * Junyuan Xie, Linli Xu, Enhong Chen
  
+## Image Restoration
+
+### 2015
+
+#### CVPR
+* UniHIST: A Unified Framework for Image Restoration With Marginal Histogram Constraints [[Paper](http://www.cv-foundation.org/openaccess/content_cvpr_2015/papers/Mei_UniHIST_A_Unified_2015_CVPR_paper.pdf)]
+ * Xing Mei, Weiming Dong, Bao-Gang Hu, Siwei Lyu
+* Data-Driven Sparsity-Based Restoration of JPEG-Compressed Images in Dual Transform-Pixel Domain [[Paper](http://www.cv-foundation.org/openaccess/content_cvpr_2015/papers/Liu_Data-Driven_Sparsity-Based_Restoration_2015_CVPR_paper.pdf)
+ * Xianming Liu, Xiaolin Wu, Jiantao Zhou, Debin Zhao
+* On Learning Optimized Reaction Diffusion Processes for Effective Image Restoration [[Paper](http://www.cv-foundation.org/openaccess/content_cvpr_2015/papers/Chen_On_Learning_Optimized_2015_CVPR_paper.pdf)],[[Code](http://gpu4vision.icg.tugraz.at/index.php?expand=c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c,c&content=Cat_0&id=94&field=Bin1#pub94)]
+ * Yunjin Chen, Wei Yu, Thomas Pock
+* Discriminative Learning of Iteration-wise Priors for Blind Deconvolution [[Paper](http://www4.comp.polyu.edu.hk/~cslzhang/paper/CVPR15.pdf)]
+ * Wangmeng Zuo, Dongwei Ren, Shuhang Gu, Liang Lin, and Lei Zhang
+
+
+
+
  
 
 
