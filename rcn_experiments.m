@@ -1,38 +1,33 @@
-%% Batch normalization effect experiment
+%% Experiment Framework
 
-[net_bn, info_bn] = rcn(...
-  'useBnorm', true);
-
-[net_fc, info_fc] = rcn(...
-  'useBnorm', false);
+net = {};
+info = {};
+exp_name = {};
+for i = 1:9
+    [net{end+1}, info{end+1}] = rcn_dag('filterSize', 2^i);
+    exp_name{end+1} = sprintf('filterSize %d (no dropout)', 2^i);
+end
 
 %%
 figure(1) ; clf ;
 subplot(1,2,1) ;
-semilogy(info_fc.val.objective, 'k') ; hold on ;
-semilogy(info_bn.val.objective, 'b') ;
-xlabel('Training samples [x10^3]'); ylabel('energy') ;
+for i = 1:numel(net)
+    val = zeros(1,numel(info{1}.val));
+    val(:) = info{i}.val.objective;
+    plot(val) ; hold on ;
+end
+xlabel('Training samples [x10^3]'); ylabel('objective (val)') ;
 grid on ;
-h=legend('BASE', 'BNORM') ;
-set(h,'color','none');
+h=legend(exp_name) ;
 title('objective') ;
 
-subplot(1,2,2) ;
-nProblem = numel(info_fc.test.error);
-base = info_fc.test.error{1}.ours;
-bnorm = info_bn.test.error{1}.ours;
-for problem_iter = 2:nProblem
-    base = base + info_fc.test.error{problem_iter}.ours;
-    bnorm = bnorm + info_bn.test.error{problem_iter}.ours;
-end
-base = base / nProblem;
-bnorm = bnorm / nProblem;
+subplot(1,2,2);
 
-plot(base, 'k') ; hold on ; % first row for top1e
-plot(bnorm, 'b') ;
-h=legend('BASE','BNORM') ;
+for i =1:numel(net)
+    plot(info{i}.test) ; hold on ;
+end
+h=legend(exp_name, 'location', 'southeast') ;
 grid on ;
 xlabel('Training samples [x10^3]'); ylabel('error') ;
-set(h,'color','none') ;
-title('error') ;
+title('PSNR') ;
 drawnow ;
