@@ -1,4 +1,4 @@
-function net = rcn_init_dag(opts)
+function [net, derOutputs] = rcn_init_dag(opts)
 % define net
 net = dagnn.DagNN() ;
 
@@ -28,6 +28,15 @@ for i = 2 : opts.depth - 1
         net.addLayer(['bnorm',num2str(i)], dagnn.BatchNorm(), {['x',num2str(x)]}, {['x',num2str(x+1)]}, {}) ;
         x = x + 1;
     end
+    
+    if i < opts.depth - 1
+        init = [0.001, 0.5];
+        if opts.resid, init(2)=0; end
+        convBlock = dagnn.Conv('size', [3,3,opts.filterSize,1], 'hasBias', true, 'init', init, 'pad', 1);        
+        net.addLayer(sprintf('conv_out%d',i), convBlock, {sprintf('x%d',x)}, {sprintf('prediction%d',i)}, {['filters',num2str(opts.depth)], ['biases',num2str(opts.depth)]});
+        net.addLayer(sprintf('objective%d',i), dagnn.EuclidLoss(), ...
+             {sprintf('prediction%d',i),'label'}, sprintf('objective%d',i)) ;
+    end
 end
 init = [0.001, 0.5];
 if opts.resid, init(2)=0; end
@@ -36,3 +45,9 @@ net.addLayer(['conv',num2str(opts.depth)], convBlock, {['x',num2str(x)]}, {'pred
 
 net.addLayer('objective', dagnn.EuclidLoss(), ...
              {'prediction','label'}, 'objective') ;
+
+derOutputs =  {'objective', 1};
+for i=2:opts.depth-2
+    derOutputs{end+1}=sprintf('objective%d',i);
+    derOutputs{end+1}=i/100;
+end
