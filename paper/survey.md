@@ -2,16 +2,18 @@
 
 ## Table of Contents
  - [Super Resolution] (#super-resolution)
-  - [2015] (#2015)
+  - [2015-SR] (#2015-sr)
  - [Denoising] (#denoising)
-  - [2015] (#2015)
-  - [2014] (#2014)
-  - [Older] (#older)
+  - [2015-Den] (#2015-den)
+  - [2014-Den] (#2014-den)
+  - [Older-Den] (#older-den)
  - [Image Restoration] (#image-restoration)
-  - [2015] (#2015)
+  - [2015-IR] (#2015-ir)
+  - [2014-IR] (#2014-ir)
+  - [Older-IR] (#older-ir)
   
 ## Super Resolution
-### 2015
+### 2015-SR
 
 #### CVPR
 * Fast and Accurate Image Upscaling with Super-Resolution Forests [[Paper](http://lrs.icg.tugraz.at/pubs/schulter_cvpr_2015.pdf)],[[Code](http://lrs.icg.tugraz.at/downloads/srf_cvpr15_public_v1.00.zip)]
@@ -36,7 +38,7 @@
  * Gernot Riegler, Samuel Schulter, Matthias Rüther, Horst Bischof
 
 ## Denoising
-### 2015
+### 2015-Den
 
 #### CVPR
 * L0TV: A New Method for Image Restoration in the Presence of Impulse Noise [[Paper](http://www.cv-foundation.org/openaccess/content_cvpr_2015/papers/Yuan_L0TV_A_New_2015_CVPR_paper.pdf)]
@@ -50,7 +52,7 @@
 * Patch Group Based Nonlocal Self-Similarity Prior Learning for Image Denoising [[Paper](http://www4.comp.polyu.edu.hk/~cslzhang/paper/PGPD.pdf)],[[Code](http://www4.comp.polyu.edu.hk/~cslzhang/code/PGPD.zip)]
  * Jun Xu, Lei Zhang, Wangmeng Zuo, David Zhang, Xiangchu Feng
 
-### 2014
+### 2014-Den
 
 #### CVPR
 * Weighted Nuclear Norm Minimization with Application to Image Denoising [[Paper](http://www4.comp.polyu.edu.hk/~cslzhang/paper/WNNM.pdf)],[[Code](http://www4.comp.polyu.edu.hk/~cslzhang/code/WNNM_code.zip)]
@@ -58,7 +60,7 @@
 * CID: Combined Image Denoising in Spatial and Frequency Domains Using Web Images [[Paper](http://www.cv-foundation.org/openaccess/content_cvpr_2014/papers/Yue_CID_Combined_Image_2014_CVPR_paper.pdf)]
  * Huanjing Yue, Xiaoyan Sun, Jingyu Yang, Feng Wu
  
-###  Older
+###  Older-Den
 
 #### CVPR
 * Deconvolutional Networks (2010) [[Paper](http://www.matthewzeiler.com/pubs/cvpr2010/cvpr2010.pdf)]
@@ -74,7 +76,7 @@
  
 ## Image Restoration
 
-### 2015
+### 2015-IR
 
 #### CVPR
 * UniHIST: A Unified Framework for Image Restoration With Marginal Histogram Constraints [[Paper](http://www.cv-foundation.org/openaccess/content_cvpr_2015/papers/Mei_UniHIST_A_Unified_2015_CVPR_paper.pdf)]
@@ -85,6 +87,43 @@
  * Yunjin Chen, Wei Yu, Thomas Pock
 * Discriminative Learning of Iteration-wise Priors for Blind Deconvolution [[Paper](http://www4.comp.polyu.edu.hk/~cslzhang/paper/CVPR15.pdf)]
  * Wangmeng Zuo, Dongwei Ren, Shuhang Gu, Liang Lin, and Lei Zhang
+
+#### ICCV
+* Compression Artifacts Reduction by Deep Convolutional Network [[Paper](http://arxiv.org/pdf/1504.06993v1.pdf)]
+ * Chao Dong, Yubin Deng, Chen-Change Loy, Xiaoou Tang
+* Improving Image Restoration with Soft-Rounding [[Paper](http://arxiv.org/pdf/1508.05046v1.pdf)]
+ * Xing Mei, Honggang Qi, Baogang Hu, Siwei Lyu
+* Conformal and Low-Rank Sparse Representation for Image Restoration (Not open yet)
+ * Jianwei Li, Xiaowu Chen, Dongqing Zou, Bo Gao, Bin Zhou
+
+#### Arxiv
+* Trainable Nonlinear Reaction Diffusion: A Flexible Framework for Fast and Effective Image Restoration [[Paper](http://arxiv.org/pdf/1508.02848.pdf)]
+ * Yunjin Chen and Thomas Pock
+
+### 2014-IR
+
+#### NIPS
+* Deep Convolutional Neural Network for Image Deconvolution [[Paper](http://papers.nips.cc/paper/5485-deep-convolutional-neural-network-for-image-deconvolution.pdf)]
+ * Li Xu, Jimmy SJ. Ren, Ce Liu, Jiaya Jia
+
+#### ECCV
+* Image Deconvolution Ringing Artifact Detection and Removal via PSF Frequency Analysis [[Paper](http://www.groupes.polymtl.ca/amosleh/papers/ECCV14.pdf)]
+ * Ali Mosleh, J.M. Pierre Langlois, Paul Green
+* Inverse Kernels for Fast Spatial Deconvolution [[Paper](http://www.cse.cuhk.edu.hk/leojia/papers/inversekernel_eccv14.pdf)]
+ *  Li Xu, Xin Tao, Jiaya Jia
+
+### Older-IR
+
+#### CVPR
+* A machine learning approach for non-blind image deconvolution (2013) [[Paper](http://www.cv-foundation.org/openaccess/content_cvpr_2013/papers/Schuler_A_Machine_Learning_2013_CVPR_paper.pdf)]
+ * Christian J. Schuler, Harold Christopher Burger, Stefan Harmeling, and Bernhard Scholkopf
+
+#### ICCV
+* Restoring An Image Taken Through a Window Covered with Dirt or Rain (2013) [[Paper](http://www.cs.nyu.edu/~deigen/rain/restore-iccv13.pdf)], [[Code](http://www.cs.nyu.edu/~deigen/rain/restore-dirt-rain.tgz)]
+ * David Eigen, Dilip Krishnan, Rob Fergus
+
+
+
 
 
 
