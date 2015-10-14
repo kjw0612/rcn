@@ -110,7 +110,10 @@ for epoch=start+1:opts.numEpochs
   end
   
   if numel(opts.gpus)>0, net.move('gpu'); end
+  backupmode = net.mode;
+  net.mode = 'test';
   [baseline_psnr, stats.test(epoch)] = evalTest(epoch, opts, net);
+  net.mode = backupmode;
   net.reset();
   if numel(opts.gpus)>0, net.move('cpu'); end 
 
