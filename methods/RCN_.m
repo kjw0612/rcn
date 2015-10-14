@@ -14,8 +14,10 @@ for f_iter = 1:numel(f_lst)
     if f_info.isdir, continue; end
     [~,imgName,~] = fileparts(f_lst(f_iter).name);
     im = imread(fullfile(dataDir, f_info.name));
-    im = rgb2ycbcr(im);
-    im = im(:,:,1);
+    if size(im,3)>1
+        im = rgb2ycbcr(im);
+        im = im(:,:,1);
+    end
     imhigh = modcrop(im, SF);
     imhigh = single(imhigh)/255;
     imlow = imresize(imhigh, 1/SF, 'bicubic');
