@@ -25,30 +25,30 @@
 % Pages are numbered in submission mode, and unnumbered in camera-ready
 \ifcvprfinal\pagestyle{empty}\fi
 \begin{document}
-\makeatletter 
-\let\@oldmaketitle\@maketitle% Store \@maketitle
-\renewcommand{\@maketitle}
-{
-{\@oldmaketitle% Update \@maketitle to insert... 
-\centerline{
-\begin{tabular}{c}
-\includegraphics[width=\textwidth]{figs/fig1_sffsr.pdf}
-\end{tabular}
-%\begin{figure*}
-%\includegraphics{figs/sr10.png}
-%\end{figure*}
-}
-\bigskip}% ... an image 
-\vspace{-15pt}
-\captionof{figure}{\label{fig:fig1}
-(Top) Our results using a single network for all scale factors. Super-resolved images over all scales are clean and sharp. (Bottom)  Results of Dong et al.  \cite{Dong2014} ($\times$3 model used for all scales). Result images are not visually pleasing. To handle multiple scales, existing methods require multiple networks. }
-\vspace{15pt}
-}
-\makeatother
+%\makeatletter 
+%\let\@oldmaketitle\@maketitle% Store \@maketitle
+%\renewcommand{\@maketitle}
+%{
+%{\@oldmaketitle% Update \@maketitle to insert... 
+%\centerline{
+%\begin{tabular}{c}
+%\includegraphics[width=\textwidth]{figs/fig1_sffsr.pdf}
+%\end{tabular}
+%%\begin{figure*}
+%%\includegraphics{figs/sr10.png}
+%%\end{figure*}
+%}
+%\bigskip}% ... an image 
+%\vspace{-15pt}
+%\captionof{figure}{\label{fig:fig1}
+%(Top) Our results using a single network for all scale factors. Super-resolved images over all scales are clean and sharp. (Bottom)  Results of Dong et al.  \cite{Dong2014} ($\times$3 model used for all scales). Result images are not visually pleasing. To handle multiple scales, existing methods require multiple networks. }
+%\vspace{15pt}
+%}
+%\makeatother
 
 
 %%%%%%%%% TITLE
-\title{Recursive-Convolutional Network Deeply-Supervised for Image Super-Resolution}
+\title{Deeply-Recursive Convolutional Network for Image Super-Resolution}
 
 \author{First Author\\
 	Institution1\\
@@ -74,8 +74,20 @@
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-	In this work, we address three challenging issues of a single-image super-resolution system (SR) based on convolutional networks, which are the scale, convergence and context problems.  \textcolor{red}{Then we propose a new powerful system based on a deep residual-learning convolutional network (RCN).} 
-Scale is a serious problem of most conventional SR algorithms which can only up-sample images to a specific trained scale. In order to cope with arbitrary scales including even fractional ones, many different systems must be trained and stored for all possible scales, which is, however, practically intractable. To solve this problem, \textcolor{red}{we propose to use a single network to handle multi-scales.} The network is trained with data augmented by various scales and found to be very effective in handling multiple scales. Convergence is another critical issue in training a CNN for SR and we estimate the residual images instead of high-resolution images directly. As residuals are sparse, we find RCN converges much faster with better accuracy during training. Embedding sufficient context information \textcolor{red}{and nonlinearities} is also necessary to deal with large scale super-resolution. In our system, by cascading small filters many times in a deep network structure, contextual information over large image regions is successfully exploited. We empirically find that the performance improves as the network depth increases. Our proposed system demonstrates superior performances over the state-of-the-art methods for various scales.
+Very deep convolutional networks (DCN) enjoy two desirable properties: wide receptive fields and high nonlinearities. We empirically find that deeper convolutional networks tend to super-resolve images better. One drawback using DCNs is that new parameters should be introduced every layer and models tend to be huge. For the reason, training an arbitrarily-deep DCN for image super-resolution is practically infeasible. To resolve the issue, we propose a deeply-recursive convolutional network (DRCN) repeatedly applying the same $3\times3$ convolutional layer many times (up to 30). Deep recursion widens receptive fields and increase nonlinearities without introducing new parameters. Training a DRCN modeling long-range dependencies between pixels is very difficult due to vanishing/exploding gradients. Gradient clipping, common to recurrent networks, resolves the issue but the network converges extremely slow. We use two techniques to boost convergence: deep-supervision and residual-learning. With them, we find DRCN converges much faster with better accuracy during training. To our surprise, very small DRCNs perform on par with gigantic DCNs (about 30 times more parameters). Moreoever, large DRCNs greatly outperform capacity-matched DCNs. Our proposed method outperform state-of-the-art methods by a large margin (TODO:number).
+%
+%\pagebreak
+% image super-resolution 
+%While very deep CNNs, achieving outstading performances in computer vision tasks in
+%We propose a recursive-convolutional network for single-image super-resolution. We  to widen 
+%
+%Using very deep CNNs for image super-resolution entails
+%CNN-based image super-resolution requires more parameters 
+%Image super-resolution requires very deep CNNs 
+%As very deep CNNs (DCNN) have shown great successes in many computer vision tasks, it is natural to use one for image super-resolution. But two problems emerge: DCNN requires many parameters and 
+%
+%address three challenging issues of a single-image super-resolution system (SR) based on convolutional networks, which are the scale, convergence and context problems.  \textcolor{red}{Then we propose a new powerful system based on a deep residual-learning convolutional network (RCN).} 
+%Scale is a serious problem of most conventional SR algorithms which can only up-sample images to a specific trained scale. In order to cope with arbitrary scales including even fractional ones, many different systems must be trained and stored for all possible scales, which is, however, practically intractable. To solve this problem, \textcolor{red}{we propose to use a single network to handle multi-scales.} The network is trained with data augmented by various scales and found to be very effective in handling multiple scales. Convergence is another critical issue in training a CNN for SR and we estimate the residual images instead of high-resolution images directly. As residuals are sparse, we find RCN converges much faster with better accuracy during training. Embedding sufficient context information \textcolor{red}{and nonlinearities} is also necessary to deal with large scale super-resolution. In our system, by cascading small filters many times in a deep network structure, contextual information over large image regions is successfully exploited. 
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
