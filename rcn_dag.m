@@ -24,13 +24,13 @@ end
 %% Set Options
 opts.problems = {struct('type', 'SR', 'sf', 3)};
 %opts.problems = {struct('type', 'SR', 'sf', 3), struct('type', 'JPEG', 'q', 20), struct('type', 'DENOISE', 'v', 0.001)};
-opts.gpus = 2;
+opts.gpus = 1;
 opts.resid = 1;
 opts.recursive = 1;
-opts.dropout = 0;
-opts.depth = 10; % 10 optimal5
-opts.filterSize = 64;
-if opts.dropout, opts.filterSize = opts.filterSize * 8; end
+opts.dropout = 1;
+opts.depth = 20; % 10 optimal5
+opts.filterSize = 256;
+%if opts.dropout, opts.filterSize = opts.filterSize * 8; end
 opts.pad = 0;
 opts.useBnorm = false;
 exp_name = 'exp';
@@ -53,13 +53,20 @@ opts.expDir = fullfile('data','exp',exp_name);
 opts.dataDir = fullfile('data', '91');
 opts.imdbPath = fullfile(opts.expDir, 'imdb.mat');
 
+opts = vl_argparse(opts, varargin);
 opts.train.batchSize = 64;
-rep = 20;
-if opts.dropout, rep = rep * 5; end
-opts.train.learningRate = [0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)];%*0.99 .^ (0:500);
+rep = 20*3;
+if opts.dropout, rep = rep * 5; opts.train.learningRate = [0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)]; end %*0.99 .^ (0:500); 
+opts.train.learningRate = 0.1; %[0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)];%*0.99 .^ (0:500);
 opts.train.numEpochs = numel(opts.train.learningRate);
 opts.train.continue = 0;
-opts.train.gradRange = 1e-4;
+if opts.depth <= 10
+  opts.train.gradRange = 1e-4;
+elseif opts.depth <= 20
+  opts.train.gradRange = 0.1*1e-4;
+else 
+  opts.train.gradRange = 0.01*1e-4;
+end
 opts.train.sync = true;
 opts.train.expDir = opts.expDir;
 opts.train.gpus = opts.gpus;
@@ -68,7 +75,6 @@ opts.train.testPath = fullfile('data', 'Set5', 'baby_GT.bmp');
 opts.train.dropout = opts.dropout;
 opts.train.recursive = opts.recursive;
 
-opts = vl_argparse(opts, varargin);
 
 % --------------------------------------------------------------------
 %                                                         Prepare data
@@ -110,7 +116,7 @@ end
 function imdb = getRcnImdb(dataDir, problems, depth, pad, diff)
 f_lst = dir(fullfile(dataDir, '*.*'));
 ps = 2*depth+1; % patch size
-stride = ps;%31;%ps - 2*pad;
+stride = 21;%ps;%31;%ps - 2*pad;
 
 nPatches = 0;
 for f_iter = 1:numel(f_lst)

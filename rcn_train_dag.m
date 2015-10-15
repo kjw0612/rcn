@@ -83,11 +83,24 @@ if start >= 1
   [net, stats] = loadState(modelPath(start)) ;
 end
 
-for epoch=start+1:opts.numEpochs
-
+lr = opts.learningRate;
+lr_decay_epochs = [];
+for epoch=start+1:1e10%opts.numEpochs
+  if epoch > 1
+    [~, min_epoch] = min([stats.val.objective]);
+  else 
+    min_epoch = 0;
+  end
+  if epoch - min_epoch > 20 && (~numel(lr_decay_epochs) || epoch - lr_decay_epochs(end) > 20) 
+    lr = lr * 0.1;
+    lr_decay_epochs(end+1) = epoch;
+  end;
+  if lr < 1e-5 
+    break
+  end;
   % train one epoch
   state.epoch = epoch ;
-  state.learningRate = opts.learningRate(min(epoch, numel(opts.learningRate))) ;
+  state.learningRate = lr; %opts.learningRate(min(epoch, numel(opts.learningRate))) ;
   state.train = opts.train(randperm(numel(opts.train))) ; % shuffle
   state.val = opts.val ;
   state.imdb = imdb ;
@@ -155,6 +168,7 @@ for epoch=start+1:opts.numEpochs
   legend(leg{:}) ; xlabel('epoch') ; ylabel('metric') ;
   grid on;
   subplot(1,2,2) ; plot(1:epoch, [repmat(baseline_psnr, 1, epoch); stats.test]') ;
+  hold on; plot(lr_decay_epochs, stats.test(lr_decay_epochs), 'o');
   %legend({'Baseline (Set5)', 'Ours (Set5)'}) ; 
   xlabel('epoch') ; ylabel('PSNR') ; title(sprintf('Best PSNR (dropout: %d, recursive: %d) : %f',opts.dropout, opts.recursive,  max(stats.test)));
   grid on ;
@@ -285,6 +299,8 @@ for i=1:numel(net.params)
   net.params(i).value = net.params(i).value ...
                         - opts.momentum * momentum_prev ...
                         + (1 + opts.momentum) * state.momentum{i};
+
+%  net.params(i).value = min(max(net.params(i).value, -1),1);
 end
 
 % -------------------------------------------------------------------------
@@ -369,10 +385,24 @@ net = dagnn.DagNN.loadobj(net) ;
 
 % -------------------------------------------------------------------------
 function [eval_base, eval_ours] = evalTest(epoch, opts, net)
-% -------------------------------------------------------------------------    
+% -------------------------------------------------------------------------  
 % Evaluation
 %fid = fopen(opts.fname,'w');
 %fprintf(fid, 'Epoch: %d\n', epoch);
+
+% recon_layer_name = net.layers(end-3).name;
+% rnn_output = net.layers(end-3).inputs{1};
+% for i=1:10
+%   if i == 1
+%     net.addLayer(sprintf('rnn_ext_conv%d', i), net.layers(7).block, {rnn_output}, {strcat(rnn_output, 'ext1')}, {'filters_share', 'biases_share'} );
+%   else
+%     net.addLayer(sprintf('rnn_ext_conv%d', i), net.layers(7).block, {strcat(rnn_output, sprintf('ext%d', 2*i-2))}, {strcat(rnn_output, sprintf('ext%d', 2*i-1))}, {'filters_share', 'biases_share'} );
+%   end
+%   net.addLayer(sprintf('rnn_ext_relu%d', i), net.layers(8).block, {strcat(rnn_output, sprintf('ext%d', 2*i-1))}, {strcat(rnn_output, sprintf('ext%d',2*i))}, {});
+% end
+% net.setLayerInputs(recon_layer_name, {strcat(rnn_output, 'ext2')});
+% net.rebuild();
+
 f_lst = dir(opts.evalDir);
 eval_base = zeros(numel(opts.problems),1);
 eval_ours = zeros(numel(opts.problems),1);
@@ -418,7 +448,7 @@ for f_iter = 1:numel(f_lst)
         % predict
         inputs = {'input', imlow, 'label', imhigh };
         net.eval(inputs);
-        impred = net.layers(end).block.lastPred;
+        impred = net.layers(net.getLayerIndex('objective')).block.lastPred;
         
         % post process
         switch problem.type
@@ -461,6 +491,14 @@ for problem_iter = 1:numel(opts.problems)
     eval_ours(problem_iter) = eval_ours(problem_iter) / f_n;
 %    fprintf(fid,'%f\t%f\t%f\t%s\n', eval_ours(problem_iter)-eval_base(problem_iter), eval_base(problem_iter), eval_ours(problem_iter), problem.type);
 end
+
+% for i=1:10
+%   net.removeLayer(sprintf('rnn_ext_conv%d', i));
+%   net.removeLayer(sprintf('rnn_ext_relu%d', i));
+% end
+% net.setLayerInputs(recon_layer_name, {rnn_output});
+% net.rebuild();
+
 %fclose(fid);
 
 function h = sfigure(h)
