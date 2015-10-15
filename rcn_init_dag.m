@@ -7,7 +7,7 @@ net.addLayer('conv1', convBlock, {'input'}, {'x1'}, {'filters1', 'biases1'});
 net.addLayer('relu1', dagnn.ReLU(), {'x1'}, {'x2'}, {}) ;
 x = 2;
 if opts.useBnorm
-    net.addLayer('bnorm1', dagnn.BatchNorm(), {'x2'}, {'x3'}, {}) ;
+    net.addLayer('bnorm1', dagnn.BatchNorm('ndim', opts.filterSize), {'x2'}, {'x3'}, {'alpha1','beta1'}) ;
 	x = x + 1;
 end
 for i = 2 : opts.depth - 1
@@ -25,7 +25,7 @@ for i = 2 : opts.depth - 1
     net.addLayer(['relu',num2str(i)], dagnn.ReLU(), {['x',num2str(x)]}, {['x',num2str(x+1)]}, {}) ;
     x = x + 1;
     if opts.useBnorm
-        net.addLayer(['bnorm',num2str(i)], dagnn.BatchNorm(), {['x',num2str(x)]}, {['x',num2str(x+1)]}, {}) ;
+        net.addLayer(['bnorm',num2str(i)], dagnn.BatchNorm('ndim', opts.filterSize), {['x',num2str(x)]}, {['x',num2str(x+1)]}, {['alpha',num2str(i)], ['beta',num2str(i)]}) ;
         x = x + 1;
     end
     

@@ -156,7 +156,7 @@ for epoch=start+1:opts.numEpochs
   grid on;
   subplot(1,2,2) ; plot(1:epoch, [repmat(baseline_psnr, 1, epoch); stats.test]') ;
   %legend({'Baseline (Set5)', 'Ours (Set5)'}) ; 
-  xlabel('epoch') ; ylabel('PSNR') ; title(sprintf('Best PSNR (dropout: %d, recursive: %d) : %f',opts.dropout, opts.recursive,  max(stats.test)));
+  xlabel('epoch') ; ylabel('PSNR') ; title(sprintf('Best PSNR (dropout: %d, recursive: %d, bnorm: %d) : %f',opts.dropout, opts.recursive, opts.useBnorm, max(stats.test)));
   grid on ;
 %   subplot(2,3,4) ; imshow(imhigh);
 %   subplot(2,3,5) ; imshow(imlow);
@@ -488,4 +488,4 @@ function epoch = findLastCheckpoint(modelDir)
 list = dir(fullfile(modelDir, 'net-epoch-*.mat')) ;
 tokens = regexp({list.name}, 'net-epoch-([\d]+).mat', 'tokens') ;
 epoch = cellfun(@(x) sscanf(x{1}{1}, '%d'), tokens) ;
-epoch = max([epoch 0]) ;                                                                                                                                               
+epoch = max([epoch 0]) ;

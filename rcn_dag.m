@@ -32,7 +32,7 @@ opts.depth = 10; % 10 optimal5
 opts.filterSize = 64;
 if opts.dropout, opts.filterSize = opts.filterSize * 8; end
 opts.pad = 0;
-opts.useBnorm = false;
+opts.useBnorm = true;
 exp_name = 'exp';
 if opts.useBnorm
     exp_name = 'exp_bn';
