@@ -27,7 +27,7 @@ opts.evalDir = fullfile('data','Set5');
 opts.prefetch = false ;
 opts.momentum = 0.9 ;
 opts.derOutputs = {'objective', 1} ;
-opts.conserveMemory = false ;
+opts.conserveMemory = true ;
 opts.sync = false ;
 opts.memoryMapFile = fullfile(tempdir, 'matconvnet.bin') ;
 opts.extractStatsFn = @extractStats ;
@@ -76,6 +76,7 @@ end
 
 modelPath = @(ep) fullfile(opts.expDir, sprintf('net-epoch-%d.mat', ep));
 modelFigPath = fullfile(opts.expDir, 'net-train.pdf') ;
+bestNetPath = fullfile(opts.expDir, 'best.mat');
 
 start = opts.continue * findLastCheckpoint(opts.expDir) ;
 if start >= 1
@@ -98,6 +99,7 @@ for epoch=start+1:1e10%opts.numEpochs
   if lr < 1e-5 
     break
   end;
+ 
   % train one epoch
   state.epoch = epoch ;
   state.learningRate = lr; %opts.learningRate(min(epoch, numel(opts.learningRate))) ;
@@ -130,27 +132,14 @@ for epoch=start+1:1e10%opts.numEpochs
   net.reset();
   if numel(opts.gpus)>0, net.move('cpu'); end 
 
+  [~, max_epoch] = max(stats.test);
+  if epoch == max_epoch
+    saveState(bestNetPath, net, stats) ;
+  end
+
   % save
   if ~evaluateMode
     saveState(modelPath(epoch), net, stats) ;
-  end
-
-  % test
-  if numel(opts.testPath) > 0
-      im = imread(opts.testPath);
-      im = rgb2ycbcr(im);
-      im = im(:,:,1);
-      sf = 3;
-      imhigh = modcrop(im, sf);
-      imhigh = single(imhigh)/255;
-      imlow = imresize(imhigh, 1/sf, 'bicubic');
-      imlow = imresize(imlow, size(imhigh), 'bicubic');
-      imlow = max(16.0/255, min(235.0/255, imlow));
-      inputs = {'input', imlow,'label', imhigh};
-      net.eval(inputs);
-      impred = imlow + net.layers(end).block.lastPred;
-  else
-      imhigh = []; imlow = []; impred = [];
   end
   
   sfigure(1) ; clf ;
