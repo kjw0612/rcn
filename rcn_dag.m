@@ -24,12 +24,12 @@ end
 %% Set Options
 opts.problems = {struct('type', 'SR', 'sf', 3)};
 %opts.problems = {struct('type', 'SR', 'sf', 3), struct('type', 'JPEG', 'q', 20), struct('type', 'DENOISE', 'v', 0.001)};
-opts.gpus = 1;
+opts.gpus = 2;
 opts.resid = 1;
 opts.recursive = 1;
 opts.dropout = 1;
-opts.depth = 20; % 10 optimal5
-opts.filterSize = 256;
+opts.depth = 30; % 10 optimal5
+opts.filterSize = 256; % 256 for depth 20 
 %if opts.dropout, opts.filterSize = opts.filterSize * 8; end
 opts.pad = 0;
 opts.useBnorm = false;
@@ -54,7 +54,11 @@ opts.dataDir = fullfile('data', '91');
 opts.imdbPath = fullfile(opts.expDir, 'imdb.mat');
 
 opts = vl_argparse(opts, varargin);
-opts.train.batchSize = 64;
+if opts.depth <= 20
+  opts.train.batchSize = 64;
+else
+  opts.train.batchSize = 20;
+end;
 rep = 20*3;
 if opts.dropout, rep = rep * 5; opts.train.learningRate = [0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)]; end %*0.99 .^ (0:500); 
 opts.train.learningRate = 0.1; %[0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)];%*0.99 .^ (0:500);
@@ -70,7 +74,6 @@ end
 opts.train.sync = true;
 opts.train.expDir = opts.expDir;
 opts.train.gpus = opts.gpus;
-opts.train.numSubBatches = 1 ;
 opts.train.testPath = fullfile('data', 'Set5', 'baby_GT.bmp');
 opts.train.dropout = opts.dropout;
 opts.train.recursive = opts.recursive;

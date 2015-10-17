@@ -26,6 +26,7 @@ opts.expDir = fullfile('data','exp_free') ;
 opts.evalDir = fullfile('data','Set5');
 opts.prefetch = false ;
 opts.momentum = 0.9 ;
+if opts.dropout, opts.momentum = 0.99; end
 opts.derOutputs = {'objective', 1} ;
 opts.conserveMemory = true ;
 opts.sync = false ;

@@ -42,7 +42,6 @@ init = [0.001, 0.5];
 if opts.resid, init(2)=0; end
 convBlock = dagnn.Conv('size', [3,3,opts.filterSize,1], 'hasBias', true, 'init', init, 'pad', 1);
 net.addLayer(['conv',num2str(opts.depth)], convBlock, {['x',num2str(x)]}, {'prediction'}, {['filters',num2str(opts.depth)], ['biases',num2str(opts.depth)]});
-
 net.addLayer('objective', dagnn.EuclidLoss(), ...
              {'prediction','label'}, 'objective') ;
 
