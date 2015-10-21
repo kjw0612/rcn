@@ -26,6 +26,7 @@ opts.problems = {struct('type', 'SR', 'sf', 3)};
 %opts.problems = {struct('type', 'SR', 'sf', 3), struct('type', 'JPEG', 'q', 20), struct('type', 'DENOISE', 'v', 0.001)};
 opts.gpus = 2;
 opts.resid = 1;
+
 opts.recursive = 1;
 opts.dropout = 1;
 opts.depth = 30; % 10 optimal5
@@ -33,6 +34,9 @@ opts.filterSize = 256; % 256 for depth 20
 %if opts.dropout, opts.filterSize = opts.filterSize * 8; end
 opts.pad = 0;
 opts.useBnorm = true;
+
+opts = vl_argparse(opts, varargin);
+
 exp_name = 'exp';
 if opts.useBnorm
     exp_name = 'exp_bn';
@@ -53,7 +57,6 @@ opts.expDir = fullfile('data','exp',exp_name);
 opts.dataDir = fullfile('data', '91');
 opts.imdbPath = fullfile(opts.expDir, 'imdb.mat');
 
-opts = vl_argparse(opts, varargin);
 if opts.depth <= 20
   opts.train.batchSize = 64;
 else
