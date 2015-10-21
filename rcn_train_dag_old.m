@@ -1,4 +1,4 @@
-function stats = rcn_train_dag(net, imdb, getBatch, depth, filterSize, varargin)
+function stats = rcn_train_dag(net, imdb, getBatch, varargin)
 %CNN_TRAIN_DAG Demonstrates training a CNN using the DagNN wrapper
 %    CNN_TRAIN_DAG() is similar to CNN_TRAIN(), but works with
 %    the DagNN wrapper instead of the SimpleNN wrapper.
@@ -8,7 +8,9 @@ function stats = rcn_train_dag(net, imdb, getBatch, depth, filterSize, varargin)
 %
 % This file is part of the VLFeat library and is made available under
 % the terms of the BSD license (see the COPYING file).
+
 opts.problems = {struct('type', 'SR', 'sf', 3)};
+
 opts.dropout = 0;
 opts.recursive = 1;
 opts.train = [] ;
@@ -72,10 +74,7 @@ end
 % -------------------------------------------------------------------------
 %                                                        Train and validate
 % -------------------------------------------------------------------------
-%   if numel(opts.gpus)>0, net.move('gpu'); end
-%   backupmode = net.mode;
-%   net.mode = 'test';
-%   [a, b] = evalTest(1, opts, net);
+
 modelPath = @(ep) fullfile(opts.expDir, sprintf('net-epoch-%d.mat', ep));
 modelFigPath = fullfile(opts.expDir, 'net-train.pdf') ;
 bestNetPath = fullfile(opts.expDir, 'best.mat');
@@ -90,15 +89,15 @@ lr = opts.learningRate;
 lr_decay_epochs = [];
 for epoch=start+1:1e10%opts.numEpochs
   if epoch > 1
-    [~, max_epoch] = max([stats.test]);
-  else
-    max_epoch = 0;
+    [~, min_epoch] = min([stats.val.objective]);
+  else 
+    min_epoch = 0;
   end
-  if epoch - max_epoch > 20 && (~numel(lr_decay_epochs) || epoch - lr_decay_epochs(end) > 20)
+  if epoch - min_epoch > 20 && (~numel(lr_decay_epochs) || epoch - lr_decay_epochs(end) > 20) 
     lr = lr * 0.1;
     lr_decay_epochs(end+1) = epoch;
   end;
-  if lr < 1e-5
+  if lr < 1e-5 
     break
   end;
  
@@ -132,16 +131,11 @@ for epoch=start+1:1e10%opts.numEpochs
   [baseline_psnr, stats.test(epoch)] = evalTest(epoch, opts, net);
   net.mode = backupmode;
   net.reset();
-  if numel(opts.gpus)>0, net.move('cpu'); end
+  if numel(opts.gpus)>0, net.move('cpu'); end 
+
   [~, max_epoch] = max(stats.test);
   if epoch == max_epoch
     saveState(bestNetPath, net, stats) ;
-    % Additionally save to best for a fixed set of depth and filter size
-    bestPath = sprintf('best/best_D%d_F%d.mat', depth, filterSize);
-    if exist(bestPath, 'file'), [~,prev_stats] = loadState(bestPath); end
-    if ~exist(bestPath, 'file') || stats.test(epoch) > max(prev_stats.test)
-      saveState(bestPath, net, stats) ;
-    end
   end
 
   % save
@@ -165,12 +159,12 @@ for epoch=start+1:1e10%opts.numEpochs
   grid on;
   subplot(1,2,2) ; plot(1:epoch, [repmat(baseline_psnr, 1, epoch); stats.test]') ;
   hold on; plot(lr_decay_epochs, stats.test(lr_decay_epochs), 'o');
-  %legend({'Baseline (Set5)', 'Ours (Set5)'}) ;
+  %legend({'Baseline (Set5)', 'Ours (Set5)'}) ; 
   xlabel('epoch') ; ylabel('PSNR') ; title(sprintf('Best PSNR (dropout: %d, recursive: %d, bnorm: %d) : %f',opts.dropout, opts.recursive, opts.useBnorm, max(stats.test)));
   grid on ;
-  %   subplot(2,3,4) ; imshow(imhigh);
-  %   subplot(2,3,5) ; imshow(imlow);
-  %   subplot(2,3,6) ; imshow(impred);
+%   subplot(2,3,4) ; imshow(imhigh);
+%   subplot(2,3,5) ; imshow(imlow);
+%   subplot(2,3,6) ; imshow(impred);
   drawnow ;
   print(1, modelFigPath, '-dpdf') ;
 end
@@ -371,8 +365,7 @@ function saveState(fileName, net, stats)
 % -------------------------------------------------------------------------
 net_ = net ;
 net = net_.saveobj() ;
-max_psnr = max(stats.test);
-save(fileName, 'net', 'stats', 'max_psnr') ;
+save(fileName, 'net', 'stats') ;
 
 % -------------------------------------------------------------------------
 function [net, stats] = loadState(fileName)
@@ -382,7 +375,7 @@ net = dagnn.DagNN.loadobj(net) ;
 
 % -------------------------------------------------------------------------
 function [eval_base, eval_ours] = evalTest(epoch, opts, net)
-% -------------------------------------------------------------------------
+% -------------------------------------------------------------------------  
 % Evaluation
 %fid = fopen(opts.fname,'w');
 %fprintf(fid, 'Epoch: %d\n', epoch);
@@ -407,107 +400,116 @@ eval_ours = zeros(numel(opts.problems),1);
 f_n = 0;
 printPic = true;
 for f_iter = 1:numel(f_lst)
-  f_info = f_lst(f_iter);
-  if f_info.isdir, continue; end
-  f_n = f_n + 1;
-  im = imread(fullfile(opts.evalDir, f_info.name));
-  im = rgb2ycbcr(im);
-  im = im(:,:,1);
-  if printPic && f_n==1, imwrite(im, 'GT.bmp'); end
-  
-  for problem_iter = 1:numel(opts.problems)
+    f_info = f_lst(f_iter);
+    if f_info.isdir, continue; end
+    f_n = f_n + 1;
+    im = imread(fullfile(opts.evalDir, f_info.name));
+    im = rgb2ycbcr(im);
+    im = im(:,:,1);
+
+    if printPic && f_n==1, imwrite(im, 'GT.bmp'); end
+    
+    for problem_iter = 1:numel(opts.problems)
+        problem = opts.problems{problem_iter};
+        
+        % preprocess
+        switch problem.type
+            case 'SR'
+                imhigh = modcrop(im, problem.sf);
+                imhigh = single(imhigh)/255;
+                imlow = imresize(imhigh, 1/problem.sf, 'bicubic');
+                imlow = imresize(imlow, size(imhigh), 'bicubic');
+                imlow = max(16.0/255, min(235.0/255, imlow));
+            case 'JPEG'
+                imhigh = single(im)/255;
+                imwrite(imhigh, 'data/_temp.jpg', 'Quality', problem.q);
+                imlow = imread('data/_temp.jpg');
+                imlow = single(imlow)/255;
+                delete('data/_temp.jpg');
+            case 'DENOISE'
+                imhigh = single(im)/255;
+                imlow = single(imnoise(imhigh, 'gaussian', 0, problem.v));
+        end
+        if numel(opts.gpus) > 0
+            imlow = gpuArray(imlow);
+            imhigh = gpuArray(imhigh);
+        end
+        
+        % predict
+        inputs = {'input', imlow, 'label', imhigh };
+        net.eval(inputs);
+        impred = net.layers(net.getLayerIndex('objective')).block.lastPred;
+        
+        % post process
+        switch problem.type
+            case 'SR'
+                impred = shave(impred, [problem.sf, problem.sf]);
+                imhigh = shave(imhigh, [problem.sf, problem.sf]);
+                imlow = shave(imlow, [problem.sf, problem.sf]);
+            case 'JPEG'
+                %
+            case 'DENOISE'
+                %
+        end
+        imhigh = imhigh(opts.pad+1:end-opts.pad,opts.pad+1:end-opts.pad);
+        imlow = imlow(opts.pad+1:end-opts.pad,opts.pad+1:end-opts.pad);
+        if opts.resid, impred = impred+imlow; end
+        impred = uint8(impred * 255);
+        imlow = uint8(imlow * 255);
+        imhigh = uint8(imhigh * 255);
+        
+        % evaluate
+        evalType = 'PSNR';
+        if isfield(problem, 'evalType')
+            evalType = problem.evalType;
+        end
+        switch evalType
+            case 'PSNR'
+                eval_base(problem_iter) = eval_base(problem_iter) + gather(compute_psnr(imhigh,imlow));
+                eval_ours(problem_iter) = eval_ours(problem_iter) + gather(compute_psnr(imhigh,impred));
+        end
+        
+        if printPic && f_n == 1
+            imwrite(gather(imlow),  strcat(problem.type,'_low.bmp'));
+            imwrite(gather(impred), strcat(problem.type,'_pred.bmp'));
+        end
+    end
+end
+for problem_iter = 1:numel(opts.problems) 
     problem = opts.problems{problem_iter};
-    
-    % preprocess
-    switch problem.type
-      case 'SR'
-        imhigh = modcrop(im, problem.sf);
-        imhigh = single(imhigh)/255;
-        imlow = imresize(imhigh, 1/problem.sf, 'bicubic');
-        imlow = imresize(imlow, size(imhigh), 'bicubic');
-        imlow = max(16.0/255, min(235.0/255, imlow));
-      case 'JPEG'
-        imhigh = single(im)/255;
-        imwrite(imhigh, 'data/_temp.jpg', 'Quality', problem.q);
-        imlow = imread('data/_temp.jpg');
-        imlow = single(imlow)/255;
-        delete('data/_temp.jpg');
-      case 'DENOISE'
-        imhigh = single(im)/255;
-        imlow = single(imnoise(imhigh, 'gaussian', 0, problem.v));
-    end
-    if numel(opts.gpus) > 0
-      imlow = gpuArray(imlow);
-      imhigh = gpuArray(imhigh);
-    end
-    
-    % predict
-    inputs = {'input', imlow, 'label', imhigh };
-    net.eval(inputs);
-    impred = net.layers(net.getLayerIndex('objective')).block.lastPred;
-    
-    % post process
-    switch problem.type
-      case 'SR'
-        impred = shave(impred, [problem.sf, problem.sf]);
-        imhigh = shave(imhigh, [problem.sf, problem.sf]);
-        imlow = shave(imlow, [problem.sf, problem.sf]);
-      case 'JPEG'
-        %
-      case 'DENOISE'
-        %
-    end
-    imhigh = imhigh(opts.pad+1:end-opts.pad,opts.pad+1:end-opts.pad);
-    imlow = imlow(opts.pad+1:end-opts.pad,opts.pad+1:end-opts.pad);
-    if opts.resid, impred = impred+imlow; end
-    impred = uint8(impred * 255);
-    imlow = uint8(imlow * 255);
-    imhigh = uint8(imhigh * 255);
-    
-    % evaluate
-    evalType = 'PSNR';
-    if isfield(problem, 'evalType')
-      evalType = problem.evalType;
-    end
-    switch evalType
-      case 'PSNR'
-        eval_base(problem_iter) = eval_base(problem_iter) + gather(compute_psnr(imhigh,imlow));
-        eval_ours(problem_iter) = eval_ours(problem_iter) + gather(compute_psnr(imhigh,impred));
-    end
-    
-    if printPic && f_n == 1
-      imwrite(gather(imlow),  strcat(problem.type,'_low.bmp'));
-      imwrite(gather(impred), strcat(problem.type,'_pred.bmp'));
-    end
-  end
-end
-for problem_iter = 1:numel(opts.problems)
-  problem = opts.problems{problem_iter};
-  eval_base(problem_iter) = eval_base(problem_iter) / f_n;
-  eval_ours(problem_iter) = eval_ours(problem_iter) / f_n;
-end
+    eval_base(problem_iter) = eval_base(problem_iter) / f_n;
+    eval_ours(problem_iter) = eval_ours(problem_iter) / f_n;
 %    fprintf(fid,'%f\t%f\t%f\t%s\n', eval_ours(problem_iter)-eval_base(problem_iter), eval_base(problem_iter), eval_ours(problem_iter), problem.type);
+end
+
 % for i=1:10
 %   net.removeLayer(sprintf('rnn_ext_conv%d', i));
 %   net.removeLayer(sprintf('rnn_ext_relu%d', i));
 % end
 % net.setLayerInputs(recon_layer_name, {rnn_output});
 % net.rebuild();
+
 %fclose(fid);
+
 function h = sfigure(h)
 % SFIGURE  Create figure window (minus annoying focus-theft).
+%
 % Usage is identical to figure.
+%
 % Daniel Eaton, 2005
+%
 % See also figure
+
 if nargin>=1
-  if ishandle(h)
-    set(0, 'CurrentFigure', h);
-  else
-    h = figure(h);
-  end
+    if ishandle(h)
+        set(0, 'CurrentFigure', h);
+    else
+        h = figure(h);
+    end
 else
-  h = figure;
+    h = figure;
 end
+
 % -------------------------------------------------------------------------
 function epoch = findLastCheckpoint(modelDir)
 % -------------------------------------------------------------------------
