@@ -4,11 +4,12 @@ clear;
 p = pwd;
 addpath(fullfile(p, 'methods'));  % the upscaling methods
 addpath(fullfile(p, 'utils'));  % utils
+run('snudeep\matlab\vl_setupnn.m');
 % addpath(fullfile(p, 'ompbox'));  % Orthogonal Matching Pursuit
 % run('../scripts/vlfeat-0.9.20/toolbox/vl_setup');
 
 % check for dataset
-dataset = {'Set5'};
+dataset = {'Set5','Set14'};
 numDataset = numel(dataset);
 for i = 1:numDataset
     if ~exist(fullfile('data',dataset{i}), 'dir')
@@ -20,22 +21,14 @@ end
 %        evalSetting = evalSet('Bicubic', 'Bicubic', 'Set5', 2, []);
 % evalSetting(end+1) = evalSet('Bicubic', 'Bicubic', 'Set5', 3, []);
 % evalSetting(end+1) = evalSet('Bicubic', 'Bicubic', 'Set5', 4, []);
-% 
-% evalSetting(end+1) = evalSet('SRCNN', 'SRCNN', 'Set5', 2, []);
-% evalSetting(end+1) = evalSet('SRCNN', 'SRCNN', 'Set5', 3, []);
-% evalSetting(end+1) = evalSet('SRCNN', 'SRCNN', 'Set5', 4, []);
-% 
-% evalSetting(end+1) = evalSet('A+', 'A+', 'Set5', 2, []);
-% evalSetting(end+1) = evalSet('A+', 'A+', 'Set5', 3, []);
-% evalSetting(end+1) = evalSet('A+', 'A+', 'Set5', 4, []);
-% 
+%  
 % evalSetting(end+1) = evalSet('RCN basic', 'RCN', 'Set5', 2, []);
 % evalSetting(end+1) = evalSet('RCN basic', 'RCN', 'Set5', 3, []);
 % evalSetting(end+1) = evalSet('RCN basic', 'RCN', 'Set5', 4, []);
-%                                                            %¦¦-- model path option is not implemented yet.
+                                                             %¦¦-- model path option is not implemented yet.
 do.dataset = {'Set5','Set14'};
 do.sf = [2 3 4];
-do.exp = {{'Bicubic', 'Bicubic'},{'SRCNN', 'SRCNN'},{'A+', 'A+'},{'RCN basic', 'RCN'}};
+do.exp = {{'Bicubic', 'Bicubic'},{'SRCNN', 'SRCNN'},{'A+', 'A+'}};
 for i = 1:numel(do.dataset)
     for j = 1:numel(do.sf)
         for k = 1:numel(do.exp)
@@ -47,11 +40,14 @@ for i = 1:numel(do.dataset)
         end
     end
 end
+evalSetting(end+1) = evalSet('RCN 256', 'RCN', 'Set5', 3, 'best256.mat');
+evalSetting(end+1) = evalSet('RCN 256', 'RCN', 'Set14', 3, 'best256.mat');
 
 % Setup outDir
 outDir = 'data\result';
 if ~exist('data\result', 'dir'), mkdir('data/result'); end
 
+fileID = fopen('rcn_eval_test.tex','w');
 %--------------------------------------------------------------------------
 % 1. Make SR images & save them for every eval settings
 %--------------------------------------------------------------------------
@@ -62,19 +58,94 @@ end
 %--------------------------------------------------------------------------
 % 2. Compute Quantitive results & draw tables. Here's table type 1.
 %--------------------------------------------------------------------------
-dataset = {'Set5'};
-problem = 'SR';
-sf = [2];
-exp = {'Bicubic', 'SRCNN', 'A+', 'RCN basic'};
-tableName = 'table_1';
+t1opts.dataset = 'Set5';
+t1opts.problem = 'SR';
+t1opts.sf = [3];
+t1opts.exp = {'Bicubic', 'A+','SRCNN', 'RCN 256'};
+t1opts.printTime = true;
+t1opts.tableName = 'table_1';
+t1opts.fid = fileID;%fopen([t1opts.tableName,'.tex'],'w');
 
-fid = fopen([tableName,'.tex'],'w');
-fprintf(fid,'\\documentclass{article}\n');
-fprintf(fid,'\\usepackage[english]{babel}\n');
-fprintf(fid,'\\usepackage{multirow}\n');
-fprintf(fid,'\\usepackage{color}\n\n');
-fprintf(fid,'\\begin{document}\n\n');
+%--------------------------------------------------------------------------
+% table type 2.
+%--------------------------------------------------------------------------
+t2opts.dataset = {'Set5','Set14'};
+t2opts.problem = 'SR';
+t2opts.sf = [ 3 ];
+t2opts.exp = {'Bicubic', 'A+', 'SRCNN', 'RCN 256'};
+t2opts.printTime = true;
+t2opts.tableName = 'table_2';
+t2opts.fid = fileID;
+
+%--------------------------------------------------------------------------
+% figure type 1. 
+%
+% ¦£------¦¤¦£------¦¤¦£------¦¤¦£------¦¤
+% ¦¢ HR   ¦¢¦¦------¦¥¦¦------¦¥¦¦------¦¥
+% ¦¢      ¦¢¦£------¦¤¦£------¦¤¦£------¦¤
+% ¦¦------¦¥¦¦------¦¥¦¦------¦¥¦¦------¦¥
+%--------------------------------------------------------------------------
+f1opts.dataset = 'Set5';
+f1opts.imgNum = 1;
+f1opts.boxSize = [60 100];
+f1opts.boxPose = [200 150];
+f1opts.lineWidth = 2;
+f1opts.lineColor = [255 0 0];
+f1opts.problem = 'SR';
+f1opts.sf = 3;
+f1opts.exp = {'HR','Bicubic','Bicubic','A+','SRCNN','RCN basic'};
+f1opts.figName = 'fig1';
+f1opts.figDir = 'figs';
+f1opts.fid = fileID;
+
+%--------------------------------------------------------------------------
+% figure type 2. 
+%
+% ¦£------¦¤¦£------¦¤¦£------¦¤¦£------¦¤¦£------¦¤
+% ¦¢      ¦¢¦¢      ¦¢¦¢      ¦¢¦¢      ¦¢¦¢      ¦¢
+% ¦¢------¦¢¦¢------¦¢¦¢------¦¢¦¢------¦¢¦¢------¦¢
+% ¦¢      ¦¢¦¢      ¦¢¦¢      ¦¢¦¢      ¦¢¦¢      ¦¢
+% ¦¦------¦¥¦¦------¦¥¦¦------¦¥¦¦------¦¥¦¦------¦¥
+%--------------------------------------------------------------------------
+f2opts.dataset = 'Set5';
+f2opts.imgNum = 1;
+f2opts.boxSize = [60 60];
+f2opts.boxPose = [200 150];
+f2opts.lineWidth = 2;
+f2opts.lineColor = [255 0 0];
+f2opts.problem = 'SR';
+f2opts.sf = 3;
+f2opts.exp = {'HR','Bicubic','A+','SRCNN','RCN basic'};
+f2opts.figName = 'fig2';
+f2opts.figDir = 'figs';
+f2opts.fid = fileID;
+
+%--------------------------------------------------------------------------
+
+texPrefix(fileID);
+makeTable1(t1opts);
+makeTable2(t2opts);
+makeFigure1(f1opts);
+makeFigure2(f2opts);
+texSuffix(fileID);
+fclose(fileID);
+
+%--------------------------------------------------------------------------
+
+function makeTable1(opts)
+
+dataset = opts.dataset;
+problem = opts.problem;
+sf = opts.sf;
+exp = opts.exp;
+tableName = opts.tableName;
+fid = opts.fid;
+printTime = opts.printTime;
+
+%fid = fopen([tableName,'.tex'],'w');
 fprintf(fid,'\\begin{table}\n\\begin{center}\n');
+fprintf(fid,'\\setlength{\\tabcolsep}{2pt}\n');
+fprintf(fid,'\\small\n');
 fprintf(fid,'\\begin{tabular}{ |');
 for indColumn = 1:numel(exp)+2
     fprintf(fid,' c |');
@@ -82,18 +153,25 @@ end
 fprintf(fid,' }\n\\hline\n');
 
 %for indDataset = 1:numel(dataset)
-datasetName = dataset{1};
+datasetName = dataset;
 gtDir = fullfile('data',datasetName);
 outDir = fullfile('data','result');
 img_lst = dir(gtDir); img_lst = img_lst(3:end);
 numImg = numel(img_lst);
 
-
-fprintf(fid,[datasetName, ' & scale']);
+fprintf(fid,['\\multirow{2}{*}{',datasetName,'} & \\multirow{2}{*}{scale}']);
 for indExp = 1:numel(exp)
     fprintf(fid,[' & ',exp{indExp}]);
 end
-fprintf(fid,'\\\\\n');    
+fprintf(fid,'\\\\\n &');
+for indExp = 1:numel(exp)
+    if printTime
+        fprintf(fid, ' & PSNR/SSIM/time');
+    else
+        fprintf(fid, ' & PSNR/SSIM');
+    end
+end
+fprintf(fid,'\\\\\n\\hline\n');    
 
 
 for indSF = 1:numel(sf)
@@ -101,6 +179,7 @@ for indSF = 1:numel(sf)
     SF = sf(indSF);
     PSNR_table = zeros(numImg, numel(exp));
     SSIM_table = zeros(numImg, numel(exp));
+    TIME_table = zeros(numImg, numel(exp));
     imgNames = cell(numImg,1);
 
     for indImg = 1:numImg
@@ -111,19 +190,22 @@ for indSF = 1:numel(sf)
             expName = exp{indExp};
             outRoute = fullfile(expName, [expName,'_',datasetName,'_x',num2str(SF)]);
             imSR = imread(fullfile(outDir, outRoute, [imgNames{indImg},'.png']));
+            elapsedTime = load(fullfile(outDir, outRoute, 'elapsed_time.mat'));
 
             [psnr, ssim] = compute_diff(imGT, imSR, SF);
             PSNR_table(indImg, indExp) = psnr;
             SSIM_table(indImg, indExp) = ssim;
+            TIME_table(indImg, indExp) = elapsedTime.timetable(indImg+2);
         end
     end
 
-    [~,maxPSNR] = max(PSNR_table,[],2);
-    [~,secmaxPSNR] = secmax(PSNR_table,2);
+    [~,maxPSNR] = max(PSNR_table,[],2); [~,maxSSIM] = max(SSIM_table,[],2);
+    [~,secmaxPSNR] = secmax(PSNR_table,2); [~,secmaxSSIM] = secmax(SSIM_table,2);
     avgPSNR = mean(PSNR_table,1);
     avgSSIM = mean(SSIM_table,1);
-    [~,maxAvgPSNR] = max(avgPSNR,[],2);
-    [~,secmaxAvgPSNR] = secmax(avgPSNR,2);        
+    avgTIME = mean(TIME_table,1);
+    [~,maxAvgPSNR] = max(avgPSNR,[],2); [~,maxAvgSSIM] = max(avgSSIM,[],2);
+    [~,secmaxAvgPSNR] = secmax(avgPSNR,2); [~,secmaxAvgSSIM] = secmax(avgSSIM,2);
 
     fprintf('\n\n=== Quantitative results for dataset %s on SRF %d === \n\n', datasetName, SF);
     fprintf('Peak signal-to-noise ratio (PSNR) \n')
@@ -136,23 +218,83 @@ for indSF = 1:numel(sf)
         for indExp = 1:numel(exp)
             if indExp == maxPSNR(indImg)
                 fprintf(fid, [' & {\\color{red}',num2str(PSNR_table(indImg, indExp),'%.2f'),'}']);
+                if indExp == maxSSIM(indImg)
+                    fprintf(fid, ['/{\\color{red}',num2str(SSIM_table(indImg, indExp),'%.4f'),'}']);
+                elseif indExp == secmaxSSIM(indImg)
+                    fprintf(fid, ['/{\\color{blue}',num2str(SSIM_table(indImg, indExp),'%.4f'),'}']);
+                else
+                    fprintf(fid, ['/',num2str(SSIM_table(indImg, indExp),'%.4f')]);
+                end
+                if printTime 
+                    fprintf(fid, ['/',num2str(TIME_table(indImg, indExp),'%.2f')]);
+                end
             elseif indExp == secmaxPSNR(indImg)
                 fprintf(fid, [' & {\\color{blue}',num2str(PSNR_table(indImg, indExp),'%.2f'),'}']);
+                if indExp == maxSSIM(indImg)
+                    fprintf(fid, ['/{\\color{red}',num2str(SSIM_table(indImg, indExp),'%.4f'),'}']);
+                elseif indExp == secmaxSSIM(indImg)
+                    fprintf(fid, ['/{\\color{blue}',num2str(SSIM_table(indImg, indExp),'%.4f'),'}']);
+                else
+                    fprintf(fid, ['/',num2str(SSIM_table(indImg, indExp),'%.4f')]);
+                end
+                if printTime
+                    fprintf(fid, ['/',num2str(TIME_table(indImg, indExp),'%.2f')]);
+                end
             else
                 fprintf(fid, [' & ',num2str(PSNR_table(indImg, indExp),'%.2f')]);
+                if indExp == maxSSIM(indImg)
+                    fprintf(fid, ['/{\\color{red}',num2str(SSIM_table(indImg, indExp),'%.4f'),'}']);
+                elseif indExp == secmaxSSIM(indImg)
+                    fprintf(fid, ['/{\\color{blue}',num2str(SSIM_table(indImg, indExp),'%.4f'),'}']);
+                else
+                    fprintf(fid, ['/',num2str(SSIM_table(indImg, indExp),'%.4f')]);
+                end
+                if printTime
+                    fprintf(fid, ['/',num2str(TIME_table(indImg, indExp),'%.2f')]);
+                end
             end
         end
         fprintf(fid, '\\\\\n');
     end
-    fprintf(fid,'\\hline\n');
+    fprintf(fid,'\\hline\\hline\n');
     fprintf(fid,['average & $\\times$',num2str(SF)]);
     for indExp = 1:numel(exp)
         if indExp == maxAvgPSNR
             fprintf(fid, [' & {\\color{red}',num2str(avgPSNR(1, indExp),'%.2f'),'}']);
+            if indExp == maxAvgSSIM
+                fprintf(fid, ['/{\\color{red}',num2str(avgSSIM(1, indExp),'%.4f'),'}']);
+            elseif indExp == secmaxAvgSSIM
+                fprintf(fid, ['/{\\color{blue}',num2str(avgSSIM(1, indExp),'%.4f'),'}']);
+            else
+                fprintf(fid, ['/',num2str(avgSSIM(1, indExp),'%.4f')]);
+            end
+            if printTime
+                fprintf(fid, ['/',num2str(avgTIME(1, indExp),'%.2f')]);
+            end
         elseif indExp == secmaxAvgPSNR
             fprintf(fid, [' & {\\color{blue}',num2str(avgPSNR(1, indExp),'%.2f'),'}']);
+            if indExp == maxAvgSSIM
+                fprintf(fid, ['/{\\color{red}',num2str(avgSSIM(1, indExp),'%.4f'),'}']);
+            elseif indExp == secmaxAvgSSIM
+                fprintf(fid, ['/{\\color{blue}',num2str(avgSSIM(1, indExp),'%.4f'),'}']);
+            else
+                fprintf(fid, ['/',num2str(avgSSIM(1, indExp),'%.4f')]);
+            end
+            if printTime
+                fprintf(fid, ['/',num2str(avgTIME(1, indExp),'%.2f')]);
+            end
         else
             fprintf(fid, [' & ',num2str(avgPSNR(1, indExp),'%.2f')]);
+            if indExp == maxAvgSSIM
+                fprintf(fid, ['/{\\color{red}',num2str(avgSSIM(1, indExp),'%.4f'),'}']);
+            elseif indExp == secmaxAvgSSIM
+                fprintf(fid, ['/{\\color{blue}',num2str(avgSSIM(1, indExp),'%.4f'),'}']);
+            else
+                fprintf(fid, ['/',num2str(avgSSIM(1, indExp),'%.4f')]);
+            end
+            if printTime
+                fprintf(fid, ['/',num2str(avgTIME(1, indExp),'%.2f')]);
+            end
         end
     end
     fprintf(fid,'\\\\\n');
@@ -163,34 +305,36 @@ fprintf(fid,'\\end{tabular}\n');
 fprintf(fid,['\\caption{PSNR for scale factor $\\times$',num2str(SF),' for ',datasetName, ... 
     '. {\\color{red}Red color} indicates the best performance and {\\color{blue}blue color} indicates the second best one.}\n']);
 fprintf(fid,'\\end{center}\n\\end{table}\n\n');  
-fprintf(fid,'\\end{document}');    
-fclose(fid);    
 
+function makeTable2(opts)
 
-%--------------------------------------------------------------------------
-% table type 2.
-%--------------------------------------------------------------------------
-dataset = {'Set5','Set14'};
-problem = 'SR';
-sf = [2 3 4];
-exp = {'Bicubic', 'SRCNN', 'A+', 'RCN basic'};
-tableName = 'table_2';
+dataset = opts.dataset;
+problem = opts.problem;
+sf = opts.sf;
+exp = opts.exp;
+tableName = opts.tableName;
+fid = opts.fid;
+printTime = opts.printTime;
 
-fid = fopen([tableName,'.tex'],'w');
-fprintf(fid,'\\documentclass{article}\n');
-fprintf(fid,'\\usepackage[english]{babel}\n');
-fprintf(fid,'\\usepackage{multirow}\n');
-fprintf(fid,'\\usepackage{color}\n\n');
-fprintf(fid,'\\begin{document}\n\n');
 fprintf(fid,'\\begin{table}\n\\begin{center}\n');
+fprintf(fid,'\\setlength{\\tabcolsep}{2pt}\n');
+fprintf(fid,'\\small\n');
 fprintf(fid,'\\begin{tabular}{ |');
 for indColumn = 1:numel(exp)+2
     fprintf(fid,' c |');
 end
 fprintf(fid,' }\n\\hline\n');
-fprintf(fid,['Dataset', ' & scale']);
+fprintf(fid,'\\multirow{2}{*}{Dataset} & \\multirow{2}{*}{scale}');
 for indExp = 1:numel(exp)
     fprintf(fid,[' & ',exp{indExp}]);
+end
+fprintf(fid,'\\\\\n &');
+for indExp = 1:numel(exp)
+    if printTime
+        fprintf(fid, ' & PSNR/SSIM/time');
+    else
+        fprintf(fid, ' & PSNR/SSIM');
+    end
 end
 fprintf(fid,'\\\\\n\\hline\n');
 
@@ -207,6 +351,7 @@ for indDataset = 1:numel(dataset)
         SF = sf(indSF);
         PSNR_table = zeros(numImg, numel(exp));
         SSIM_table = zeros(numImg, numel(exp));
+        TIME_table = zeros(numImg, numel(exp));
         imgNames = cell(numImg,1);
         
         for indImg = 1:numImg
@@ -217,26 +362,59 @@ for indDataset = 1:numel(dataset)
                 expName = exp{indExp};
                 outRoute = fullfile(expName, [expName,'_',datasetName,'_x',num2str(SF)]);
                 imSR = imread(fullfile(outDir, outRoute, [imgNames{indImg},'.png']));
-                
+                elapsedTime = load(fullfile(outDir, outRoute, 'elapsed_time.mat'));
+
                 [psnr, ssim] = compute_diff(imGT, imSR, SF);
                 PSNR_table(indImg, indExp) = psnr;
                 SSIM_table(indImg, indExp) = ssim;
+                TIME_table(indImg, indExp) = elapsedTime.timetable(indImg+2);
             end
         end
         
         avgPSNR = mean(PSNR_table,1);
         avgSSIM = mean(SSIM_table,1);
-        [~,maxAvgPSNR] = max(avgPSNR,[],2);
-        [~,secmaxAvgPSNR] = secmax(avgPSNR,2);        
+        avgTIME = mean(TIME_table,1);
+        [~,maxAvgPSNR] = max(avgPSNR,[],2); [~,maxAvgSSIM] = max(avgSSIM,[],2);
+        [~,secmaxAvgPSNR] = secmax(avgPSNR,2); [~,secmaxAvgSSIM] = secmax(avgSSIM,2); 
                 
         fprintf(fid,[' & $\\times$', num2str(SF)]);            
         for indExp = 1:numel(exp)
             if indExp == maxAvgPSNR
                 fprintf(fid, [' & {\\color{red}',num2str(avgPSNR(1, indExp),'%.2f'),'}']);
+                if indExp == maxAvgSSIM
+                    fprintf(fid, ['/{\\color{red}',num2str(avgSSIM(1, indExp),'%.4f'),'}']);
+                elseif indExp == secmaxAvgSSIM
+                    fprintf(fid, ['/{\\color{blue}',num2str(avgSSIM(1, indExp),'%.4f'),'}']);
+                else
+                    fprintf(fid, ['/',num2str(avgSSIM(1, indExp),'%.4f')]);
+                end
+                if printTime
+                    fprintf(fid, ['/',num2str(avgTIME(1, indExp),'%.2f')]);
+                end
             elseif indExp == secmaxAvgPSNR
                 fprintf(fid, [' & {\\color{blue}',num2str(avgPSNR(1, indExp),'%.2f'),'}']);
+                if indExp == maxAvgSSIM
+                    fprintf(fid, ['/{\\color{red}',num2str(avgSSIM(1, indExp),'%.4f'),'}']);
+                elseif indExp == secmaxAvgSSIM
+                    fprintf(fid, ['/{\\color{blue}',num2str(avgSSIM(1, indExp),'%.4f'),'}']);
+                else
+                    fprintf(fid, ['/',num2str(avgSSIM(1, indExp),'%.4f')]);
+                end
+                if printTime
+                    fprintf(fid, ['/',num2str(avgTIME(1, indExp),'%.2f')]);
+                end
             else
                 fprintf(fid, [' & ',num2str(avgPSNR(1, indExp),'%.2f')]);
+                if indExp == maxAvgSSIM
+                    fprintf(fid, ['/{\\color{red}',num2str(avgSSIM(1, indExp),'%.4f'),'}']);
+                elseif indExp == secmaxAvgSSIM
+                    fprintf(fid, ['/{\\color{blue}',num2str(avgSSIM(1, indExp),'%.4f'),'}']);
+                else
+                    fprintf(fid, ['/',num2str(avgSSIM(1, indExp),'%.4f')]);
+                end
+                if printTime
+                    fprintf(fid, ['/',num2str(avgTIME(1, indExp),'%.2f')]);
+                end
             end
         end
         fprintf(fid, '\\\\\n');        
@@ -256,35 +434,28 @@ for i=1:numel(dataset)
 end
 fprintf(fid,'. {\\color{red}Red color} indicates the best performance and {\\color{blue}blue color} indicates the second best one.}\n');
 fprintf(fid,'\\end{center}\n\\end{table}\n\n');  
-fprintf(fid,'\\end{document}');    
-fclose(fid);    
 
-%--------------------------------------------------------------------------
-% figure type 1. 
-%
-% ¦£------¦¤¦£------¦¤¦£------¦¤¦£------¦¤
-% ¦¢ HR   ¦¢¦¦------¦¥¦¦------¦¥¦¦------¦¥
-% ¦¢      ¦¢¦£------¦¤¦£------¦¤¦£------¦¤
-% ¦¦------¦¥¦¦------¦¥¦¦------¦¥¦¦------¦¥
-%--------------------------------------------------------------------------
-dataset = {'Set5'};
-imgNum = 1;
-boxSize = [60 100];
-boxPose = [200 150];
-lineWidth = 2;
-lineColor = [255 0 0];
-problem = 'SR';
-sf = 3;
-exp = {'HR','Bicubic','Bicubic','A+','SRCNN','RCN basic'};
-figName = 'fig1';
-figDir = 'figs';
+function makeFigure1(opts)
+
+dataset = opts.dataset;
+imgNum = opts.imgNum;
+boxSize = opts.boxSize;
+boxPose = opts.boxPose;
+lineWidth = opts.lineWidth;
+lineColor = opts.lineColor;
+problem = opts.problem;
+sf = opts.sf;
+exp = opts.exp;
+figName = opts.figName;
+figDir = opts.figDir;
+fid = opts.fid;
 
 numColumn = numel(exp)/2;
 
 if ~exist(fullfile(figDir,figName),'dir')
     mkdir(fullfile(figDir,figName));
 end
-datasetName = dataset{1};
+datasetName = dataset;
 SF = sf;
 gtDir = fullfile('data',datasetName);
 outDir = fullfile('data','result');
@@ -312,17 +483,6 @@ for indExp = 1:numel(exp)
     imwrite(subimSRcolor,fullfile(figDir,figName,[imgName,'_for_',figName,'_',expName,'.png']));
 end
 
-fid = fopen([figName,'.tex'],'w');
-fprintf(fid,'\\documentclass{article}\n');
-fprintf(fid,'\\usepackage[english]{babel}\n');
-fprintf(fid,'\\usepackage{multirow}\n');
-fprintf(fid,'\\usepackage{color}\n');
-fprintf(fid,'\\usepackage{graphicx}\n');
-fprintf(fid,'\\usepackage[space]{grffile}\n');
-fprintf(fid,'\\usepackage{array}\n');
-fprintf(fid,'\\newcolumntype{C}[1]{>{\\centering\\arraybackslash}p{#1}}\n');
-fprintf(fid,'\\usepackage{chngpage}\n\n');
-fprintf(fid,'\\begin{document}\n\n');
 fprintf(fid,'\\begin{figure}\n');
 fprintf(fid,'\\begin{adjustwidth}{-1cm}{-1cm}\n');
 fprintf(fid,'\\begin{center}\n');
@@ -358,35 +518,30 @@ fprintf(fid,'\\end{tabular}\n');
 fprintf(fid,'\\end{center}\n');
 fprintf(fid,'\\end{adjustwidth}\n');
 fprintf(fid,'\\end{figure}\n');
-fprintf(fid,'\\end{document}');
 
-%--------------------------------------------------------------------------
-% figure type 2. 
-%
-% ¦£------¦¤¦£------¦¤¦£------¦¤¦£------¦¤¦£------¦¤
-% ¦¢      ¦¢¦¢      ¦¢¦¢      ¦¢¦¢      ¦¢¦¢      ¦¢
-% ¦¢------¦¢¦¢------¦¢¦¢------¦¢¦¢------¦¢¦¢------¦¢
-% ¦¢      ¦¢¦¢      ¦¢¦¢      ¦¢¦¢      ¦¢¦¢      ¦¢
-% ¦¦------¦¥¦¦------¦¥¦¦------¦¥¦¦------¦¥¦¦------¦¥
-%--------------------------------------------------------------------------
-dataset = {'Set5'};
-imgNum = 1;
-boxSize = [60 60];
-boxPose = [200 150];
-lineWidth = 2;
-lineColor = [255 0 0];
-problem = 'SR';
-sf = 3;
-exp = {'HR','Bicubic','A+','SRCNN','RCN basic'};
-figName = 'fig2';
-figDir = 'figs';
+function makeFigure2(opts)
+
+dataset = opts.dataset;
+imgNum = opts.imgNum;
+boxSize = opts.boxSize;
+boxPose = opts.boxPose;
+lineWidth = opts.lineWidth;
+lineColor = opts.lineColor;
+problem = opts.problem;
+sf = opts.sf;
+exp = opts.exp;
+figName = opts.figName;
+figDir = opts.figDir;
+fid = opts.fid;
+
+
 
 numColumn = numel(exp);
 
 if ~exist(fullfile(figDir,figName),'dir')
     mkdir(fullfile(figDir,figName));
 end
-datasetName = dataset{1};
+datasetName = dataset;
 SF = sf;
 gtDir = fullfile('data',datasetName);
 outDir = fullfile('data','result');
@@ -420,17 +575,6 @@ for indExp = 1:numel(exp)
     imwrite(catimSRcolor,fullfile(figDir,figName,[imgName,'_for_',figName,'_',expName,'.png']));
 end
 
-fid = fopen([figName,'.tex'],'w');
-fprintf(fid,'\\documentclass{article}\n');
-fprintf(fid,'\\usepackage[english]{babel}\n');
-fprintf(fid,'\\usepackage{multirow}\n');
-fprintf(fid,'\\usepackage{color}\n');
-fprintf(fid,'\\usepackage{graphicx}\n');
-fprintf(fid,'\\usepackage[space]{grffile}\n');
-fprintf(fid,'\\usepackage{array}\n');
-fprintf(fid,'\\newcolumntype{C}[1]{>{\\centering\\arraybackslash}p{#1}}\n');
-fprintf(fid,'\\usepackage{chngpage}\n\n');
-fprintf(fid,'\\begin{document}\n\n');
 fprintf(fid,'\\begin{figure}\n');
 fprintf(fid,'\\begin{adjustwidth}{-1cm}{-1cm}\n');
 fprintf(fid,'\\begin{center}\n');
@@ -472,9 +616,24 @@ fprintf(fid,'\\end{tabular}\n');
 fprintf(fid,'\\end{center}\n');
 fprintf(fid,'\\end{adjustwidth}\n');
 fprintf(fid,'\\end{figure}\n');
+
+function texPrefix(fid)
+
+fprintf(fid,'\\documentclass{article}\n');
+fprintf(fid,'\\usepackage[english]{babel}\n');
+fprintf(fid,'\\usepackage{multirow}\n');
+fprintf(fid,'\\usepackage{color}\n');
+fprintf(fid,'\\usepackage{graphicx}\n');
+fprintf(fid,'\\usepackage[space]{grffile}\n');
+fprintf(fid,'\\usepackage{array}\n');
+fprintf(fid,'\\newcolumntype{C}[1]{>{\\centering\\arraybackslash}p{#1}}\n');
+fprintf(fid,'\\usepackage{chngpage}\n\n');
+fprintf(fid,'\\begin{document}\n\n');
+
+function texSuffix(fid)
+
 fprintf(fid,'\\end{document}');
 
-%--------------------------------------------------------------------------
 
 function validName = setValidName(name, exp)
 ind = regexp(name,exp);
@@ -500,7 +659,5 @@ else
 end
 
 % ToDo :
-% Fig 1 : Good Qualitative result (zoomed)
 % add recent method (from CVPR15, ICCV15 ...)
-% Fig 2 : Good Qualitative result 
         
