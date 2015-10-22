@@ -74,7 +74,7 @@
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-We propose an image super-resolution method (SR) using a deeply-recursive convolutional network (DRCN). DRCN super-resolves images with a single recursive layer. Our network utilizes very large context without dimensionality reduction such as pooling. As our method reuse the same parameters all times, our network is much smaller than the CNN-based approach with the same receptive field. As optimizing DRCN with standard gradient descent does not easily converge, we propose an SR-specific optimization method using residual-learning and deep-supervision. We sucessfully learned a SR method with deep recursions (50 times). Our proposed method outperform state-of-the-art methods by a large margin (TODO:number).
+We propose an image super-resolution method (SR) using a deeply-recursive convolutional network (DRCN). DRCN super-resolves images with a single recursive layer. Our network utilizes very large context without dimensionality reduction such as pooling. As our method reuse the same parameters all times, our network is much smaller than the CNN-based approach with the same receptive field. As optimizing DRCN with standard gradient descent does not easily converge, we propose an SR-specific optimization method using residual-learning and (TODO change term) deep-supervision. We sucessfully learned a SR method with deep recursions (50 times). Our proposed method outperform state-of-the-art methods by a large margin (TODO:number).
 %
 %\pagebreak
 % image super-resolution 
@@ -233,15 +233,18 @@ In addition, we demonstrate that recursions can be very deep. We apply the same 
 %	\label{tab:SRCNN_Factor_Test}
 %\end{table*}
 %
-%\section{Proposed Method}
-%In this section, our proposed method is explained. We first go over the process of super-resolving an image with our recursive-convolutional network (inference). Next, we describe the training procedure.
-%
-%\subsection{Inference}
-%  \begin{align*}
-%        h_t &= q(W_{xh}x_t + W_{hh}h_{t-1} + b_h)\\
-%        y_t &= r(W_{hy}h_{t} + b_y)
-%    \end{align*}
-%
+\section{Proposed Method}
+In this section, our proposed method is explained. We first go over the process of super-resolving an image with our recursive-convolutional network (inference). Next, we describe the training procedure.
+
+\subsection{Inference}
+  \begin{align*}
+        H_0 &= max(0, W_{xh_0}*X + b_{h_{0})}\\
+        H_1 &= max(0, W_{h_0 h_1}*H_0 + b_{h_{1})}\\
+        H_d &= max(0, W_{hh}*H_{d-1} + b_h), d = 2, ..., D - 1\\
+        H_D &= max(0, W_{h h_D}*H_{D-1} + b_{h_D})\\
+        \hat{Y} &= max(0, W_{hy}*H_{D} + b_y)
+    \end{align*}
+
 %\subsubsection{Convolutional Network}
 %Simonyan and Zisserman \cite{simonyan2015very} have demonstrated the effectiveness of stacking small filters ($3\times3$) many times to make the network (very) deep (VGG-net). Inspired by VGG-net, we stack small filters repeatedly. We first describe our deep convolutional network (DCN) and then explain how to make it recursive.
 %
