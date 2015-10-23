@@ -40,6 +40,9 @@ for i = 2 : opts.depth - 1
       end
     end
 end
+%net.params(net.getParamIndex('filters_share')).learningRate =  1/sqrt(opts.depth - 4);
+%net.params(net.getParamIndex('biases_share')).learningRate = 1/sqrt(opts.depth - 4);
+
 init = [0.001, 0.5];
 if opts.resid, init(2)=0; end
 convBlock = dagnn.Conv('size', [3,3,opts.filterSize,1], 'hasBias', true, 'init', init, 'pad', 1);

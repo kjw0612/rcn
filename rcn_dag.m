@@ -20,23 +20,31 @@ if ~exist('data/Set5', 'dir')
 end
 
 %% Set Options
-opts.gpus = 2;
-minimal = 1;
+opts.gpus = 1;
+model_size = 'minimal'; % one of minimal, medium, heavy
 
 opts.test_sf = 3;
 opts.resid = 1;
 opts.recursive = 1;
 opts.deep_supervise = 1;
-if minimal
+if strcmp(model_size, 'minimal')
   opts.dropout = 0;
   opts.depth = 10; % 10 optimal5
   opts.filterSize = 64; % 256 for depth 20 
   opts.augment = false; %data augmentation
-else
-  opts.dropout = 1;
+elseif strcmp(model_size, 'medium')
+  opts.dropout = 0;
   opts.depth = 10; % 10 optimal5
+  opts.filterSize = 128; % 256 for depth 20 
+  opts.augment = true; %data augmentation
+elseif strcmp(model_size, 'heavy')
+  opts.dropout = 0;
+  opts.depth = 20; % 10 optimal5
   opts.filterSize = 256; % 256 for depth 20 
   opts.augment = true; %data augmentation
+else
+  fprintf('Choose model size correctly\n');
+  return;
 end
 
 opts.pad = 0;
@@ -55,22 +63,32 @@ opts.imdbPath = fullfile(opts.expDir, 'imdb.mat');
 if opts.depth <= 20
   opts.train.batchSize = 64;
 elseif opts.depth <= 30
-  opts.train.batchSize = 32; % 18
+  if opts.filterSize <= 128
+    opts.train.batchSize = 32; % 18
+  else
+    opts.train.batchSize = 18;
+  end
 else
-  opts.train.batchSize = 16;    % 4 
+  if opts.filterSize <= 128
+   opts.train.batchSize = 8;    % 4 
+  else
+    opts.train.batchSize = 3;
+  end
 end;
-rep = 20*3;
-if opts.dropout, rep = rep * 5; opts.train.learningRate = [0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)]; end %*0.99 .^ (0:500); 
-opts.train.learningRate = 0.1; %[0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)];%*0.99 .^ (0:500);
-opts.train.numEpochs = numel(opts.train.learningRate);
+
+%rep = 20*3;
+%if opts.dropout, rep = rep * 5; opts.train.learningRate = [0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)]; end %*0.99 .^ (0:500); 
+opts.train.learningRate = 0.1; % 0.1 %[0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)];%*0.99 .^ (0:500);
+%opts.train.numEpochs = numel(opts.train.learningRate);
 opts.train.continue = 0;
-if opts.depth <= 10
-  opts.train.gradRange = 1e-4;
-elseif opts.depth <= 20
-  opts.train.gradRange = 0.1*1e-4;
-else 
-  opts.train.gradRange = 0.01*1e-4;
-end
+opts.train.gradRange = 1e-4 / opts.depth;
+% if opts.depth <= 10
+%   opts.train.gradRange = 1e-5; % 1e-4
+% elseif opts.depth <= 20
+%   opts.train.gradRange = 1e-5;%0.001*1e-4;
+% else 
+%   opts.train.gradRange = 1e-6;
+% end
 opts.train.useBnorm = opts.useBnorm;
 opts.train.sync = true;
 opts.train.expDir = opts.expDir;
@@ -78,6 +96,8 @@ opts.train.gpus = opts.gpus;
 opts.train.dropout = opts.dropout;
 opts.train.recursive = opts.recursive;
 opts.train.momentum = opts.momentum;
+opts.train.rep = 20;
+if opts.augment, opts.train.rep = 10; end
 
 % --------------------------------------------------------------------
 %                                                         Prepare data
@@ -99,10 +119,8 @@ end
 % of filters.
 % --------------------------------------------------------------------
 
-[net, opts.train.derOutputs] = rcn_init_dag(opts);
-net.initParams();
-if ~minimal
-  close_depth = 0;
+close_depth = 0;
+if ~strcmp(model_size, 'minimal') % *** TODO remove 0
   for i=1:100
     bestPath = sprintf('best/best_D%d_F%d.mat', i, opts.filterSize);
     if exist(bestPath, 'file') && abs(i - opts.depth) < abs(close_depth - opts.depth)
@@ -111,7 +129,15 @@ if ~minimal
       close_depth = i;
     end
   end
-  if close_depth > 0, net.params.value = best_net.params.value; end
+end
+
+[net, opts.train.derOutputs] = rcn_init_dag(opts);
+net.initParams();
+if close_depth > 0
+  for i=1:numel(net.params)
+   net.params(i).value = best_net.params(i).value; 
+  end
+  opts.train.learningRate = 0.01;
 end
 
 % --------------------------------------------------------------------
@@ -139,7 +165,7 @@ ps = 2*depth+1; % patch size
 stride = 21;%ps;%31;%ps - 2*pad;
 
 nPatches = 0;
-for sf = test_sf
+for sf = test_sf-1:test_sf
   for f_iter = 1:numel(f_lst)
     f_info = f_lst(f_iter);
     if f_info.isdir, continue; end
@@ -152,7 +178,7 @@ for sf = test_sf
     for j = 1:stride:size(imhigh,1)-ps+1
       for k = 1:stride:size(imhigh,2)-ps+1
         if augment
-         nPatches = nPatches +16;
+         nPatches = nPatches +7;
         else
          nPatches = nPatches +1;
         end
@@ -164,46 +190,47 @@ end
 imsuba = zeros(nPatches, ps-pad*2, ps-pad*2);
 imsublowa = zeros(nPatches, ps, ps);
 ind = 0;
-for sf = test_sf
+val_ind = 0;
+for sf = test_sf-1:test_sf
   for f_iter = 1:numel(f_lst)
-    for flip = 0:3
-      if ~augment && flip>0, continue; end
-      f_info = f_lst(f_iter);
+    f_info = f_lst(f_iter);
+    if strcmp(f_info.name, 'baby_GT.bmp'), val_ind = ind; end
+    for aug=0:6 % 0, flip:1~3, rot:4~6 
+      if ~augment && aug>0, continue; end
       if f_info.isdir, continue; end
       im = imread(fullfile(dataDir, f_info.name));
       im = rgb2ycbcr(im);
       im = im(:,:,1);
-      switch flip
+      switch aug
         case 1
           im = im(:,end:-1:1);
         case 2
           im = im(end:-1:1,:);
         case 3
           im = im(end:-1:1, end:-1:1);
+        case 4
+          im = rot90(im, 1);
+        case 5
+          im = rot90(im, 2);
+        case 6
+          im = rot90(im, 3);
         otherwise
       end
 
-      imhigh = modcrop(im, test_sf);
+      imhigh = modcrop(im, sf);
       imhigh = single(imhigh)/255;
-      imlow = imresize(imhigh, 1/test_sf, 'bicubic');
+      imlow = imresize(imhigh, 1/sf, 'bicubic');
       imlow = imresize(imlow, size(imhigh), 'bicubic');
       imlow = max(16.0/255, min(235.0/255, imlow));
 
       if diff, imhigh=imhigh-imlow; end;
-      for rot =0:3
-        if ~augment && rot>0, continue; end
-        for j = 1:stride:size(imhigh,1)-ps+1
-          for k = 1:stride:size(imhigh,2)-ps+1
-            imsub = imhigh(j+pad:j+ps-1-pad,k+pad:k+ps-1-pad);
-            imsublow = imlow(j:j+ps-1,k:k+ps-1);
-            if rot
-              imsub=rot90(imsub, rot);
-              imsublow = rot90(imsublow,rot);
-            end
-            ind = ind + 1;
-            imsuba(ind,:,:,:)=imsub;
-            imsublowa(ind,:,:,:)=imsublow;
-          end
+      for j = 1:stride:size(imhigh,1)-ps+1
+        for k = 1:stride:size(imhigh,2)-ps+1
+          imsub = imhigh(j+pad:j+ps-1-pad,k+pad:k+ps-1-pad);
+          imsublow = imlow(j:j+ps-1,k:k+ps-1);
+          ind = ind + 1;
+          imsuba(ind,:,:,:)=imsub;
+          imsublowa(ind,:,:,:)=imsublow;
         end
       end
     end
@@ -215,6 +242,8 @@ imsuba = imsuba(1:ind,:,:);
 imsublowa = imsublowa(1:ind,:,:);
 
 s = randperm(ind); %shuffle
+image_set = [ones(1, val_ind) 3*ones(1, ind-val_ind)];
+image_set = image_set(1,s);
 imsuba = imsuba(s,:,:);
 imsublowa = imsublowa(s,:,:);
 
@@ -224,6 +253,5 @@ imsuba = permute(imsuba, [2 3 4 1]);
 imsublowa = permute(imsublowa, [2 3 4 1]);
 imdb.images.data = single(imsublowa);
 imdb.images.labels = single(imsuba);
-val_size = floor(ind * 0.01);
-imdb.images.set = [ones(1, ind-val_size) 3*ones(1, val_size)];
+imdb.images.set = image_set;
 imdb.meta.sets = {'train', 'val', 'test'} ;

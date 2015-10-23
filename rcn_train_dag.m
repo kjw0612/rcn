@@ -35,6 +35,7 @@ opts.resid = 1;
 opts.gradRange = 10000;
 opts.useBnorm = false;
 opts.testPath = [];
+opts.rep = 20;
 opts = vl_argparse(opts, varargin) ;
 
 if ~exist(opts.expDir, 'dir'), mkdir(opts.expDir) ; end
@@ -72,10 +73,12 @@ end
 % -------------------------------------------------------------------------
 %                                                        Train and validate
 % -------------------------------------------------------------------------
-%   if numel(opts.gpus)>0, net.move('gpu'); end
-%   backupmode = net.mode;
-%   net.mode = 'test';
-%   [a, b] = evalTest(1, opts, net);
+% if numel(opts.gpus)>0, net.move('gpu'); end
+% backupmode = net.mode;
+% net.mode = 'test';
+% [a, b] = evalTest(1, opts, net);
+% net.mode = backupmode;
+
 modelPath = @(ep) fullfile(opts.expDir, sprintf('net-epoch-%d.mat', ep));
 modelFigPath = fullfile(opts.expDir, 'net-train.pdf') ;
 bestNetPath = fullfile(opts.expDir, 'best.mat');
@@ -94,7 +97,7 @@ for epoch=start+1:1e10%opts.numEpochs
   else
     max_epoch = 0;
   end
-  if epoch - max_epoch > 20 && (~numel(lr_decay_epochs) || epoch - lr_decay_epochs(end) > 20)
+  if epoch - max_epoch > opts.rep && (~numel(lr_decay_epochs) || epoch - lr_decay_epochs(end) > opts.rep)
     lr = lr * 0.1;
     lr_decay_epochs(end+1) = epoch;
   end;
@@ -155,6 +158,7 @@ for epoch=start+1:1e10%opts.numEpochs
   for s = {'train', 'val'}
     s = char(s) ;
     for f = setdiff(fieldnames(stats.train)', {'num', 'time'})
+      if ~strcmp(f, 'objective'), continue; end
       f = char(f) ;
       leg{end+1} = sprintf('%s (%s)', f, s) ;
       values(end+1,:) = [stats.(s).(f)] ;
@@ -166,7 +170,7 @@ for epoch=start+1:1e10%opts.numEpochs
   subplot(1,2,2) ; plot(1:epoch, [repmat(baseline_psnr, 1, epoch); stats.test]') ;
   hold on; plot(lr_decay_epochs, stats.test(lr_decay_epochs), 'o');
   %legend({'Baseline (Set5)', 'Ours (Set5)'}) ;
-  xlabel('epoch') ; ylabel('PSNR') ; title(sprintf('Best PSNR (dropout: %d, recursive: %d, bnorm: %d) : %f',opts.dropout, opts.recursive, opts.useBnorm, max(stats.test)));
+  xlabel('epoch') ; ylabel('PSNR') ; title(sprintf('Best PSNR (dropout: %d, recursive: %d) : %f',opts.dropout, opts.recursive, max(stats.test)));
   grid on ;
   %   subplot(2,3,4) ; imshow(imhigh);
   %   subplot(2,3,5) ; imshow(imlow);
@@ -261,7 +265,7 @@ for t=1:opts.batchSize:numel(subset)
     stats.num/stats.time * max(numGpus, 1)) ;
   for f = setdiff(fieldnames(stats)', {'num', 'time'})
     f = char(f) ;
-    fprintf(' %s:%.3f', f, stats.(f)) ;
+    fprintf(' %s:%.4f', f, stats.(f)) ;
   end
   fprintf('\n') ;
 end
