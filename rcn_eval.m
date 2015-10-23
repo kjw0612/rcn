@@ -2,8 +2,9 @@ function rcn_eval()% evaluation code for rcn
 % Initialize code
 clear;
 p = pwd;
-addpath(fullfile(p, 'methods'));  % the upscaling methods
+addpath(genpath(fullfile(p, 'methods')));  % the upscaling methods
 addpath(fullfile(p, 'utils'));  % utils
+addpath(fullfile(p, 'toolbox'));
 run('snudeep\matlab\vl_setupnn.m');
 % addpath(fullfile(p, 'ompbox'));  % Orthogonal Matching Pursuit
 % run('../scripts/vlfeat-0.9.20/toolbox/vl_setup');
@@ -28,7 +29,7 @@ end
                                                              %¦¦-- model path option is not implemented yet.
 do.dataset = {'Set5','Set14'};
 do.sf = [2 3 4];
-do.exp = {{'Bicubic', 'Bicubic'},{'SRCNN', 'SRCNN'},{'A+', 'A+'}};
+do.exp = {{'Bicubic', 'Bicubic'},{'SRCNN', 'SRCNN'},{'A+', 'A+'},{'RFL', 'RFL'},{'SelfEx','SelfEx'}};
 for i = 1:numel(do.dataset)
     for j = 1:numel(do.sf)
         for k = 1:numel(do.exp)
@@ -61,7 +62,7 @@ end
 t1opts.dataset = 'Set5';
 t1opts.problem = 'SR';
 t1opts.sf = [3];
-t1opts.exp = {'Bicubic', 'A+','SRCNN', 'RCN 256'};
+t1opts.exp = {'Bicubic', 'A+','SRCNN', 'RFL', 'SelfEx', 'RCN 256'};
 t1opts.printTime = true;
 t1opts.tableName = 'table_1';
 t1opts.fid = fileID;%fopen([t1opts.tableName,'.tex'],'w');
@@ -72,7 +73,7 @@ t1opts.fid = fileID;%fopen([t1opts.tableName,'.tex'],'w');
 t2opts.dataset = {'Set5','Set14'};
 t2opts.problem = 'SR';
 t2opts.sf = [ 3 ];
-t2opts.exp = {'Bicubic', 'A+', 'SRCNN', 'RCN 256'};
+t2opts.exp = {'Bicubic', 'A+','SRCNN', 'RFL', 'SelfEx', 'RCN 256'};
 t2opts.printTime = true;
 t2opts.tableName = 'table_2';
 t2opts.fid = fileID;
@@ -93,7 +94,7 @@ f1opts.lineWidth = 2;
 f1opts.lineColor = [255 0 0];
 f1opts.problem = 'SR';
 f1opts.sf = 3;
-f1opts.exp = {'HR','Bicubic','Bicubic','A+','SRCNN','RCN basic'};
+f1opts.exp = {'HR','Bicubic','Bicubic','A+','SRCNN','RCN 256'};
 f1opts.figName = 'fig1';
 f1opts.figDir = 'figs';
 f1opts.fid = fileID;
@@ -115,7 +116,7 @@ f2opts.lineWidth = 2;
 f2opts.lineColor = [255 0 0];
 f2opts.problem = 'SR';
 f2opts.sf = 3;
-f2opts.exp = {'HR','Bicubic','A+','SRCNN','RCN basic'};
+f2opts.exp = {'HR','Bicubic','A+','SRCNN','RCN 256'};
 f2opts.figName = 'fig2';
 f2opts.figDir = 'figs';
 f2opts.fid = fileID;
@@ -651,6 +652,8 @@ A(maxIndMatrix) = -Inf;
 function imSRcolor = colorize(imGT, imSR, SF)
 if size(imGT,3) < 1
     imSRcolor = imSR;
+elseif size(imSR,3) == 3
+    imSRcolor = imSR;
 else
     imGT = rgb2ycbcr(imGT);
     imGT = modcrop(imGT, SF);
@@ -659,5 +662,4 @@ else
 end
 
 % ToDo :
-% add recent method (from CVPR15, ICCV15 ...)
         

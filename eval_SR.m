@@ -15,6 +15,10 @@ else
             Aplus(evalSetting.dataset, evalSetting.sf, evalSetting.model, outRoute);
         case 'SRCNN'
             SRCNN(evalSetting.dataset, evalSetting.sf, evalSetting.model, outRoute);
+        case 'RFL'
+            RFL(evalSetting.dataset, evalSetting.sf, evalSetting.model, outRoute);
+        case 'SelfEx'
+            SelfEx(evalSetting.dataset, evalSetting.sf, outRoute);
         case 'RCN'
             RCN_(evalSetting.dataset, evalSetting.sf, evalSetting.model, outRoute);
         otherwise
