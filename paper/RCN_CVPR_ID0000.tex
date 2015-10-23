@@ -74,7 +74,7 @@
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-We propose an image super-resolution method (SR) using a deeply-recursive convolutional network (DRCN). DRCN repeatedly applies the same convolutional layer. Our network utilizes very large context with one recursive layer and no pooling is used. As our method reuse the same parameters all times, our network is much smaller than the CNN-based approach with the same receptive field. We sucessfully learned a SR method using a deeply-recursive network (50 recursions). Surprisingly, very small DRCNs perform on par with gigantic DCNs (about 50 times more parameters). Moreover, large DRCNs greatly outperform capacity-matched DCNs. Our proposed method outperform state-of-the-art methods by a large margin (TODO:number).
+We propose an image super-resolution method (SR) using a deeply-recursive convolutional network (DRCN). DRCN super-resolves images with a single recursive layer. Our network utilizes very large context without dimensionality reduction such as pooling. As our method reuse the same parameters all times, our network is much smaller than the CNN-based approach with the same receptive field. As optimizing DRCN with standard gradient descent does not easily converge, we propose an SR-specific optimization method using residual-learning and (TODO change term) deep-supervision. We sucessfully learned a SR method with deep recursions (50 times). Our proposed method outperform state-of-the-art methods by a large margin (TODO:number).
 %
 %\pagebreak
 % image super-resolution 
@@ -96,27 +96,34 @@ Deep convolutional networks (DCN) succeeding in various computer vision tasks ty
 
 %While recent studies have shown that unpooling recovers some information about the original image (CITE), Alexey paper has shown inverting CNN cannot reconstruct the image perfectly.
 
-As image details are important for image restoration problems such as super-resolution and denoising, most deep-learning approaches for such problems do not use pooling. For the task of image super-resolution (SR), receptive field corresponds to the amount of contextual information that can be exploited to infer missing high-frequency components. For example, if there exist a pattern with smoothed edges contained in a receptive field, it is plausible the pattern is recognized and edges are sharpened. As SR is an ill-posed inverse problem, collecting and analyzing more neighbor pixels can possibly give more clues on what have been lost by downsampling. 
+For the task of image super-resolution (SR), receptive field corresponds to the amount of contextual information that can be exploited to infer missing high-frequency components. For example, if there exist a pattern with smoothed edges contained in a receptive field, it is plausible the pattern is recognized and edges are sharpened. As SR is an ill-posed inverse problem, collecting and analyzing more neighbor pixels can possibly give more clues on what have been lost by downsampling in which we experimentally confirm later.  
+
+Image details are important for image restoration problems such as super-resolution and denoising. Therefore, most deep-learning approaches for such problems do not use pooling. This implies enlarging receptive field can only be achieved by introducing a new conv. layer.
+
+Increasing depth basically introduces more parameters. Two problems can arise. First, overfitting is highly likely. More data are required for prevention. Second, model becomes too huge to be stored and retrieved (reaching gigabytes if 50 layers used TODO confirm numbers).
+
  
-[TODO List some efforts put into enlarging patch sizes in traditional SR literature in this paragraph.]
+%[TODO List some efforts put into enlarging patch sizes in traditional SR literature in this paragraph.]
 
-[TODO Mention deep-learning SR methods.] A famous deep-learning SR method SRCNN \cite{Dong2014}, however, use only three layers resulting in a receptive field of 13 by 13. To utilize contextual information spread over very large image regions, many conv. layers need to be stacked in standard CNN settings. If $3 \times 3$ filters are stacked, stacking 10 layers result in $21 \times 21$ receptive field. This is still very small compared to typical image sizes.
+%[TODO Mention deep-learning SR methods.] A famous deep-learning SR method SRCNN \cite{Dong2014}, however, use only three layers resulting in a receptive field of 13 by 13. To utilize contextual information spread over very large image regions, many conv. layers need to be stacked in standard CNN settings. If $3 \times 3$ filters are stacked, stacking 10 layers result in $21 \times 21$ receptive field. This is still very small compared to typical image sizes.
 
-Increasing depth basically introduces more parameters. Two problems can arise. First, overfitting is highly likely. To prevent, more data are required. Second, model becomes too huge to be stored and retrieved (reaching gigabytes).
 
 To resolve the issues, we propose a SR method using a deeply-recursive convolutional network (DRCN). DRCN repeatedly applies the same convolutional layer as many times as desired. The number of parameters are kept small while widening receptive fields. Our receptive field reaches 101 by 101 and this is very large compared to patch sizes used in previous methods. 
 
 Overfitting is largely alleviated in DRCN. As the same parameters are used again and again, the network is effectively regularized. Moreoever, our compact model can be economically stored and distributed online.   
 
-While DRCN has good properties, learning long-range dependencies between pixels is very difficult. Networks do not easily converge. This is due to exploding/vanishing gradients and this phenomena is also observed in recurrent neural networks \cite{pascanu2013difficulty}. Note the difference that our recursive layer do not have any external input/output whereas recurrent neural networks have external input/output for all timesteps. 
+While DRCN has good properties, learning long-range dependencies between pixels is very difficult. Networks do not easily converge. This is due to exploding/vanishing gradients. 
 
-Many researchers have tackled the difficulties of training recurrent neural networks. [TODO LSTMs and GRUs and more]
+We propose two domain-specific approaches to ease the difficulty of training. First, residual images are modeled. Low-resolution image (input) and high-resolution image (output) share the same information to a large extent. Exact copy of Input, however, is likely to be lost during many forward passes. We explicitly add input to the final reconstruction layer. This is particularly effective when input and output are highly correlated. 
 
-One way to resolve the issues is to modify our network so that memory and forget cells as in LSTM are added or gated recurrent units in GRUs are added. This severely complicates the network structure and finding the best structure involves huge efforts (TODO cite odyssey paper). 
 
-Instead of soly relying on general techniques, we propose two domain-specific approaches to ease the difficulty of training. First, all recursions are supervised in the same manner. Our deep-supervision is different from deeply-supervised nets (TODO cite). In deeply-supervised net, layers represent different levels of abstraction (edges/parts/objects) and they are supervised in a different manner. 
+% and this phenomena is also observed in recurrent neural networks \cite{pascanu2013difficulty}. Note the difference that our recursive layer do not have any external input/output whereas recurrent neural networks have external input/output for all timesteps. 
+%
+%Many researchers have tackled the difficulties of training recurrent neural networks. [TODO LSTMs and GRUs and more]
+%
+%One way to resolve the issues is to modify our network so that memory and forget cells as in LSTM are added or gated recurrent units in GRUs are added. This severely complicates the network structure and finding the best structure involves huge efforts (TODO cite odyssey paper). 
 
-Second, residual images are modeled. As LR image and HR image share the same information to a large extent, explicitly modelling the residual image which is the difference between HR and LR images is advantageous. This is particularly effective when input and output are highly correlated. With residual-learning as well as deep-supervision, we find DRCN converges very well during training. 
+Second, all recursions are supervised in the same manner with the same reconstruction network for all levels. This is different from deeply-supervised nets (TODO cite). In deeply-supervised net, layers have different representations across levels of abstraction (edges/parts/objects) and they are supervised in a different manner. With deep-supervision as well as residual-learning we find DRCN converges very well during training. 
 
 %
 %While SRCNN successfully introduced a deep learning technique into the super-resolution (SR) problem, it is shallow in comparison to very recent networks  (four? TODO confirm TODO cite deep net). As witenssed in several computer vision tasks, very deep networks can deliver outstanding performance. We also find that deeper SRCNN delivers better performance. 
@@ -125,7 +132,7 @@ Second, residual images are modeled. As LR image and HR image share the same inf
 %
 %In this work. we propose a new super-resolution method based on a recursive-convolutional network. Recursive-convolutional network was first introduced in \cite{Eigen2014}.  They did blah blah. In contrast, we do blah blah. 
 
-\textbf{Contributions} In summary, we propose a image super-resolution method deeply recursive in nature. It utilizes very large context compared to previous SR methods with only a single convolutional layer. We suggest two ways to make this deeply-recursive convolutional network converge very fast during training: deep-supervision and residual-learning. Our algorithm demonstrates the state-of-the-art quality in common benchmarks for SR.
+\textbf{Contributions} In summary, we propose a image super-resolution method deeply recursive in nature. It utilizes very large context compared to previous SR methods with only a single convolutional layer. We suggest two ways to make this deeply-recursive convolutional network converge very fast during training: residual-learning and deep-supervision. Our algorithm demonstrates the state-of-the-art quality in common benchmarks for SR.
 
 
 %Learning a mapping between low/high-resolution (LR/HR) images
@@ -148,9 +155,23 @@ Second, residual images are modeled. As LR image and HR image share the same inf
 %\label{fig:network}
 %\end{figure*}
 
-%
-%\section{Related Work}
-%
+
+\section{Related Work}
+\subsection{Single-Image Super-Resolution}
+
+We address the problem of generating a high-resolution (HR) image given a low-resolution (LR) image, commonly referred as single image super-resolution (SISR) \cite{Irani1991}, \cite{freeman2000learning}, \cite{glasner2009super}. SISR is widely used in computer vision applications ranging from security and surveillance imaging to medical imaging where more image details are required on demand.
+
+Many SISR methods have been studied in the computer vision community. Interpolation methods are simple and very fast but they give poor results. More powerful methods utilize statistical image priors \cite{sun2008image,Kim2010} or rely on internal patch recurrence \cite{glasner2009super, Huang-CVPR-2015}.
+
+Recently, sophisticated learning methods are widely used to model a mapping from LR to HR patches. Existing methods use various techniques: neighbor embedding \cite{chang2004super,bevilacqua2012}, sparse coding \cite{yang2010image,zeyde2012single,Timofte2013,Timofte}, convolutional neural network (CNN) \cite{Dong2014} and random forest \cite{schulter2015fast}.
+
+While many methods focus on how regression functions from LR to HR are modeled, not much attention has paid to long-range dependencies among pixels. This is closely related to patch sizes and receptive fields used in their methods. In Section (TODO), we discuss pixel interaction in detail.
+
+
+%[JL TODO] Discuss patch sizes of previous methods.
+
+%Among them, Dong et al. \cite{Dong2014} has demonstrated that a CNN can be used to learn a mapping from LR to HR in an end-to-end manner. Their method, termed SRCNN, does not require any engineered features that are typically necessary in other methods \cite{yang2010image,zeyde2012single,Timofte2013,Timofte}. In addition, it is very fast and accurate.
+
 %\subsection{Convolutional Network  for Image Restoration}
 %
 %We address the problem of generating a high-resolution (HR) image given a low-resolution (LR) image, commonly referred as single image super-resolution (SISR) \cite{Irani1991}, \cite{freeman2000learning}, \cite{glasner2009super}. SISR is widely used in computer vision applications ranging from security and surveillance imaging to medical imaging where more image details are required on demand.
@@ -161,9 +182,19 @@ Second, residual images are modeled. As LR image and HR image share the same inf
 %
 %Among them, Dong et al. \cite{Dong2014} has demonstrated that a CNN can be used to learn a mapping from LR to HR in an end-to-end manner. Their method, termed SRCNN, does not require any engineered features that are typically necessary in other methods \cite{yang2010image,zeyde2012single,Timofte2013,Timofte}. In addition, it is very fast and accurate.
 %
-%\subsection{Recursive Network}
+\subsection{Recursive Neural Network in Computer Vision}
+
 %
 %Recursive convolution is first proposed in \cite{Eigen2014}. (Socher et al. [45]?? Eigen et. al) to understand deep architectures. They used up to three 
+
+Recursive neural networks, suitable for temporal and sequential data, have seen limited use on algorithms operating on a single static image.   Socher et al.  \cite{socher2012convolutional} used a convolutional network in a separate stage to first learn features on RGB-Depth data, prior to hierarchical merging. In these models the input dimension is twice that of the output and recursive convolutions are applied only two times. In Eigen et. al \cite{Eigen2014}, recursive layers have the same input and output dimension, but recursive convolutions resulted in worse performances than a single convolution due to overfitting. 
+
+To overcome overfitting, Liang and Hu \cite{Liang_2015_CVPR} uses a recurrent layer that takes feed-forward inputs into all unfolded layers. They show that up to three convolutions performance increases. Their network is for object recognition and the architecture is vastly similar to existing architectures, except each convolution is applied three times. 
+
+While \cite{Eigen2014} and \cite{Liang_2015_CVPR} simply modify existing architectures to apply convolutions up to three times, our network is completely different from multi-layer approaches. To our knowledge, we demonstrate for the first time that a single recursive layer can entirely solve a non-trivial vision task (SR). 
+
+In addition, we demonstrate that recursions can be very deep. We apply the same convolution up to TODO 30 times (previous maximum is three). It is an interesting future direction to see if a single-layer approach works for other tasks.  
+
 %
 %\subsection{Convolutional Network for Image Super-Resolution}
 %Recently, Dong et al. \cite{Dong2014} have presented a SISR method called SRCNN using a convolutional network. Let us first analyze SRCNN in three aspects: scale, convergence and context.
@@ -202,15 +233,18 @@ Second, residual images are modeled. As LR image and HR image share the same inf
 %	\label{tab:SRCNN_Factor_Test}
 %\end{table*}
 %
-%\section{Proposed Method}
-%In this section, our proposed method is explained. We first go over the process of super-resolving an image with our recursive-convolutional network (inference). Next, we describe the training procedure.
-%
-%\subsection{Inference}
-%  \begin{align*}
-%        h_t &= q(W_{xh}x_t + W_{hh}h_{t-1} + b_h)\\
-%        y_t &= r(W_{hy}h_{t} + b_y)
-%    \end{align*}
-%
+\section{Proposed Method}
+In this section, our proposed method is explained. We first go over the process of super-resolving an image with our recursive-convolutional network (inference). Next, we describe the training procedure.
+
+\subsection{Inference}
+  \begin{align*}
+        H_0 &= max(0, W_{xh_0}*X + b_{h_{0})}\\
+        H_1 &= max(0, W_{h_0 h_1}*H_0 + b_{h_{1})}\\
+        H_d &= max(0, W_{hh}*H_{d-1} + b_h), d = 2, ..., D - 1\\
+        H_D &= max(0, W_{h h_D}*H_{D-1} + b_{h_D})\\
+        \hat{Y} &= max(0, W_{hy}*H_{D} + b_y)
+    \end{align*}
+
 %\subsubsection{Convolutional Network}
 %Simonyan and Zisserman \cite{simonyan2015very} have demonstrated the effectiveness of stacking small filters ($3\times3$) many times to make the network (very) deep (VGG-net). Inspired by VGG-net, we stack small filters repeatedly. We first describe our deep convolutional network (DCN) and then explain how to make it recursive.
 %
