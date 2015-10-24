@@ -1,9 +1,9 @@
 function SRCNN(datasetName, SF, model, outRoute)
 
 if isempty(model)
-    model = ['methods\SRCNN\9-5-5(ImageNet)\x',num2str(SF),'.mat'];
+    model = ['methods/SRCNN/9-5-5(ImageNet)/x',num2str(SF),'.mat'];
 else
-    model = ['methods\SRCNN\9-5-5(ImageNet)\x',num2str(model),'.mat'];
+    model = ['methods/SRCNN/9-5-5(ImageNet)/x',num2str(model),'.mat'];
 end
 
 dataDir = fullfile('data', datasetName);

@@ -13,26 +13,26 @@ end
 
 tic;
 if isempty(model)
-    mat_file = ['methods\Aplus\conf_Zeyde_' num2str(dictSize) '_finalx' num2str(SF) '.mat'] ;
+    mat_file = ['methods/Aplus/conf_Zeyde_' num2str(dictSize) '_finalx' num2str(SF) '.mat'] ;
     if exist(mat_file,'file')
         load(mat_file, 'conf');
     else
         error([mat_file ' : Zeyde model is needed']);
     end
-    fname = ['methods\Aplus\Aplus_x' num2str(SF) '_' num2str(dictSize) 'atoms' num2str(clusterSize) 'nn_5mil.mat'];
+    fname = ['methods/Aplus/Aplus_x' num2str(SF) '_' num2str(dictSize) 'atoms' num2str(clusterSize) 'nn_5mil.mat'];
     if exist(fname,'file')
         load(fname);
     else
         error([fname ' : A+ model is needed']);
     end
 else
-    mat_file = ['methods\Aplus\conf_Zeyde_' num2str(dictSize) '_finalx' num2str(model) '.mat'];
+    mat_file = ['methods/Aplus/conf_Zeyde_' num2str(dictSize) '_finalx' num2str(model) '.mat'];
     if exist(mat_file,'file')
         load(mat_file, 'conf');
     else
         error([mat_file ' : Zeyde model is needed']);
     end
-    fname = ['methods\Aplus\Aplus_x' num2str(model) '_' num2str(dictSize) 'atoms' num2str(clusterSize) 'nn_5mil.mat'];
+    fname = ['methods/Aplus/Aplus_x' num2str(model) '_' num2str(dictSize) 'atoms' num2str(clusterSize) 'nn_5mil.mat'];
     if exist(fname,'file')
         load(fname);
     else

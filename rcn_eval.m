@@ -5,7 +5,7 @@ p = pwd;
 addpath(genpath(fullfile(p, 'methods')));  % the upscaling methods
 addpath(fullfile(p, 'utils'));  % utils
 addpath(genpath(fullfile(p, 'toolbox')));
-run('snudeep\matlab\vl_setupnn.m');
+run('snudeep/matlab/vl_setupnn.m');
 % addpath(fullfile(p, 'ompbox'));  % Orthogonal Matching Pursuit
 % run('../scripts/vlfeat-0.9.20/toolbox/vl_setup');
 
@@ -26,10 +26,10 @@ end
 % evalSetting(end+1) = evalSet('RCN basic', 'RCN', 'Set5', 2, []);
 % evalSetting(end+1) = evalSet('RCN basic', 'RCN', 'Set5', 3, []);
 % evalSetting(end+1) = evalSet('RCN basic', 'RCN', 'Set5', 4, []);
-                                                             %¦¦-- model path option is not implemented yet.
-do.dataset = {'Set5','Set14'};%,'B100','Urban100'};
+                                                             %ï¿½ï¿½-- model path option is not implemented yet.
+do.dataset = {'Set5','Set14','B100','Urban100'};
 do.sf = [2 3 4];
-do.exp = {{'Bicubic', 'Bicubic'},{'SRCNN', 'SRCNN'},{'A+', 'A+'},{'RFL', 'RFL'},{'SelfEx','SelfEx'}};
+do.exp = {{'Bicubic', 'Bicubic'},{'SRCNN', 'SRCNN'},{'A+', 'A+'},{'RFL', 'RFL'}};
 for i = 1:numel(do.dataset)
     for j = 1:numel(do.sf)
         for k = 1:numel(do.exp)
@@ -47,8 +47,8 @@ evalSetting(end+1) = evalSet('RCN 64', 'RCN', 'Set5', 3, 'best64.mat');
 evalSetting(end+1) = evalSet('RCN 64', 'RCN', 'Set14', 3, 'best64.mat');
 
 % Setup outDir
-outDir = 'data\result';
-if ~exist('data\result', 'dir'), mkdir('data/result'); end
+outDir = 'data/result';
+if ~exist('data/result', 'dir'), mkdir('data/result'); end
 
 fileID = fopen('rcn_eval_test.tex','w');
 %--------------------------------------------------------------------------
@@ -83,10 +83,10 @@ t2opts.fid = fileID;
 %--------------------------------------------------------------------------
 % figure type 1. 
 %
-% ¦£------¦¤¦£------¦¤¦£------¦¤¦£------¦¤
-% ¦¢ HR   ¦¢¦¦------¦¥¦¦------¦¥¦¦------¦¥
-% ¦¢      ¦¢¦£------¦¤¦£------¦¤¦£------¦¤
-% ¦¦------¦¥¦¦------¦¥¦¦------¦¥¦¦------¦¥
+% ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½
+% ï¿½ï¿½ HR   ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½
+% ï¿½ï¿½      ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½
+% ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½
 %--------------------------------------------------------------------------
 f1opts.dataset = 'Set5';
 f1opts.imgNum = 1;
@@ -104,11 +104,11 @@ f1opts.fid = fileID;
 %--------------------------------------------------------------------------
 % figure type 2. 
 %
-% ¦£------¦¤¦£------¦¤¦£------¦¤¦£------¦¤¦£------¦¤
-% ¦¢      ¦¢¦¢      ¦¢¦¢      ¦¢¦¢      ¦¢¦¢      ¦¢
-% ¦¢------¦¢¦¢------¦¢¦¢------¦¢¦¢------¦¢¦¢------¦¢
-% ¦¢      ¦¢¦¢      ¦¢¦¢      ¦¢¦¢      ¦¢¦¢      ¦¢
-% ¦¦------¦¥¦¦------¦¥¦¦------¦¥¦¦------¦¥¦¦------¦¥
+% ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½
+% ï¿½ï¿½      ï¿½ï¿½ï¿½ï¿½      ï¿½ï¿½ï¿½ï¿½      ï¿½ï¿½ï¿½ï¿½      ï¿½ï¿½ï¿½ï¿½      ï¿½ï¿½
+% ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½
+% ï¿½ï¿½      ï¿½ï¿½ï¿½ï¿½      ï¿½ï¿½ï¿½ï¿½      ï¿½ï¿½ï¿½ï¿½      ï¿½ï¿½ï¿½ï¿½      ï¿½ï¿½
+% ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½ï¿½ï¿½------ï¿½ï¿½
 %--------------------------------------------------------------------------
 f2opts.dataset = 'Set5';
 f2opts.imgNum = 1;

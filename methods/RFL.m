@@ -1,9 +1,9 @@
 function RFL(datasetName, SF, model, outRoute)
 
 if isempty(model)
-    modelPath = ['methods\RFL\srf_sf-',num2str(SF),'_T-10_ARF-0.mat'];
+    modelPath = ['methods/RFL/srf_sf-',num2str(SF),'_T-10_ARF-0.mat'];
 else
-    modelPath = ['methods\RFL\',model];
+    modelPath = ['methods/RFL/',model];
 end
 
 srforest = srForestLoad(modelPath);
