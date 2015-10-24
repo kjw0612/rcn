@@ -69,7 +69,7 @@
 \maketitle
 %\thispagestyle{empty}
 
-
+% TODO if net was trained very deep, it can be used in a shallow way for low-end PCs or mobiles
 
 
 %%%%%%%%% ABSTRACT
@@ -234,16 +234,67 @@ In addition, we demonstrate that recursions can be very deep. We apply the same 
 %\end{table*}
 %
 \section{Proposed Method}
-In this section, our proposed method is explained. We first go over the process of super-resolving an image with our recursive-convolutional network (inference). Next, we describe the training procedure.
+In this section, our proposed method is explained. We first explain our model and how it can be used to super-resolve an image . Next, we describe the training procedure.
 
-\subsection{Inference}
-  \begin{align*}
-        H_0 &= max(0, W_{xh_0}*X + b_{h_{0})}\\
-        H_1 &= max(0, W_{h_0 h_1}*H_0 + b_{h_{1})}\\
-        H_d &= max(0, W_{hh}*H_{d-1} + b_h), d = 2, ..., D - 1\\
-        H_D &= max(0, W_{h h_D}*H_{D-1} + b_{h_D})\\
-        \hat{Y} &= max(0, W_{hy}*H_{D} + b_y)
-    \end{align*}
+\subsection{Model Formulation}
+
+Simonyan and Zisserman \cite{simonyan2015very} have demonstrated the effectiveness of stacking small filters many times to make the network (very) deep (VGG-net). We similarly use small filters ($3\times3$) for all conv. layers. 
+Our network configuration is outlined in Figure TODO.
+
+It consists of three sub-networks: embedding, inference and reconstruction networks.  \textbf{Embedding net} is used to represent the given image as feature maps ready for inference. Next, \textbf{inference net} solves the task. Once inference is done, final feature maps in inference net. are fed into \textbf{reconstruction net} to generate the output image.
+
+We now look into each sub-networks. \textbf{Embedding net} takes the input image (grayscale or RGB) and represent it as a set of feature maps. Intermediate representation used to pass information to inference net largely depends on how inference net internally represent its feature maps in their hidden layers. Learning this representation is done end-to-end altogether with learning other sub-networks.
+
+
+\textbf{Inference net} is the main component that solves the task, super-resolution. It needs to serve two purposes: analysis and synthesis. Analysis requires large region to understand the given image and synthesis needs a highly non-linear regression function. Both are handled entirely with a single convolutional layer deeply-recursive. Each recursion widens receptive field and increases non-linearities at the same time. As analysis and synthesis are interwined in the recursive layer, division of network capacity between analysis and synthesis is naturally handled while learning the model. 
+
+While feature maps from the final application of the recursive layer represent the high-resolution image, transformation of them into the original image space is necessary. This is done by \textbf{reconstruction net}.  
+
+We have a single hidden layer for each sub-net. Only the layer for inference net is recursive. Other sub-nets are vastly similar to standard mutilayer perceptrons (MLP) with a single hidden layer. For MLP, full connection of $F$ neurons is equivalent to a convolution with $1\times 1\times F \times F$. In our sub-nets, we use $3\times 3\times F \times F$ filters. This is because image gradients are more informative than the raw intensities for super-resolution  (TODO cite).
+
+\textbf{Mathematical Formulation} Now we give the mathematical formulation of our model. The network takes an interpolated input image (to the desired size) as input and predicts the target image as in SRCNN \cite{Dong2014}. Given an input image ${\bf x}$ (low-resolution) and an output image ${\bf y}$ (high-resolution), our goal is to learn a model $f$ that predicts values $\mathbf{\hat{y}}=f(\mathbf{x})$.  We also discuss predicting residuals ${\bf y - x} $ in later sections, but we assume ${\bf y}$ is the output of our network for the moment.
+
+ Let $f_1, f_2, f_3$ denote sub-net functions: embedding, inference and reconstruction, respectively. Our model is the composition of three functions: $f({\bf y}) = f_3(f_2 (f_1({\bf x}))).$ We use convolution followed by ReLUs (rectified linear unit) for all hidden layers. 
+ 
+ Embedding net $f_1({\bf x})$ takes the input vector ${\bf x}$ and computes the matrix output $H_1$, which is an input to the inference net $f_2$. Hidden layer values are denoted by $H_{-1}$. The formula for embedding net is as follows:
+  \begin{align}
+        H_{-1} &= max(0, W_{-1}*{\bf x} + b_{-1})\\
+        H_0 &= max(0, W_{0}*H_{-1} + b_0)\\
+        f_0({\bf x}) &= H_0,
+    \end{align}
+the operator $*$ denotes a convolution and $max(0,\cdot)$ corresponds to a ReLU. Weight and bias matrices are $W_{-1},W_0$ and $b_{-1},b_0$.
+
+Inference net $f_2$ takes the input matrix $H_0$ and computes the matrix output $H_{D}$. Here, we use the same weight and bias matrices $W$ and $b$ for all operations.  Let $g$ denote the function modeled by a single recursion of the recursive layer: $g(H)=max(0,W*H+b)$. The recurrence relation is  
+\begin{equation}
+ H_d = g(H_{d-1}) = max(0,W*H_{d-1}+b),
+\end{equation}
+for $d = 1, ..., D$.
+
+Inference net $f_2$ is equivalent to the composition of elementary fuinction 
+%        H_d &= max(0, W_{hh}*H_{d-1} + b_h), d = 2, ..., D - 1\\
+%        H_D &= max(0, W_{h h_D}*H_{D-1} + b_{h_D})\\
+%        \hat{Y} &= max(0, W_{hy}*H_{D} + b_y).
+%    \end{align*}
+% 
+%We use $d$ layers where layers except the first and the last are of the same type: $F$ filters of the size $3\times 3 \times F$, where a filter operates on $3\times3$ spatial region across $F$ channels (feature maps). The first layer operates on the input image. The last layer, used for image reconstruction, consists of a single filter of size $3\times 3 \times F$.
+
+ details. While modelling image details is often used in super-resolution methods \cite{Timofte2013, Timofte, bevilacqua2012,bevilacqua2013super}, to our knowledge, there has been no CNN-based method that models image details explicitly.
+
+In this work, we demonstrate explicitly modelling image details is sufficient for the purpose of SR and has several advantages. These are further justified and discussed later in the Section \ref{sec:residual}. 
+
+One problem with applying a deep network to predict dense outputs is that the size of feature map gets reduced every time convolution operations are applied. For example,  when an input of size $(n+1)\times (n+1)$ is applied to a network with receptive field size $n\times n$, the output image is $1\times1$. 
+
+This is in accordance with other super-resolution methods since many require surrounding pixels to infer center pixels correctly. This center-surround relation is useful since surrounding region provides more constraints to this ill-posed problem (SR). For pixels near image boundary, this relation cannot be exploited to the full extent and many SR methods crop the result image. 
+
+This methodology, however, is not valid if required surround region is very big. After cropping, the final image is too small to be visually pleasing.
+
+To resolve this issue, we opt not to use this relation. Instead, we use the same-sized regions (i.e. $n\times n$ input and output). To do this, we pad zeros before convolutions to keep the sizes of all feature maps (including the output image) the same. We think that powerful nonlinearities modelled by CNNs can handle both the general case (i.e. receptive field has all valid pixels) and the corner case (i.e. the field located near the image boundary has invalid pixels beyond the border).
+
+It turns out that zero-padding works surprisingly well. For this reason our method differs from most other methods in the sense that pixels near image boundary are also correctly predicted. 
+
+Once image details are predicted, they are added back to ILR to give the final result (HR). We use this structure for all experiments in our work.  
+
+
 
 %\subsubsection{Convolutional Network}
 %Simonyan and Zisserman \cite{simonyan2015very} have demonstrated the effectiveness of stacking small filters ($3\times3$) many times to make the network (very) deep (VGG-net). Inspired by VGG-net, we stack small filters repeatedly. We first describe our deep convolutional network (DCN) and then explain how to make it recursive.
