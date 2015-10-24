@@ -236,7 +236,7 @@ In addition, we demonstrate that recursions can be very deep. We apply the same 
 \section{Proposed Method}
 In this section, our proposed method is explained. We first explain our model and how it can be used to super-resolve an image . Next, we describe the training procedure.
 
-\subsection{Model Formulation}
+\subsection{Model and Inference}
 
 Simonyan and Zisserman \cite{simonyan2015very} have demonstrated the effectiveness of stacking small filters many times to make the network (very) deep (VGG-net). We similarly use small filters ($3\times3$) for all conv. layers. 
 Our network configuration is outlined in Figure TODO.
@@ -370,23 +370,23 @@ Once image details are predicted, they are added back to ILR to give the final r
 %\end{figure*}
 %
 %
-%\subsection{Training}
-%
-%We now describe the objective to minimize to find optimal parameters of our model. Let ${\bf x}$ denote an interpolated low-resolution image and ${\bf y}$ a high-resolution image. 
-%Given training dataset $\{{\bf x}^{(i)},{\bf y}^{(i)}\}{}_{i=1}^{N}$, our goal is to learn a model $f$ that predicts values $\mathbf{\hat{y}}=f(\mathbf{x})$.
-%
-%In the least-squares regression setting, typically used in super-resolution
-%problems, the mean squared error $\frac{1}{2}||\mathbf{y}-f(\mathbf{x})||^{2}$
-%averaged over training set is minimized. This favors high Peak Signal-to-Noise
-%Ratio (PSNR), a widely-used evaluation criteria for SR. 
-%
-%As the input and output images are mostly similar, we define a residual image ${\bf r}={\bf y}-{\bf x}$, where most values are likely to be \textcolor{red}{zero or} small. We want to predict this residual image. The loss function now becomes $\frac{1}{2}||\mathbf{r}-f(\mathbf{x})||^{2}$, where $f(\bf{x})$ is the network prediction. Loss function is one major difference between SRCNN and ours. 
-%
-%In networks, this is reflected in the loss layer as follows. 
-%Our loss layer takes three inputs: residual estimate, network input (ILR) and ground truth HR. The loss is computed as the Euclidean distance between the reconstructed image (the sum of network input and output) and ground truth. With this residual loss layer, we can still use the original dataset for an end-to-end learning.
-%
-%Training is carried out by optimizing the regression objective using mini-batch gradient descent based on back-propagation (LeCun et al. \cite{lecun1998gradient}). We set the momentum parameter to 0.9. The training is regularized by weight decay ($L_2$ penalty multiplied by
-%0.0001).  
+\subsection{Training}
+
+We now describe the objective to minimize to find optimal parameters of our model. Let ${\bf x}$ denote an interpolated low-resolution image and ${\bf y}$ a high-resolution image. 
+Given training dataset $\{{\bf x}^{(i)},{\bf y}^{(i)}\}{}_{i=1}^{N}$, our goal is to learn a model $f$ that predicts values $\mathbf{\hat{y}}=f(\mathbf{x})$.
+
+In the least-squares regression setting, typically used in super-resolution
+problems, the mean squared error $\frac{1}{2}||\mathbf{y}-f(\mathbf{x})||^{2}$
+averaged over training set is minimized. This favors high Peak Signal-to-Noise
+Ratio (PSNR), a widely-used evaluation criteria for SR. 
+
+As the input and output images are mostly similar, we define a residual image ${\bf r}={\bf y}-{\bf x}$, where most values are likely to be \textcolor{red}{zero or} small. We want to predict this residual image. The loss function now becomes $\frac{1}{2}||\mathbf{r}-f(\mathbf{x})||^{2}$, where $f(\bf{x})$ is the network prediction. Loss function is one major difference between SRCNN and ours. 
+
+In networks, this is reflected in the loss layer as follows. 
+Our loss layer takes three inputs: residual estimate, network input (ILR) and ground truth HR. The loss is computed as the Euclidean distance between the reconstructed image (the sum of network input and output) and ground truth. With this residual loss layer, we can still use the original dataset for an end-to-end learning.
+
+Training is carried out by optimizing the regression objective using mini-batch gradient descent based on back-propagation (LeCun et al. \cite{lecun1998gradient}). We set the momentum parameter to 0.9. The training is regularized by weight decay ($L_2$ penalty multiplied by
+0.0001).  
 %
 %Training deep models often fail to converge. He et al. \cite{he2015delving} uses a theoretically sound initialization method which helps very deep models converge when training from scratch and they succeed in training 30 weight layers. They, however, report no benefit from training extremely deep models for their problem. In our work, adding layers are beneficial in general. For large scale factors, deep models exploiting contextual information spread in very large field are dominant. 
 %
@@ -617,8 +617,8 @@ Once image details are predicted, they are added back to ILR to give the final r
 %
 %
 %
-%\section{Conclusion}
-%In this work, we have presented a single-model super-resolution method. Our method uses a very deep convolutional network modified for learning an residual (output minus input). We demonstrate three properties. First, we show our method works under various scales. Second, optimizing a residual-learning network converges rapidly toward a state-of-the-art solution. Third, very deep network operating on an large image region improves performance for large scale factors. We have demonstrated that our method outperforms the existing method by a large margin on benchmarked images. In the future, one can try a much deeper network in order to use full image-level information (receptive field larger than image). Residual-learning network is also readily applicable to other image restoration problems such as denoising and deblurring.
+\section{Conclusion}
+In this work, we have presented a super-resolution method using a deeply-recursive convolutional network. Our network uses a fixed number of parameters while exploiting a large image context. To ease the difficulty of training the model, we use residual-learning and deep-supervision. We have demonstrated that our method outperforms the existing method by a large margin on benchmarked images. In the future, one can try more recursions in order to use full image-level information. We believe our approach is readily applicable to other image restoration problems such as denoising, compression artifact removal and deblurring.
 
 {\small
 	\bibliographystyle{ieee}
