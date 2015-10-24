@@ -3,11 +3,27 @@ function eval_SR(evalSetting, outDir)
 outRoute = fullfile(evalSetting.expName, [evalSetting.expName,'_',evalSetting.dataset,'_x',num2str(evalSetting.sf)]);
 outRoute = fullfile(outDir, outRoute);
 
+switch evalSetting.dataset
+    case 'Set5'
+        effImgNum = 5;
+    case 'Set14'
+        effImgNum = 14;
+    case 'B100'
+        effImgNum = 100;
+    case 'Urban100'
+        effImgNum = 100;
+    otherwise
+        disp('Unknown dataset name');
+end
+
 if exist(outRoute, 'dir')
-    disp(['Already exist dir name : ', outRoute, ' please check if re-evaluation is required']);   
 else
     mkdir(outRoute);
-    
+end
+
+if numel(dir(fullfile(outRoute, '*.png'))) == effImgNum
+    disp(['This experiment was done already. @: ', outRoute, ' please check if re-evaluation is required']);       
+else    
     switch evalSetting.method
         case 'Bicubic'
             Bicubic(evalSetting.dataset, evalSetting.sf, evalSetting.model, outRoute);

@@ -4,7 +4,7 @@ clear;
 p = pwd;
 addpath(genpath(fullfile(p, 'methods')));  % the upscaling methods
 addpath(fullfile(p, 'utils'));  % utils
-addpath(fullfile(p, 'toolbox'));
+addpath(genpath(fullfile(p, 'toolbox')));
 run('snudeep\matlab\vl_setupnn.m');
 % addpath(fullfile(p, 'ompbox'));  % Orthogonal Matching Pursuit
 % run('../scripts/vlfeat-0.9.20/toolbox/vl_setup');
@@ -27,7 +27,7 @@ end
 % evalSetting(end+1) = evalSet('RCN basic', 'RCN', 'Set5', 3, []);
 % evalSetting(end+1) = evalSet('RCN basic', 'RCN', 'Set5', 4, []);
                                                              %¦¦-- model path option is not implemented yet.
-do.dataset = {'Set5','Set14'};
+do.dataset = {'Set5','Set14'};%,'B100','Urban100'};
 do.sf = [2 3 4];
 do.exp = {{'Bicubic', 'Bicubic'},{'SRCNN', 'SRCNN'},{'A+', 'A+'},{'RFL', 'RFL'},{'SelfEx','SelfEx'}};
 for i = 1:numel(do.dataset)
@@ -43,6 +43,8 @@ for i = 1:numel(do.dataset)
 end
 evalSetting(end+1) = evalSet('RCN 256', 'RCN', 'Set5', 3, 'best256.mat');
 evalSetting(end+1) = evalSet('RCN 256', 'RCN', 'Set14', 3, 'best256.mat');
+evalSetting(end+1) = evalSet('RCN 64', 'RCN', 'Set5', 3, 'best64.mat');
+evalSetting(end+1) = evalSet('RCN 64', 'RCN', 'Set14', 3, 'best64.mat');
 
 % Setup outDir
 outDir = 'data\result';
@@ -73,7 +75,7 @@ t1opts.fid = fileID;%fopen([t1opts.tableName,'.tex'],'w');
 t2opts.dataset = {'Set5','Set14'};
 t2opts.problem = 'SR';
 t2opts.sf = [ 3 ];
-t2opts.exp = {'Bicubic', 'A+','SRCNN', 'RFL', 'SelfEx', 'RCN 256'};
+t2opts.exp = {'Bicubic', 'A+','SRCNN', 'RFL', 'SelfEx', 'RCN 64'};
 t2opts.printTime = true;
 t2opts.tableName = 'table_2';
 t2opts.fid = fileID;
@@ -111,7 +113,7 @@ f1opts.fid = fileID;
 f2opts.dataset = 'Set5';
 f2opts.imgNum = 1;
 f2opts.boxSize = [60 60];
-f2opts.boxPose = [200 150];
+f2opts.boxPose = [];%[200 150];
 f2opts.lineWidth = 2;
 f2opts.lineColor = [255 0 0];
 f2opts.problem = 'SR';
@@ -146,7 +148,11 @@ printTime = opts.printTime;
 %fid = fopen([tableName,'.tex'],'w');
 fprintf(fid,'\\begin{table}\n\\begin{center}\n');
 fprintf(fid,'\\setlength{\\tabcolsep}{2pt}\n');
-fprintf(fid,'\\small\n');
+if numel(exp) >= 5
+    fprintf(fid,'\\scriptsize\n');
+else
+    fprintf(fid,'\\small\n');
+end
 fprintf(fid,'\\begin{tabular}{ |');
 for indColumn = 1:numel(exp)+2
     fprintf(fid,' c |');
@@ -319,7 +325,11 @@ printTime = opts.printTime;
 
 fprintf(fid,'\\begin{table}\n\\begin{center}\n');
 fprintf(fid,'\\setlength{\\tabcolsep}{2pt}\n');
-fprintf(fid,'\\small\n');
+if numel(exp) >= 5
+    fprintf(fid,'\\scriptsize\n');
+else
+    fprintf(fid,'\\small\n');
+end
 fprintf(fid,'\\begin{tabular}{ |');
 for indColumn = 1:numel(exp)+2
     fprintf(fid,' c |');
@@ -463,11 +473,27 @@ outDir = fullfile('data','result');
 img_lst = dir(gtDir); img_lst = img_lst(3:end);
 [~,imgName,imgExt] = fileparts(img_lst(imgNum).name);
 imGT = imread(fullfile(gtDir, [imgName,imgExt]));
+imGT = modcrop(imGT, SF);
+
+if isempty(boxPose)
+    for indExp = 1:numel(exp)
+        expName = exp{indExp};
+        outRoute = fullfile(expName, [expName,'_',datasetName,'_x',num2str(SF)]);
+        if strcmp(expName,'SRCNN')
+            imSRCNN = imread(fullfile(outDir, outRoute, [imgName,'.png']));
+        elseif strcmp(expName,'A+')
+            imAplus = imread(fullfile(outDir, outRoute, [imgName,'.png']));
+        elseif indExp == numel(exp)
+            imRCN = imread(fullfile(outDir, outRoute, [imgName,'.png']));
+        end
+    end
+    [boxPose(1),boxPose(2)] = findBestPos(imGT, imSRCNN, imAplus, imRCN, boxSize);
+end
+
 PSNR_array = zeros(numel(exp),1);
 SSIM_array = zeros(numel(exp),1);
 ShapeInserter = vision.ShapeInserter('LineWidth',lineWidth,'BorderColor','Custom','CustomBorderColor',lineColor);
-imGTbox = step(ShapeInserter, imGT, int32(cat(2,fliplr(boxPose),fliplr(boxSize))));
-imwrite(imGTbox,fullfile(figDir,figName,[imgName,'_GTbox','.png']));
+
 for indExp = 1:numel(exp)
     expName = exp{indExp};
     outRoute = fullfile(expName, [expName,'_',datasetName,'_x',num2str(SF)]);
@@ -483,6 +509,8 @@ for indExp = 1:numel(exp)
         subimSRcolor = imSRcolor(boxPose(1):boxPose(1)+boxSize(1)-1,boxPose(2):boxPose(2)+boxSize(2)-1,:);
     imwrite(subimSRcolor,fullfile(figDir,figName,[imgName,'_for_',figName,'_',expName,'.png']));
 end
+imGTbox = step(ShapeInserter, imGT, int32(cat(2,fliplr(boxPose),fliplr(boxSize))));
+imwrite(imGTbox,fullfile(figDir,figName,[imgName,'_GTbox','.png']));
 
 fprintf(fid,'\\begin{figure}\n');
 fprintf(fid,'\\begin{adjustwidth}{-1cm}{-1cm}\n');
@@ -550,6 +578,22 @@ img_lst = dir(gtDir); img_lst = img_lst(3:end);
 [~,imgName,imgExt] = fileparts(img_lst(imgNum).name);
 imGT = imread(fullfile(gtDir, [imgName,imgExt]));
 imGT = modcrop(imGT, SF);
+
+if isempty(boxPose)
+    for indExp = 1:numel(exp)
+        expName = exp{indExp};
+        outRoute = fullfile(expName, [expName,'_',datasetName,'_x',num2str(SF)]);
+        if strcmp(expName,'SRCNN')
+            imSRCNN = imread(fullfile(outDir, outRoute, [imgName,'.png']));
+        elseif strcmp(expName,'A+')
+            imAplus = imread(fullfile(outDir, outRoute, [imgName,'.png']));
+        elseif indExp == numel(exp)
+            imRCN = imread(fullfile(outDir, outRoute, [imgName,'.png']));
+        end
+    end
+    [boxPose(1),boxPose(2)] = findBestPos(imGT, imSRCNN, imAplus, imRCN, boxSize);
+end
+
 PSNR_array = zeros(numel(exp),1);
 SSIM_array = zeros(numel(exp),1);
 
@@ -661,5 +705,38 @@ else
     imSRcolor = ycbcr2rgb(imSRcolor);
 end
 
-% ToDo :
+function [maxX, maxY] = findBestPos(imGT, imSRCNN, imAplus, imRCN, boxSize)
+% find the region that illustrates where SFFSR works well.
+% i.e. maximize PSNR(SFFSR Window ) - max (PSNR(A+ Window),
+% PSNR(SRCNNwindow))
+
+if size(imGT,3) > 1
+    imGT = rgb2ycbcr(imGT);
+    imGT = imGT(:,:,1);
+end
+
+max_val = -1e5;
+maxX = 1;
+maxY = 1;
+sz = size(imGT);
+stride = 1;
+
+[~, ssim1] = ssim(imRCN,   imGT, 'Exponents', [0 0 1]);
+[~, ssim2] = ssim(imSRCNN, imGT, 'Exponents', [0 0 1]);
+[~, ssim3] = ssim(imAplus, imGT, 'Exponents', [0 0 1]);
+ssim1c = cumsum(cumsum(ssim1, 1), 2);
+ssim2c = cumsum(cumsum(ssim2, 1), 2);
+ssim3c = cumsum(cumsum(ssim3, 1), 2);
+for x = 2:stride:sz(1)-boxSize(1)
+    for y=2:stride:sz(2)-boxSize(2)
+        val1 = ssim1c(x+boxSize(1)-1,y+boxSize(2)-1) - ssim1c(x+boxSize(1)-1,y-1) - ssim1c(x-1,y+boxSize(2)-1) + 2*ssim1c(x-1,y-1);
+        val2 = ssim2c(x+boxSize(1)-1,y+boxSize(2)-1) - ssim2c(x+boxSize(1)-1,y-1) - ssim2c(x-1,y+boxSize(2)-1) + 2*ssim2c(x-1,y-1);
+        val3 = ssim3c(x+boxSize(1)-1,y+boxSize(2)-1) - ssim3c(x+boxSize(1)-1,y-1) - ssim3c(x-1,y+boxSize(2)-1) + 2*ssim3c(x-1,y-1);
+        if log(val1)-log(max(val2,val3)) > max_val
+            max_val= log(val1)-log(max(val2,val3));
+            maxX = x;
+            maxY = y;
+        end
+    end
+end
         
