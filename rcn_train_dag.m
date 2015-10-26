@@ -24,7 +24,7 @@ opts.expDir = fullfile('data','exp_free') ;
 opts.evalDir = fullfile('data','Set5');
 opts.prefetch = false ;
 opts.momentum = 0.9 ;
-if opts.dropout, opts.momentum = 0.99; end
+%if opts.dropout, opts.momentum = 0.99; end
 opts.derOutputs = {'objective', 1} ;
 opts.conserveMemory = true ;
 opts.sync = false ;
@@ -104,7 +104,13 @@ for epoch=start+1:1e10%opts.numEpochs
   if lr < 1e-5
     break
   end;
- 
+  
+  temp = 1;
+  for i=4:2:numel(opts.derOutputs)
+    opts.derOutputs{i} = lr/0.1/(numel(opts.derOutputs)/2);
+    temp = temp - opts.derOutputs{i};
+  end
+  opts.derOutputs{2} = temp;
   % train one epoch
   state.epoch = epoch ;
   state.learningRate = lr; %opts.learningRate(min(epoch, numel(opts.learningRate))) ;
@@ -267,6 +273,8 @@ for t=1:opts.batchSize:numel(subset)
     f = char(f) ;
     fprintf(' %s:%.4f', f, stats.(f)) ;
   end
+  fprintf(' ensemble weights ');
+  fprintf(' %.2f ', (net.params(end).value(:)'));
   fprintf('\n') ;
 end
 

@@ -21,7 +21,7 @@ end
 
 %% Set Options
 opts.gpus = 1;
-model_size = 'minimal'; % one of minimal, medium, heavy
+model_size = 'medium'; % one of minimal, medium, heavy
 
 opts.test_sf = 3;
 opts.resid = 1;
@@ -30,18 +30,24 @@ opts.deep_supervise = 1;
 if strcmp(model_size, 'minimal')
   opts.dropout = 0;
   opts.depth = 10; % 10 optimal5
-  opts.filterSize = 64; % 256 for depth 20 
+  opts.filterSize = 64; % 256 for depth 20  
   opts.augment = false; %data augmentation
+  opts.continueBest = false;
+  opts.train.learningRate = 0.1;
 elseif strcmp(model_size, 'medium')
-  opts.dropout = 0;
-  opts.depth = 10; % 10 optimal5
-  opts.filterSize = 128; % 256 for depth 20 
-  opts.augment = true; %data augmentation
-elseif strcmp(model_size, 'heavy')
-  opts.dropout = 0;
-  opts.depth = 20; % 10 optimal5
+  opts.dropout = 1;
+  opts.depth = 15; % 10 optimal5
   opts.filterSize = 256; % 256 for depth 20 
   opts.augment = true; %data augmentation
+  opts.continueBest = false;
+  opts.train.learningRate = 0.01;
+elseif strcmp(model_size, 'heavy')
+  opts.dropout = 1;
+  opts.depth = 15; % 10 optimal5
+  opts.filterSize = 384; % 256 for depth 20 
+  opts.augment = true; %data augmentation
+  opts.continueBest = false;
+  opts.train.learningRate = 0.01;
 else
   fprintf('Choose model size correctly\n');
   return;
@@ -49,6 +55,7 @@ end
 
 opts.pad = 0;
 opts.momentum = 0.9;
+%if opts.dropout, opts.momentum = 0.99; end
 opts.useBnorm = false;
 exp_name = 'exp';
 if opts.useBnorm
@@ -78,17 +85,19 @@ end;
 
 %rep = 20*3;
 %if opts.dropout, rep = rep * 5; opts.train.learningRate = [0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)]; end %*0.99 .^ (0:500); 
-opts.train.learningRate = 0.1; % 0.1 %[0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)];%*0.99 .^ (0:500);
+ % 0.1 %[0.1*ones(1,rep) 0.01*ones(1,rep) 0.001*ones(1,rep) 0.0001*ones(1,rep)];%*0.99 .^ (0:500);
 %opts.train.numEpochs = numel(opts.train.learningRate);
 opts.train.continue = 0;
-opts.train.gradRange = 1e-4 / opts.depth;
-% if opts.depth <= 10
-%   opts.train.gradRange = 1e-5; % 1e-4
-% elseif opts.depth <= 20
-%   opts.train.gradRange = 1e-5;%0.001*1e-4;
-% else 
-%   opts.train.gradRange = 1e-6;
-% end
+%opts.train.gradRange = 1e-3 / opts.depth;
+if opts.depth <= 10
+  opts.train.gradRange = 1e-4; % 1e-4
+elseif opts.depth <= 15
+  opts.train.gradRange = 1e-4;%0.001*1e-4;
+elseif opts.depth <= 20
+  opts.train.gradRange = 1e-5;%0.001*1e-4;
+else 
+  opts.train.gradRange = 1e-6;
+end
 opts.train.useBnorm = opts.useBnorm;
 opts.train.sync = true;
 opts.train.expDir = opts.expDir;
@@ -96,8 +105,8 @@ opts.train.gpus = opts.gpus;
 opts.train.dropout = opts.dropout;
 opts.train.recursive = opts.recursive;
 opts.train.momentum = opts.momentum;
-opts.train.rep = 20;
-if opts.augment, opts.train.rep = 10; end
+opts.train.rep = 5;
+if opts.augment, opts.train.rep = 3; end
 
 % --------------------------------------------------------------------
 %                                                         Prepare data
@@ -120,7 +129,7 @@ end
 % --------------------------------------------------------------------
 
 close_depth = 0;
-if ~strcmp(model_size, 'minimal') % *** TODO remove 0
+if opts.continueBest%% && ~strcmp(model_size, 'minimal') % *** TODO remove 0
   for i=1:100
     bestPath = sprintf('best/best_D%d_F%d.mat', i, opts.filterSize);
     if exist(bestPath, 'file') && abs(i - opts.depth) < abs(close_depth - opts.depth)
@@ -137,7 +146,7 @@ if close_depth > 0
   for i=1:numel(net.params)
    net.params(i).value = best_net.params(i).value; 
   end
-  opts.train.learningRate = 0.01;
+  %opts.train.learningRate = 0.01;
 end
 
 % --------------------------------------------------------------------
