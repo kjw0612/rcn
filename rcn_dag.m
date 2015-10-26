@@ -67,6 +67,7 @@ opts.expDir = fullfile('data','exp',exp_name);
 opts.dataDir = fullfile('data', '91');
 opts.imdbPath = fullfile(opts.expDir, 'imdb.mat');
 
+opts = vl_argparse(opts, varargin);
 if opts.depth <= 20
   opts.train.batchSize = 64;
 elseif opts.depth <= 30
@@ -102,6 +103,7 @@ opts.train.useBnorm = opts.useBnorm;
 opts.train.sync = true;
 opts.train.expDir = opts.expDir;
 opts.train.gpus = opts.gpus;
+opts.train.testPath = fullfile('data', 'Set5', 'baby_GT.bmp');
 opts.train.dropout = opts.dropout;
 opts.train.recursive = opts.recursive;
 opts.train.momentum = opts.momentum;
