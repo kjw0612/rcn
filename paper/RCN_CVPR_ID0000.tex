@@ -236,6 +236,11 @@ In addition, we demonstrate that recursions can be very deep. We apply the same 
 \section{Proposed Method}
 In this section, our proposed method is explained. We first explain our model and how it can be used to super-resolve an image . Next, we describe the training procedure.
 
+\begin{figure*}[t]
+	\includegraphics[width=\textwidth]{figs/f1}
+	\caption {Overview of our method. (a): Our model architecture. A given input, low resolution image, passes through embedding network, inference network, and reconstruction network to be super-resovled. (b): Detailed description of embedding network. (c): Detailed description of inference network. (d): Detailed description of reconstruction network.}
+\end{figure*}
+
 \subsection{Model and Inference}
 
 Simonyan and Zisserman \cite{simonyan2015very} have demonstrated the effectiveness of stacking small filters many times to make the network (very) deep (VGG-net). We similarly use small filters ($3\times3$) for all conv. layers. 
@@ -247,6 +252,11 @@ We now look into each sub-networks. \textbf{Embedding net} takes the input image
 
 
 \textbf{Inference net} is the main component that solves the task, super-resolution. It needs to serve two purposes: analysis and synthesis. Analysis requires large region to understand the given image and synthesis needs a highly non-linear regression function. Both are handled entirely with a single convolutional layer deeply-recursive. Each recursion widens receptive field and increases non-linearities at the same time. As analysis and synthesis are interwined in the recursive layer, division of network capacity between analysis and synthesis is naturally handled while learning the model. 
+
+\begin{figure}
+	\includegraphics[width=0.5\textwidth]{figs/f2}
+	\caption {An illustration of inference network. \textbf{Left}: A folded version of inference network. \textbf{Right}: An unfolded version of inference network along with recursion. The same filters W are applied to feature maps recursively. By doing this, our model can utilize very large context just with the relatively small number of parameters.}
+\end{figure}
 
 While feature maps from the final application of the recursive layer represent the high-resolution image, transformation of them into the original image space is necessary. This is done by \textbf{reconstruction net}.  
 
@@ -294,7 +304,19 @@ It turns out that zero-padding works surprisingly well. For this reason our meth
 
 Once image details are predicted, they are added back to ILR to give the final result (HR). We use this structure for all experiments in our work.  
 
+\begin{figure}
+\begin{center}
+	\includegraphics[width=0.4\textwidth]{figs/f4}
+	\caption{An illlustration of using residual learning. By learning residual parts only, we can get two advantages. First, the problem space is shrinked to be learned more easily. Second, An useful information of input can be conserved intact to the end.}
+\end{center}
+\end{figure}
 
+\begin{figure*}
+\begin{center}
+	\includegraphics[width=\textwidth]{figs/f3}
+	\caption{Deep supervision illlustration. (a): Original form of deep supervision. To supervise every feature maps at $d = 1, ..., D$, we need to have corresponding reconstruction networks for every feature maps at $d = 1, ..., D$, which result in a large number of parameters. (b): Our deep supervision. Unlike in (a), the reconstruction network is shared among feature maps in directed acyclic graph manner. It is possible because the space of feature maps remain same in our method. Furthermore, not onlywe use deep supervision to regularize intermediate feature maps, but we use all the outputs from the intermediate recursion to get the final output by weighted sum. So we can utilize useful information though it emerges from the early stage of recursion.}
+\end{center}
+\end{figure*}
 
 %\subsubsection{Convolutional Network}
 %Simonyan and Zisserman \cite{simonyan2015very} have demonstrated the effectiveness of stacking small filters ($3\times3$) many times to make the network (very) deep (VGG-net). Inspired by VGG-net, we stack small filters repeatedly. We first describe our deep convolutional network (DCN) and then explain how to make it recursive.
