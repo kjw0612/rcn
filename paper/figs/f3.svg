@@ -9,9 +9,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="500mm"
-   height="210mm"
-   viewBox="0 0 1771.6535 744.09448"
+   width="477.86331mm"
+   height="86.067589mm"
+   viewBox="0 0 1693.2164 304.96389"
    id="svg50179"
    version="1.1"
    inkscape:version="0.91 r13725"
@@ -1003,8 +1003,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.70144123"
-     inkscape:cx="815.8262"
-     inkscape:cy="372.91959"
+     inkscape:cx="608.04948"
+     inkscape:cy="-72.932978"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -1013,10 +1013,16 @@
      inkscape:window-x="1272"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     showguides="false">
+     showguides="false"
+     fit-margin-top="3"
+     fit-margin-left="3"
+     fit-margin-right="3"
+     fit-margin-bottom="3">
     <inkscape:grid
        type="xygrid"
-       id="grid50727" />
+       id="grid50727"
+       originx="3.930253"
+       originy="-445.85256" />
   </sodipodi:namedview>
   <metadata
      id="metadata50184">
@@ -1026,7 +1032,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -1034,7 +1040,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-308.26772)">
+     transform="translate(3.9302531,-301.54575)">
     <text
        sodipodi:linespacing="125%"
        id="text53759"
@@ -2171,7 +2177,7 @@
          x="1522.1589"
          id="tspan24009"
          sodipodi:role="line">w<tspan
-   style="font-size:65%;baseline-shift:sub"
+   style="font-size:64.99999762%;baseline-shift:sub"
    id="tspan5734">d-1</tspan></tspan></text>
     <text
        xml:space="preserve"
@@ -2185,7 +2191,7 @@
          x="1522.5164"
          y="439.20209"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.25px;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math'">w<tspan
-   style="font-size:65%;baseline-shift:sub"
+   style="font-size:64.99999762%;baseline-shift:sub"
    id="tspan5732">d</tspan></tspan></text>
     <text
        sodipodi:linespacing="125%"
@@ -2199,7 +2205,7 @@
          x="1521.8016"
          id="tspan24021"
          sodipodi:role="line">w<tspan
-   style="font-size:65%;baseline-shift:sub"
+   style="font-size:64.99999762%;baseline-shift:sub"
    id="tspan4842">d+1</tspan></tspan></text>
     <text
        xml:space="preserve"
@@ -2213,7 +2219,7 @@
          x="1521.4445"
          y="552.80725"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.25px;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math'">w<tspan
-   style="font-size:65%;baseline-shift:sub"
+   style="font-size:64.99999762%;baseline-shift:sub"
    id="tspan4840">D</tspan></tspan></text>
     <text
        xml:space="preserve"
@@ -2227,11 +2233,12 @@
          x="1522.8735"
          y="349.40689"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:16.25px;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math'">w<tspan
-   style="font-size:65%;baseline-shift:sub"
+   style="font-size:64.99999762%;baseline-shift:sub"
    id="tspan5736">1</tspan></tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer4"
-     inkscape:label="Layer 2" />
+     inkscape:label="Layer 2"
+     transform="translate(3.9302531,6.7219713)" />
 </svg>
