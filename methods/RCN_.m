@@ -3,7 +3,7 @@ function RCN_(datasetName, SF, model, outRoute)
 if isempty(model)
     modelPath = ['data/exp/exp_S',num2str(SF),'_resid1_depth10/best.mat'];
 else
-    modelPath = ['data/exp/',model];
+    modelPath = ['methods/RCN/',model];
     gpu = 1;
 end
 
