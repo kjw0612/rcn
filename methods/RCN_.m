@@ -4,6 +4,7 @@ if isempty(model)
     modelPath = ['data/exp/exp_S',num2str(SF),'_resid1_depth10/best.mat'];
 else
     modelPath = ['data/exp/',model];
+    gpu = 1;
 end
 
 dataDir = fullfile('data', datasetName);
@@ -24,7 +25,7 @@ for f_iter = 1:numel(f_lst)
     tic;
     imlow = imresize(imlow, size(imhigh), 'bicubic');
     imlow = max(16.0/255, min(235.0/255, imlow));
-    impred = runRCN(modelPath, imlow);
+    impred = runRCN(modelPath, imlow, gpu);
     timetable(f_iter,1) = toc;
     imwrite(impred, fullfile(outRoute, [imgName, '.png']));
 end

@@ -41,11 +41,12 @@ for i = 1:numel(do.dataset)
         end
     end
 end
-evalSetting(end+1) = evalSet('RCN 256', 'RCN', 'Set5', 3, 'best256.mat');
-evalSetting(end+1) = evalSet('RCN 256', 'RCN', 'Set14', 3, 'best256.mat');
+% evalSetting(end+1) = evalSet('RCN 256', 'RCN', 'Set5', 3, 'best256.mat');
+% evalSetting(end+1) = evalSet('RCN 256', 'RCN', 'Set14', 3, 'best256.mat');
 evalSetting(end+1) = evalSet('RCN 64', 'RCN', 'Set5', 3, 'best64.mat');
 evalSetting(end+1) = evalSet('RCN 64', 'RCN', 'Set14', 3, 'best64.mat');
-
+evalSetting(end+1) = evalSet('RCN 64', 'RCN', 'B100', 3, 'best64.mat');
+evalSetting(end+1) = evalSet('RCN 64', 'RCN', 'Urban100', 3, 'best64.mat');
 % Setup outDir
 outDir = 'data/result';
 if ~exist('data/result', 'dir'), mkdir('data/result'); end
@@ -72,9 +73,9 @@ t1opts.fid = fileID;%fopen([t1opts.tableName,'.tex'],'w');
 %--------------------------------------------------------------------------
 % table type 2.
 %--------------------------------------------------------------------------
-t2opts.dataset = {'Set5','Set14'};
+t2opts.dataset = {'Set5','Set14','B100'};
 t2opts.problem = 'SR';
-t2opts.sf = [ 3 ];
+t2opts.sf = [3];
 t2opts.exp = {'Bicubic', 'A+','SRCNN', 'RFL', 'SelfEx', 'RCN 64'};
 t2opts.printTime = true;
 t2opts.tableName = 'table_2';
@@ -83,22 +84,22 @@ t2opts.fid = fileID;
 %--------------------------------------------------------------------------
 % figure type 1. 
 %
-% ��------����------����------����------��
-% �� HR   ����------����------����------��
-% ��      ����------����------����------��
-% ��------����------����------����------��
+% t------tt------tt------tt------t
+% | HR   |t------tt------tt------t
+% |      |t------tt------tt------t
+% t------tt------tt------tt------t
 %--------------------------------------------------------------------------
 f1opts.dataset = 'Set5';
 f1opts.imgNum = 1;
 f1opts.boxSize = [60 100];
-f1opts.boxPose = [200 150];
+f1opts.boxPose = [];
 f1opts.lineWidth = 2;
 f1opts.lineColor = [255 0 0];
 f1opts.problem = 'SR';
 f1opts.sf = 3;
 f1opts.exp = {'HR','Bicubic','Bicubic','A+','SRCNN','RCN 256'};
 f1opts.figName = 'fig1';
-f1opts.figDir = 'figs';
+f1opts.figDir = 'paper/figs';
 f1opts.fid = fileID;
 
 %--------------------------------------------------------------------------
@@ -120,7 +121,7 @@ f2opts.problem = 'SR';
 f2opts.sf = 3;
 f2opts.exp = {'HR','Bicubic','A+','SRCNN','RCN 256'};
 f2opts.figName = 'fig2';
-f2opts.figDir = 'figs';
+f2opts.figDir = 'paper/figs';
 f2opts.fid = fileID;
 
 %--------------------------------------------------------------------------
