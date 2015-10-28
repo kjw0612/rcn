@@ -265,7 +265,7 @@ We now look into each sub-networks. \textbf{Embedding net} takes the input image
 	\caption {An illustration of inference network. \textbf{Left}: A folded version of inference network. \textbf{Right}: An unfolded version of inference network along with recursion. The same filters W are applied to feature maps recursively. By doing this, our model can utilize very large context just with the relatively small number of parameters.}
 \end{figure}
 
-While feature maps from the final application of the recursive layer represent the high-resolution image, transformation of them into the original image space is necessary. This is done by \textbf{reconstruction net}.  
+While feature maps from the final application of the recursive layer represent the high-resolution image, transformation of them back into the original image space is necessary. This is done by \textbf{reconstruction net}.  
 
 We have a single hidden layer for each sub-net. Only the layer for inference net is recursive. Other sub-nets are vastly similar to standard mutilayer perceptrons (MLP) with a single hidden layer. For MLP, full connection of $F$ neurons is equivalent to a convolution with $1\times 1\times F \times F$. In our sub-nets, we use $3\times 3\times F \times F$ filters. This is because image gradients are more informative than the raw intensities for super-resolution  (TODO cite).
 
@@ -273,7 +273,7 @@ We have a single hidden layer for each sub-net. Only the layer for inference net
 
  Let $f_1, f_2, f_3$ denote sub-net functions: embedding, inference and reconstruction, respectively. Our model is the composition of three functions: $f({\bf y}) = f_3(f_2 (f_1({\bf x}))).$ We use convolution followed by ReLUs (rectified linear unit) for all hidden layers. 
  
- Embedding net $f_1({\bf x})$ takes the input vector ${\bf x}$ and computes the matrix output $H_1$, which is an input to the inference net $f_2$. Hidden layer values are denoted by $H_{-1}$. The formula for embedding net is as follows:
+ Embedding net $f_1({\bf x})$ takes the input vector ${\bf x}$ and computes the matrix output $H_0$, which is an input to the inference net $f_2$. Hidden layer values are denoted by $H_{-1}$. The formula for embedding net is as follows:
   \begin{align}
         H_{-1} &= max(0, W_{-1}*{\bf x} + b_{-1})\\
         H_0 &= max(0, W_{0}*H_{-1} + b_0)\\
@@ -299,7 +299,7 @@ Reconstruction net $f_3$ takes the input hidden state $H_D$ and outputs the targ
 	f_3(H) &= \hat{{\bf y}}.
 \end{align}
 
-\textbf{Model Properties} Now we have all components for our model $f({\bf y}) = f_3(f_2 (f_1({\bf x})))$. The recursive model has pros and cons. One good thing is that the model requires no new parameters for additional recursions. That means widening receptive field to utilize larger image context can be done with the network capcity fixed. This also holds true for other recursive network approaches \cite{Liang_2015_CVPR}.  
+\textbf{Model Properties} Now we have all components for our model $f({\bf y}) = f_3(f_2 (f_1({\bf x})))$. The recursive model has pros and cons. One good thing is that the model requires no new parameters for additional recursions. That means widening receptive field to utilize larger image context can be done with the network capcity fixed. 
 
 While the recursive model is simple and powerful, we find training a deeply-recursive network very difficult. The maximum number of recursions succesful in previous methods is three \cite{Liang_2015_CVPR}.  Among many reasons, two severe problems are \textit{vanishing} and \textit{exploding gradients} \cite{bengio1994learning, pascanu2013difficulty}.   TODO Fixed-vector memory problems???
 
@@ -325,7 +325,7 @@ To overcome the weaknesses of the simple model, we propose two extensions: deep-
 
 As we have assummed that the same representation can be used again and again during covolutions in inference net, much better regularization is to use the same recon. net for all recursions. Our recon. net now outputs $D$ predictions and all predictions are simultaneously supervised during training. 
 
-The second difference of our method to the original deep-supervision is that we use all $D$ predictions to compute the final output. All predictions are averaged during testing. The optimal weights are automtically learned during training. In contrast,  \cite{lee2014deeply} discard all intermediate classifiers during testing. 
+The second difference of our method to the original deep-supervision is that we use all $D$ intermediate predictions to compute the final output. All predictions are averaged during testing. The optimal weights are automtically learned during training. In contrast,  \cite{lee2014deeply} discard all intermediate classifiers during testing. 
 
 Our deep-supervision naturally eases the difficulty of training recursive networks. Backpropagation goes through small number of layers if supervising signal goes directly from loss layer to early recursion. Summing all gradients backpropagated from different prediction losses give smoothing effect. The effect of vanishing/exploding graidents along one backpropagation path is alleviated.
 
@@ -336,22 +336,19 @@ Moreoever, the importance of picking the optimal number of recursions is reduced
 Our residual learning is simple yet very effective. In super-resolution, LR and HR images are vastly similar. In most regions, differences are zero and only small number of locations have non-zero values. Modelling image details is often used in super-resolution methods \cite{Timofte2013, Timofte, bevilacqua2012,bevilacqua2013super}, but we demonstrate that this domain-specific knowledge can significantly improve an general end-to-end learning method like deep-learning, especially if the net is very recursive.
 As illustrated in Figure \ref{fig: TODO}, the main network now learns very sparse predictions and the required capacity to solve the task gets significantly reduced. 
 
-\textbf{Mathematical Formulation} We revisit the mathematical formulation of our model with two extensions. In the simple model, the prediction is $\hat{{\bf y}} = f_3(H_D)$, where $f_3$ and $H_D$ denote the recon net and the final hidden state of the inference net, respectively. With deep-supervision and residual-learning,  
+\textbf{Mathematical Formulation} We revisit the mathematical formulation of our model with two extensions. In the simple model, the prediction is $\hat{{\bf y}} = f_3(H_D)$, where $f_3$ and $H_D$ denote the recon net and the final hidden state of the inference net, respectively. With residual-learning,  
 \begin{equation}
-\hat{{\bf y}} = {\bf x} + \sum_{d=1}^{D} w_d \cdot f_3(H_d),
+\hat{{\bf y}} = {\bf x} + f_3(f_2(f_1({\bf x}))) = {\bf x} + f_3(g^{(D)}(f_1({\bf x}))).
+\end{equation}
+Each intermediate prediction under deep-supervision is 
+\begin{equation}
+\hat{{\bf y}}^{(d)} = {\bf x} + f_3(g^{(d)}(f_1({\bf x}))).
+\end{equation}
+Now, the final output is the weighted average of all intermediate predictions:
+\begin{equation}
+\hat{{\bf y}}^{(d)} = \sum_{d=1}^{D} w_d \cdot \hat{{\bf y}}^{(d)}.
 \end{equation}
 where $w_d$ denotes the weights of predictions reconstructed from each intermediate hidden state during recursion.
-
-\textbf{Implementation Details}
-One problem with applying a deep network to predict dense outputs is that the size of feature map gets reduced every time convolution operations are applied. For example,  when an input of size $(n+1)\times (n+1)$ is applied to a network with receptive field size $n\times n$, the output image is $1\times1$. 
-
-This is in accordance with other super-resolution methods since many require surrounding pixels to infer center pixels correctly. This center-surround relation is useful since surrounding region provides more constraints to this ill-posed problem (SR). For pixels near image boundary, this relation cannot be exploited to the full extent and many SR methods crop the result image. 
-
-This methodology, however, is not valid if required surround region is very big. After cropping, the final image is too small to be visually pleasing.
-
-To resolve this issue, we opt not to use this relation. Instead, we use the same-sized regions (i.e. $n\times n$ input and output). To do this, we pad zeros before convolutions to keep the sizes of all feature maps (including the output image) the same. We think that powerful nonlinearities modelled by CNNs can handle both the general case (i.e. receptive field has all valid pixels) and the corner case (i.e. the field located near the image boundary has invalid pixels beyond the border).
-
-It turns out that zero-padding works surprisingly well. For this reason our method differs from most other methods in the sense that pixels near image boundary are also correctly predicted. 
 
 \begin{figure}
 \begin{center}
@@ -367,36 +364,9 @@ It turns out that zero-padding works surprisingly well. For this reason our meth
 \end{center}
 \end{figure*}
 
-%\subsubsection{Convolutional Network}
-%Simonyan and Zisserman \cite{simonyan2015very} have demonstrated the effectiveness of stacking small filters ($3\times3$) many times to make the network (very) deep (VGG-net). Inspired by VGG-net, we stack small filters repeatedly. We first describe our deep convolutional network (DCN) and then explain how to make it recursive.
-%
-%The DCN configuration is outlined in Figure \ref{fig:network}. We use $d$ layers where layers except the first and the last are of the same type: $F$ filters of the size $3\times 3 \times F$, where a filter operates on $3\times3$ spatial region across $F$ channels (feature maps). The first layer operates on the input image. The last layer, used for image reconstruction, consists of a single filter of size $3\times 3 \times F$.
-%
-%The network takes an interpolated input image (to the desired size) as input and predicts image details. While modelling image details is often used in super-resolution methods \cite{Timofte2013, Timofte, bevilacqua2012,bevilacqua2013super}, to our knowledge, there has been no CNN-based method that models image details explicitly.
-%
-%In this work, we demonstrate explicitly modelling image details is sufficient for the purpose of SR and has several advantages. These are further justified and discussed later in the Section \ref{sec:residual}. 
-%
-%One problem with applying a deep network to predict dense outputs is that the size of feature map gets reduced every time convolution operations are applied. For example,  when an input of size $(n+1)\times (n+1)$ is applied to a network with receptive field size $n\times n$, the output image is $1\times1$. 
-%
-%This is in accordance with other super-resolution methods since many require surrounding pixels to infer center pixels correctly. This center-surround relation is useful since surrounding region provides more constraints to this ill-posed problem (SR). For pixels near image boundary, this relation cannot be exploited to the full extent and many SR methods crop the result image. 
-%
-%This methodology, however, is not valid if required surround region is very big. After cropping, the final image is too small to be visually pleasing.
-%
-%To resolve this issue, we opt not to use this relation. Instead, we use the same-sized regions (i.e. $n\times n$ input and output). To do this, we pad zeros before convolutions to keep the sizes of all feature maps (including the output image) the same. We think that powerful nonlinearities modelled by CNNs can handle both the general case (i.e. receptive field has all valid pixels) and the corner case (i.e. the field located near the image boundary has invalid pixels beyond the border).
-%
-%It turns out that zero-padding works surprisingly well. For this reason our method differs from most other methods in the sense that pixels near image boundary are also correctly predicted. 
-%
-%Once image details are predicted, they are added back to ILR to give the final result (HR). We use this structure for all experiments in our work.  
-%
-%\subsubsection{Recursive-Convolutional Network}
-%
-%TODO
-
 \subsection{Training}
 
-\textbf{Objective}
-
-We now describe the training objective to minimize to find optimal parameters of our model. Let ${\bf x}$ denote an interpolated low-resolution image and ${\bf y}$ a high-resolution image. 
+\textbf{Objective} We now describe the training objective to minimize to find optimal parameters of our model. Let ${\bf x}$ denote an interpolated low-resolution image and ${\bf y}$ a high-resolution image. 
 Given training dataset $\{{\bf x}^{(i)},{\bf y}^{(i)}\}{}_{i=1}^{N}$, our goal is to learn a model $f$ that predicts values $\mathbf{\hat{y}}=f(\mathbf{x})$.
 
 In the least-squares regression setting, typically used in super-resolution
@@ -404,10 +374,23 @@ problems, the mean squared error $\frac{1}{2}||\mathbf{y}-f(\mathbf{x})||^{2}$
 averaged over training set is minimized. This favors high Peak Signal-to-Noise
 Ratio (PSNR), a widely-used evaluation criteria for SR. 
 
-With deep-supervision, we have $D+1$ objectives: $D$ outputs from recursions and the final output 
+With deep-supervision, we have $D+1$ objectives: supervising $D$ outputs from recursions and the final output. For intermediate outputs, we have the loss function 
+\begin{equation}
+l_1(\theta) = \sum_{d=1}^D \sum_{i=1}^N \frac{1}{2}||\mathbf{y^{(i)}}-f^{(d)}(\mathbf{x^{(i)}})||^{2},
+\end{equation}
+where $\theta$ denotes the parameter set and $f^{(d)}$ produces the output from the $d$-th recursion. For the final output, we have 
+\begin{align}
+l_2(\theta) &= \sum_{i=1}^N \frac{1}{2}||\mathbf{y^{(i)}}-f(\mathbf{x^{(i)}})||^{2} \\
+&= \sum_{i=1}^N \frac{1}{2}||\mathbf{y^{(i)}}-   \sum_{d=1}^D  w_d \cdot f^{(d)}(\mathbf{x^{(i)}})||^{2}
+\end{align}
 
-Training is carried out by optimizing the regression objective using mini-batch gradient descent based on back-propagation (LeCun et al. \cite{lecun1998gradient}). We set the momentum parameter to 0.9. The training is regularized by weight decay ($L_2$ penalty multiplied by
-0.0001).  
+Now we give the final loss function $L(\theta)$. The training is regularized by weight decay ($L_2$ penalty multiplied by $\beta$). 
+\begin{equation}
+L(\theta)  =\alpha  l_1(\theta) + (1 - \alpha) l_2(\theta) + \beta ||\theta||^2,
+\end{equation}
+where $\alpha$ denotes the importance of the companion objective on the intermediate outputs and $\beta$ denotes the multiplier of weight decay.   Setting $\alpha$ high makes the training procedure stable as early recursions easily converge. As training progresses, $\alpha$ decays to boost the performance of the final output. 
+
+Training is carried out by optimizing the regression objective using mini-batch gradient descent based on back-propagation (LeCun et al. \cite{lecun1998gradient}). We set the momentum parameter to 0.9 and weight decay to 0.0001.
 %
 %Training deep models often fail to converge. He et al. \cite{he2015delving} uses a theoretically sound initialization method which helps very deep models converge when training from scratch and they succeed in training 30 weight layers. They, however, report no benefit from training extremely deep models for their problem. In our work, adding layers are beneficial in general. For large scale factors, deep models exploiting contextual information spread in very large field are dominant. 
 %
