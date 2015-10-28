@@ -18,7 +18,8 @@
    sodipodi:docname="f1.svg"
    inkscape:export-filename="C:\Users\LEE\Dropbox\CV\WORKS\rcn_paper\paper\figs\f1.png"
    inkscape:export-xdpi="750"
-   inkscape:export-ydpi="750">
+   inkscape:export-ydpi="750"
+   shape-rendering="crispEdges">
   <defs
      id="defs4">
     <marker
@@ -1061,10 +1062,10 @@
      pagecolor="#ffffff"
      bordercolor="#666666"
      borderopacity="1.0"
-     inkscape:pageopacity="0.0"
+     inkscape:pageopacity="1"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="405.45666"
+     inkscape:cx="452.96935"
      inkscape:cy="301.05068"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -1092,7 +1093,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -1102,8 +1103,8 @@
      id="layer1"
      transform="translate(13.257506,-561.47901)">
     <path
-       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 4.459029,709.53613 c 1043.487571,0 1043.487571,0 1043.487571,0"
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00024545px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 4.459029,709.53613 c 1043.999971,0 1043.999971,0 1043.999971,0"
        id="path4138"
        inkscape:connector-curvature="0" />
     <path
