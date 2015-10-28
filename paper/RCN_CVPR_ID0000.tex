@@ -8,6 +8,12 @@
 \usepackage{amssymb}
 \usepackage{subcaption}
 \usepackage{multirow}
+\usepackage{color}
+\usepackage[space]{grffile}
+\usepackage{array}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\usepackage{chngpage}
+
 
 % Include other packages here, before hyperref.
 
@@ -644,44 +650,140 @@ Training is carried out by optimizing the regression objective using mini-batch 
 %%	\end{tabular}
 %%\end{table*}
 %
-%\section{Experimental Results}
-%In this section, we evaluate the performance of our method on several datasets. We first describe datasets used for training and testing our method. Next, parameters necessary for training are given. 
-%
-%After outlining our experimental setup, we compare our method with several state-of-the-art SISR methods. 
-%
-%\subsection{Datasets for Training and Testing}
-%\textbf{Training dataset} For training, we use images proposed in Yang et al. \cite{yang2010image}, which is used by other learning-based methods \cite{Timofte,Timofte2013,zeyde2012single}. 
-%
-%\textbf{Test dataset} For benchmark, we use four datasets. Datasets `Set5' \cite{bevilacqua2012} and `Set14' \cite{zeyde2012single} are often used for benchmark in other works \cite{Timofte,Timofte2013,Dong2014}. Dataset `Urban100', a dataset of urban images recently provided by Huang et al. \cite{Huang-CVPR-2015} is very interesting as it contains many challenging images failed by many of existing methods. Finally, dataset `B100', natural images in the Berkeley Segmentation Dataset, used in Timofte et al. \cite{Timofte} and Yang and Yang \cite{Yang2013} for benchmark, is also employed. 
-%\subsection{Training Parameters}
-%We provide parameters used to train our final model. We use a network of depth 20. Training uses batches of size 64. Momentum and weight decay parameters are set to 0.9 and $0.0001$, respectively. 
-%
-%For weight initialization, we use the method described in He et al. \cite{he2015delving}. This is a theoretically sound procedure for networks utilizing rectified linear units (ReLu).
-%
-%We train all experiments over 80 epochs (9960 iterations with batch size 64). Learning rate was initially set to 0.1 and then decreased by a factor of 10 every 20 epochs. In total, the learning rate was decreased 3 times, and the learning
-%is stopped after 80 epochs. \textcolor{red}{Training takes roughly 4 hours on GPU Titan X.} 
-%
-%%\footnotetext{\textcolor{red}{PSNRs are slightly different from the original paper as they use different evaluation framework from Timofte et al. \cite{Timofte}}}
-%
-%\subsection{Benchmark}
-%For benchmark, we follow the publicly available framework of Timofte et al. \cite{Timofte2013}. It enables the comparison of many state-of-the-art results with the same evaluation procedure.
-%
-%The framework applies bicubic interpolation to color components of an image and sophisticated models to luminance components as in  other methods \cite{chang2004super}, \cite{glasner2009super}, \cite{zeyde2012single}. This is because human is much more sensitive to visually observe details in intensity than in color. 
-%
-%
-%This framework crops pixels near image boundary. For our method, this procedure is unnecessary as our network super-resolves an entire image. For fair comparison, however, we also crop pixels to the same amount.
-%
-%
-%
-%\subsection{Comparisons with State-of-the-Art Methods}
-%We provide quantitative and qualitative comparisons. Compared methods are A+ \cite{Timofte}, SRCNN \cite{Dong2014} and Huang et al. \cite{Huang-CVPR-2015}.
-%
-%\textcolor{red}{
-%In Table \ref{table_all}, we provide a summary of quantitative evaluation on several datasets. In addition to our model trained with 91 images, we provide three more models. A model trained with 291 images (91 + 200 natural images from Berkeley Segmentation Dataset \cite{Martin2001}).
-%We also provide RCN+ and RCN-291+, where transformed images (combination of flips and 90 deg. rotations) are also used for training. Our methods outperform all previous methods in these datasets. Moreover, our methods are very fast. }
-%
-%In Figures \ref{fig:c1}, \ref{fig:c2} and \ref{fig:c3} we compare our method with top-performing methods. In Figure \ref{fig:c1}, only our method perfectly reconstructs the line in the middle. Similarly, in Figures \ref{fig:c2} and \ref{fig:c3}, lines are clean and vivid in our method whereas they are severely blurred or distorted in other methods. As Huang et al. does not publicly provide $\times 3$ results we only compare with other two methods.
-%
+\section{Experimental Results}
+In this section, we evaluate the performance of our method on several datasets. We first describe datasets used for training and testing our method. Next, parameters necessary for training are given. 
+
+After outlining our experimental setup, we compare our method with several state-of-the-art SISR methods. 
+
+\subsection{Datasets for Training and Testing}
+\textbf{Training dataset} For training, we use images proposed in Yang et al. \cite{yang2010image}, which is used by other learning-based methods \cite{Timofte,Timofte2013,zeyde2012single}. 
+
+\textbf{Test dataset} For benchmark, we use four datasets. Datasets `Set5' \cite{bevilacqua2012} and `Set14' \cite{zeyde2012single} are often used for benchmark in other works \cite{Timofte,Timofte2013,Dong2014}. Dataset `Urban100', a dataset of urban images recently provided by Huang et al. \cite{Huang-CVPR-2015} is very interesting as it contains many challenging images failed by many of existing methods. Finally, dataset `B100', natural images in the Berkeley Segmentation Dataset, used in Timofte et al. \cite{Timofte} and Yang and Yang \cite{Yang2013} for benchmark, is also employed. 
+\subsection{Training Parameters}
+We provide parameters used to train our final model. We use a network of \textcolor{red}{depth 20}. Training uses batches of size 64. \textcolor{red}{Momentum and weight decay parameters are set to 0.9 and $0.0001$, respectively. TODO: explain in Section 3?}
+
+For weight initialization, we use the method described in He et al. \cite{he2015delving}. This is a theoretically sound procedure for networks utilizing rectified linear units (ReLu).
+
+We train all experiments over \textcolor{red}{80 epochs (9960 iterations with batch size 64)}. Learning rate was initially set to 0.0005 and then decreased by a factor of 10 every 20 epochs. In total, the learning rate was decreased 3 times, and the learning
+is stopped after \textcolor{red}{?} epochs. \textcolor{red}{Training takes roughly 4 hours on GPU Titan X.} 
+
+
+
+This framework crops pixels near image boundary. For our method, this procedure is unnecessary as our network super-resolves an entire image. For fair comparison, however, we also crop pixels to the same amount.
+
+\subsection{Comparisons with State-of-the-Art Methods}
+We provide quantitative and qualitative comparisons. For benchmark, we use pubilshed code for A+\cite{Timofte}, SRCNN\cite{dong2014image}, RFL\cite{schulter2015fast} and  Huang et al.\cite{Huang-CVPR-2015}. We apply bicubic interpolation to color components of an image and sophisticated models to luminance components as in  other methods \cite{chang2004super}, \cite{glasner2009super}, \cite{zeyde2012single}. This is because human is much more sensitive to visually observe details in intensity than in color. \footnotemark{}
+
+\footnotetext{\textcolor{red}{PSNRs are slightly different from the original paper as they use different evaluation framework }}
+
+\begin{table*}
+\begin{center}
+\setlength{\tabcolsep}{2pt}
+\footnotesize
+\begin{tabular}{ | c | c | c | c | c | c | c | c | }
+\hline
+\multirow{2}{*}{Dataset} & \multirow{2}{*}{scale} & Bicubic & A+ & SRCNN & RFL & SelfEx & RCN 64\\
+ & & PSNR/SSIM/time & PSNR/SSIM/time & PSNR/SSIM/time & PSNR/SSIM/time & PSNR/SSIM/time & PSNR/SSIM/time\\
+\hline
+\hline
+\multirow{3}{*}{Set5} & $\times$3 & 30.39/0.8682/0.00 & 32.58/0.9088/0.32 & {\color{red}32.75}/{\color{blue}0.9090}/2.23 & 32.43/0.9057/0.49 & 32.58/{\color{red}0.9093}/33.44 & {\color{blue}32.64}/0.9076/0.12\\
+ & $\times$3 & 30.39/0.8682/0.00 & 32.58/0.9088/0.32 & {\color{red}32.75}/{\color{blue}0.9090}/2.23 & 32.43/0.9057/0.49 & 32.58/{\color{red}0.9093}/33.44 & {\color{blue}32.64}/0.9076/0.12\\
+ & $\times$3 & 30.39/0.8682/0.00 & 32.58/0.9088/0.32 & {\color{red}32.75}/{\color{blue}0.9090}/2.23 & 32.43/0.9057/0.49 & 32.58/{\color{red}0.9093}/33.44 & {\color{blue}32.64}/0.9076/0.12\\
+\hline
+\hline
+\multirow{3}{*}{Set14} & $\times$3 & 27.55/0.7742/0.00 & 29.13/0.8188/0.56 & {\color{red}29.28}/{\color{red}0.8209}/4.40 & 29.05/0.8164/0.85 & 29.16/{\color{blue}0.8196}/74.69 & {\color{blue}29.16}/0.8179/0.40\\
+ & $\times$3 & 27.55/0.7742/0.00 & 29.13/0.8188/0.56 & {\color{red}29.28}/{\color{red}0.8209}/4.40 & 29.05/0.8164/0.85 & 29.16/{\color{blue}0.8196}/74.69 & {\color{blue}29.16}/0.8179/0.40\\
+ & $\times$3 & 27.55/0.7742/0.00 & 29.13/0.8188/0.56 & {\color{red}29.28}/{\color{red}0.8209}/4.40 & 29.05/0.8164/0.85 & 29.16/{\color{blue}0.8196}/74.69 & {\color{blue}29.16}/0.8179/0.40\\
+\hline
+\hline
+\multirow{3}{*}{B100} & $\times$3 & 27.21/0.7385/0.00 & 28.29/0.7835/0.33 & {\color{red}28.41}/{\color{red}0.7863}/2.58 & 28.22/0.7806/0.62 & 28.29/{\color{blue}0.7840}/40.01 & {\color{blue}28.33}/0.7821/0.36\\
+ & $\times$3 & 27.21/0.7385/0.00 & 28.29/0.7835/0.33 & {\color{red}28.41}/{\color{red}0.7863}/2.58 & 28.22/0.7806/0.62 & 28.29/{\color{blue}0.7840}/40.01 & {\color{blue}28.33}/0.7821/0.36\\
+ & $\times$3 & 27.21/0.7385/0.00 & 28.29/0.7835/0.33 & {\color{red}28.41}/{\color{red}0.7863}/2.58 & 28.22/0.7806/0.62 & 28.29/{\color{blue}0.7840}/40.01 & {\color{blue}28.33}/0.7821/0.36\\
+\hline
+\hline
+\multirow{3}{*}{Urban100} & $\times$3 & 24.46/0.7349/0.00 & 26.03/0.7973/1.67 & {\color{blue}26.24}/{\color{blue}0.7989}/19.35 & 25.86/0.7900/2.48 & {\color{red}26.44}/{\color{red}0.8088}/462.93 & 26.06/0.7965/0.66\\
+ & $\times$3 & 24.46/0.7349/0.00 & 26.03/0.7973/1.67 & {\color{blue}26.24}/{\color{blue}0.7989}/19.35 & 25.86/0.7900/2.48 & {\color{red}26.44}/{\color{red}0.8088}/462.93 & 26.06/0.7965/0.66\\
+ & $\times$3 & 24.46/0.7349/0.00 & 26.03/0.7973/1.67 & {\color{blue}26.24}/{\color{blue}0.7989}/19.35 & 25.86/0.7900/2.48 & {\color{red}26.44}/{\color{red}0.8088}/462.93 & 26.06/0.7965/0.66\\
+\hline
+\end{tabular}
+\caption{Average PSNR/SSIM for scale factor $\times$3 for Set5, Set14, B100 and Urban100. {\color{red}Red color} indicates the best performance and {\color{blue}blue color} indicates the second best one.} \label{table_all}
+\end{center}
+\end{table*}
+
+
+\textcolor{red}{
+In Table \ref{table_all}, we provide a summary of quantitative evaluation on several datasets. In addition to our model trained with 91 images, we provide another model trained with 291 images (91 + 200 natural images from Berkeley Segmentation Dataset \cite{Martin2001}).
+%We also provide RCN+ and RCN-291+, where transformed images (combination of flips and 90 deg. rotations) are also used for training.
+Our methods outperform all previous methods in these datasets. Moreover, our methods are very fast. }
+
+\textcolor{red}{[TODO : describing qualitative results]}
+In Figures \ref{fig:c1}, \ref{fig:c2} and \ref{fig:c3} we compare our method with top-performing methods. In Figure \ref{fig:c1}, only our method perfectly reconstructs the line in the middle. Similarly, in Figures \ref{fig:c2} and \ref{fig:c3}, lines are clean and vivid in our method whereas they are severely blurred or distorted in other methods.
+\begin{figure*}
+\begin{adjustwidth}{0cm}{-0.5cm}
+\begin{center}
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{ c C{3.5cm}  C{3.5cm}  C{3.5cm}  }
+\multirow{4}{*}{\graphicspath{{figs/fig1/}}\includegraphics[width=0.27\textwidth]{img053_GTbox.png}}
+& \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.2\textwidth]{img053_for_fig1_HR.png}}\vspace{0.3ex}
+& \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.2\textwidth]{img053_for_fig1_A+.png}}\vspace{0.3ex}
+& \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.2\textwidth]{img053_for_fig1_SRCNN.png}}\vspace{0.3ex}
+\\
+& HR (PSNR, SSIM)& A+ (22.42, 0.7482)& SRCNN (22.81, 0.7574)\\
+& \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.2\textwidth]{img053_for_fig1_RFL.png}}\vspace{0.3ex}
+& \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.2\textwidth]{img053_for_fig1_SelfEx.png}}\vspace{0.3ex}
+& \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.2\textwidth]{img053_for_fig1_RCN 64.png}}\vspace{0.3ex}
+\\
+& RFL (22.35, 0.7425)& SelfEx (22.80, 0.7615)& RCN 64 (22.61, 0.7522)\\
+\end{tabular}
+\caption{Super-resolution results of "img053"(Urban100) with scale factor $\times$ 3. Our result is visually pleasing.} \label{fig:c1}
+\end{center}
+\end{adjustwidth}
+\end{figure*}
+
+\begin{figure*}
+\begin{adjustwidth}{0.5cm}{0.5cm}
+\begin{center}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{  c  c  c  c  c  c  }
+{\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img058_for_fig2_HR.png}}
+& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img058_for_fig2_A+.png}}
+& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img058_for_fig2_SRCNN.png}}
+& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img058_for_fig2_RFL.png}}
+& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img058_for_fig2_SelfEx.png}}
+& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img058_for_fig2_RCN 64.png}}
+\\
+HR& A+& SRCNN& RFL& SelfEx& RCN 64\\
+(PSNR, SSIM)& (26.08, 0.8682)& (26.39, 0.8709)& (25.95, 0.8629)& (27.12, 0.8919)& (26.19, 0.8697)\\
+\end{tabular}
+\caption{Super-resolution results of "img058"(Urban100) with scale factor $\times$ 3. Our result is visually pleasing.} \label{fig:c2}
+\end{center}
+\end{adjustwidth}
+\end{figure*}
+
+\begin{figure*}
+\begin{adjustwidth}{0.5cm}{0.5cm}
+\begin{center}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{  c  c  c  c  c  c  }
+{\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_HR.png}}
+& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_A+.png}}
+& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_SRCNN.png}}
+& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_RFL.png}}
+& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_SelfEx.png}}
+& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_RCN 64.png}}
+\\
+HR& A+& SRCNN& RFL& SelfEx& RCN 64\\
+(PSNR, SSIM)& (32.49, 0.9425)& (32.59, 0.9409)& (32.35, 0.9389)& (33.21, 0.9453)& (32.93, 0.9425)\\
+\end{tabular}
+\caption{Super-resolution results of "img082"(Urban100) with scale factor $\times$ 3. Our result is visually pleasing.} \label{fig:c3}
+\end{center}
+\end{adjustwidth}
+\end{figure*}
+
+
 %
 %
 \section{Conclusion}
