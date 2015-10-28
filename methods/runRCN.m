@@ -1,10 +1,4 @@
-function impred = runRCN(model, imlow, gpu)
-load(model);
-net = dagnn.DagNN.loadobj(net) ;
-if gpu
-    net.move('gpu');
-    imlow = gpuArray(imlow);
-end
+function impred = runRCN(net, imlow, gpu)
 inputs = {'input', imlow};
 %net.conserveMemory = false;
 net.mode = 'test';

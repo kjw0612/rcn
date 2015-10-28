@@ -7,6 +7,12 @@ else
     gpu = 1;
 end
 
+load(model);
+net = dagnn.DagNN.loadobj(net) ;
+if gpu
+    net.move('gpu');
+end
+
 dataDir = fullfile('data', datasetName);
 f_lst = dir(fullfile(dataDir, '*.*'));
 timetable = zeros(numel(f_lst),1);
@@ -25,7 +31,8 @@ for f_iter = 1:numel(f_lst)
     tic;
     imlow = imresize(imlow, size(imhigh), 'bicubic');
     imlow = max(16.0/255, min(235.0/255, imlow));
-    impred = runRCN(modelPath, imlow, gpu);
+    if gpu, imlow = gpuArray(imlow); end;
+    impred = runRCN(net, imlow, gpu);
     timetable(f_iter,1) = toc;
     imwrite(impred, fullfile(outRoute, [imgName, '.png']));
 end

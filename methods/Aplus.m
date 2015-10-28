@@ -11,7 +11,6 @@ else
     lambda = 5;
 end
 
-tic;
 if isempty(model)
     mat_file = ['methods/Aplus/conf_Zeyde_' num2str(dictSize) '_finalx' num2str(SF) '.mat'] ;
     if exist(mat_file,'file')
@@ -39,8 +38,6 @@ else
         error([fname ' : A+ model is needed']);
     end
 end
-basetime = toc;
-
 
 conf.PPs = Aplus_PPs;
 conf.ProjM = inv(conf.dict_lores'*conf.dict_lores+lambda*eye(size(conf.dict_lores,2)))*conf.dict_lores';
@@ -70,7 +67,7 @@ for f_iter = 1:numel(f_lst)
     %imlow = imresize(imlow, size(imhigh), 'bicubic');
     %imlow = max(16.0/255, min(235.0/255, imlow));
     impred = runAplus(conf, {imlow});     
-    timetable(f_iter,1) = toc + basetime;
+    timetable(f_iter,1) = toc;
     imwrite(impred{1}, fullfile(outRoute, [imgName, '.png']));
 end
 

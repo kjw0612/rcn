@@ -1,9 +1,9 @@
 function SRCNN(datasetName, SF, model, outRoute)
 
 if isempty(model)
-    model = ['methods/SRCNN/9-5-5(ImageNet)/x',num2str(SF),'.mat'];
+    modelPath = ['methods/SRCNN/9-5-5(ImageNet)/x',num2str(SF),'.mat'];
 else
-    model = ['methods/SRCNN/9-5-5(ImageNet)/x',num2str(model),'.mat'];
+    modelPath = ['methods/SRCNN/',model];
 end
 
 dataDir = fullfile('data', datasetName);
@@ -24,7 +24,7 @@ for f_iter = 1:numel(f_lst)
     tic;
     imlow = imresize(imlow, size(imhigh), 'bicubic');
     imlow = max(16.0/255, min(235.0/255, imlow));
-    impred = runSRCNN(model, imlow);
+    impred = runSRCNN(modelPath, imlow);
     timetable(f_iter,1) = toc;
     imwrite(impred, fullfile(outRoute, [imgName, '.png']));
 end

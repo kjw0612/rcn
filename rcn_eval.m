@@ -29,7 +29,8 @@ end
                                                              %��-- model path option is not implemented yet.
 do.dataset = {'Set5','Set14','B100','Urban100'};
 do.sf = [2 3 4];
-do.exp = {{'Bicubic', 'Bicubic'},{'SRCNN', 'SRCNN'},{'A+', 'A+'},{'RFL', 'RFL'}};
+%do.exp = {{'Bicubic', 'Bicubic'},{'SRCNN', 'SRCNN'},{'A+', 'A+'},{'RFL', 'RFL'}};
+do.exp = {{'A+','A+'}};
 for i = 1:numel(do.dataset)
     for j = 1:numel(do.sf)
         for k = 1:numel(do.exp)
@@ -51,7 +52,7 @@ evalSetting(end+1) = evalSet('RCN 64', 'RCN', 'Urban100', 3, 'best64.mat');
 outDir = 'data/result';
 if ~exist('data/result', 'dir'), mkdir('data/result'); end
 
-fileID = fopen('rcn_eval_test.tex','w');
+fileID = fopen('paper/rcn_eval_test.tex','w');
 %--------------------------------------------------------------------------
 % 1. Make SR images & save them for every eval settings
 %--------------------------------------------------------------------------
@@ -65,7 +66,7 @@ end
 t1opts.dataset = 'Set5';
 t1opts.problem = 'SR';
 t1opts.sf = [3];
-t1opts.exp = {'Bicubic', 'A+','SRCNN', 'RFL', 'SelfEx', 'RCN 256'};
+t1opts.exp = {'Bicubic','A+','SRCNN','RFL','SelfEx','RCN 64'};
 t1opts.printTime = true;
 t1opts.tableName = 'table_1';
 t1opts.fid = fileID;%fopen([t1opts.tableName,'.tex'],'w');
@@ -73,10 +74,10 @@ t1opts.fid = fileID;%fopen([t1opts.tableName,'.tex'],'w');
 %--------------------------------------------------------------------------
 % table type 2.
 %--------------------------------------------------------------------------
-t2opts.dataset = {'Set5','Set14','B100'};
+t2opts.dataset = {'Set5','Set14','B100','Urban100'};
 t2opts.problem = 'SR';
 t2opts.sf = [3];
-t2opts.exp = {'Bicubic', 'A+','SRCNN', 'RFL', 'SelfEx', 'RCN 64'};
+t2opts.exp = {'Bicubic','A+','SRCNN','RFL','SelfEx','RCN 64'};
 t2opts.printTime = true;
 t2opts.tableName = 'table_2';
 t2opts.fid = fileID;
@@ -97,7 +98,7 @@ f1opts.lineWidth = 2;
 f1opts.lineColor = [255 0 0];
 f1opts.problem = 'SR';
 f1opts.sf = 3;
-f1opts.exp = {'HR','Bicubic','Bicubic','A+','SRCNN','RCN 256'};
+f1opts.exp = {'HR','A+','SRCNN','RFL','SelfEx','RCN 64'};
 f1opts.figName = 'fig1';
 f1opts.figDir = 'paper/figs';
 f1opts.fid = fileID;
@@ -114,12 +115,12 @@ f1opts.fid = fileID;
 f2opts.dataset = 'Set5';
 f2opts.imgNum = 1;
 f2opts.boxSize = [60 60];
-f2opts.boxPose = [];%[200 150];
+f2opts.boxPose = [];%if empty, it finds the best position.
 f2opts.lineWidth = 2;
 f2opts.lineColor = [255 0 0];
 f2opts.problem = 'SR';
 f2opts.sf = 3;
-f2opts.exp = {'HR','Bicubic','A+','SRCNN','RCN 256'};
+f2opts.exp = {'HR','A+','SRCNN','RFL','SelfEx','RCN 64'};
 f2opts.figName = 'fig2';
 f2opts.figDir = 'paper/figs';
 f2opts.fid = fileID;
@@ -147,7 +148,7 @@ fid = opts.fid;
 printTime = opts.printTime;
 
 %fid = fopen([tableName,'.tex'],'w');
-fprintf(fid,'\\begin{table}\n\\begin{center}\n');
+fprintf(fid,'\\begin{table*}\n\\begin{center}\n');
 fprintf(fid,'\\setlength{\\tabcolsep}{2pt}\n');
 if numel(exp) >= 5
     fprintf(fid,'\\scriptsize\n');
@@ -312,7 +313,7 @@ end
 fprintf(fid,'\\end{tabular}\n');
 fprintf(fid,['\\caption{PSNR for scale factor $\\times$',num2str(SF),' for ',datasetName, ... 
     '. {\\color{red}Red color} indicates the best performance and {\\color{blue}blue color} indicates the second best one.}\n']);
-fprintf(fid,'\\end{center}\n\\end{table}\n\n');  
+fprintf(fid,'\\end{center}\n\\end{table*}\n\n');  
 
 function makeTable2(opts)
 
@@ -324,7 +325,7 @@ tableName = opts.tableName;
 fid = opts.fid;
 printTime = opts.printTime;
 
-fprintf(fid,'\\begin{table}\n\\begin{center}\n');
+fprintf(fid,'\\begin{table*}\n\\begin{center}\n');
 fprintf(fid,'\\setlength{\\tabcolsep}{2pt}\n');
 if numel(exp) >= 5
     fprintf(fid,'\\scriptsize\n');
@@ -445,7 +446,7 @@ for i=1:numel(dataset)
     end
 end
 fprintf(fid,'. {\\color{red}Red color} indicates the best performance and {\\color{blue}blue color} indicates the second best one.}\n');
-fprintf(fid,'\\end{center}\n\\end{table}\n\n');  
+fprintf(fid,'\\end{center}\n\\end{table*}\n\n');  
 
 function makeFigure1(opts)
 
@@ -506,24 +507,25 @@ for indExp = 1:numel(exp)
         imSRcolor = colorize(imGT, imSR, SF);
     else
         imSRcolor = modcrop(imGT, SF);
-    end        
-        subimSRcolor = imSRcolor(boxPose(1):boxPose(1)+boxSize(1)-1,boxPose(2):boxPose(2)+boxSize(2)-1,:);
+    end
+    imSRcolor = shave(imSRcolor,[SF SF]);
+    subimSRcolor = imSRcolor(boxPose(1):boxPose(1)+boxSize(1)-1,boxPose(2):boxPose(2)+boxSize(2)-1,:);
     imwrite(subimSRcolor,fullfile(figDir,figName,[imgName,'_for_',figName,'_',expName,'.png']));
 end
 imGTbox = step(ShapeInserter, imGT, int32(cat(2,fliplr(boxPose),fliplr(boxSize))));
 imwrite(imGTbox,fullfile(figDir,figName,[imgName,'_GTbox','.png']));
 
-fprintf(fid,'\\begin{figure}\n');
-fprintf(fid,'\\begin{adjustwidth}{-1cm}{-1cm}\n');
+fprintf(fid,'\\begin{figure*}\n');
+fprintf(fid,'\\begin{adjustwidth}{0cm}{-0.1cm}\n');
 fprintf(fid,'\\begin{center}\n');
 fprintf(fid,'\\small\n');
-fprintf(fid,'\\setlength{\\tabcolsep}{-1pt}\n');
+fprintf(fid,'\\setlength{\\tabcolsep}{5pt}\n');
 fprintf(fid,'\\begin{tabular}{ c');
 for indColumn = 1:numColumn
     fprintf(fid,' C{3.7cm} ');
 end
 fprintf(fid,' }\n');
-fprintf(fid, ['\\multirow{4}{*}{\\graphicspath{{',figDir,'/',figName,'/}}\\includegraphics[width=0.30\\textwidth]{', ...
+fprintf(fid, ['\\multirow{4}{*}{\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=0.30\\textwidth]{', ...
              [imgName,'_GTbox','.png'],'}}\n']);
 indExp = 0;
 indExp2 = 0;
@@ -531,7 +533,7 @@ for indRow = 1:4
     for indColumn = 1:numColumn
         if mod(indRow,2) == 1
             indExp = indExp + 1;
-            fprintf(fid, ['& \\raisebox{-',num2str(boxSize(1)/7+1,'%.1f'),'ex} {\\graphicspath{{',figDir,'/',figName,'/}}\\includegraphics[width=0.22\\textwidth]{', ...
+            fprintf(fid, ['& \\raisebox{-',num2str(boxSize(1)/4,'%.1f'),'ex} {\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=0.22\\textwidth]{', ...
                          [imgName,'_for_',figName,'_',exp{indExp},'.png'],'}}\\vspace{0.3ex}\n']);            
         else
             indExp2 = indExp2 + 1;
@@ -547,7 +549,7 @@ end
 fprintf(fid,'\\end{tabular}\n');
 fprintf(fid,'\\end{center}\n');
 fprintf(fid,'\\end{adjustwidth}\n');
-fprintf(fid,'\\end{figure}\n');
+fprintf(fid,'\\end{figure*}\n');
 
 function makeFigure2(opts)
 
@@ -621,8 +623,8 @@ for indExp = 1:numel(exp)
     imwrite(catimSRcolor,fullfile(figDir,figName,[imgName,'_for_',figName,'_',expName,'.png']));
 end
 
-fprintf(fid,'\\begin{figure}\n');
-fprintf(fid,'\\begin{adjustwidth}{-1cm}{-1cm}\n');
+fprintf(fid,'\\begin{figure*}\n');
+fprintf(fid,'\\begin{adjustwidth}{0.5cm}{0.5cm}\n');
 fprintf(fid,'\\begin{center}\n');
 fprintf(fid,'\\small\n');
 fprintf(fid,'\\setlength{\\tabcolsep}{3pt}\n');
@@ -633,10 +635,10 @@ end
 fprintf(fid,' }\n');
 for indColumn = 1:numColumn
     if indColumn == 1
-        fprintf(fid, ['{\\graphicspath{{',figDir,'/',figName,'/}}\\includegraphics[width=',num2str(1.02/numel(exp),'%.2f'),'\\textwidth]{', ...
+        fprintf(fid, ['{\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=',num2str(0.93/numel(exp),'%.2f'),'\\textwidth]{', ...
                      [imgName,'_for_',figName,'_',exp{indColumn},'.png'],'}}\\vspace{0.3ex}\n']);            
     else
-        fprintf(fid, ['& {\\graphicspath{{',figDir,'/',figName,'/}}\\includegraphics[width=',num2str(1.02/numel(exp),'%.2f'),'\\textwidth]{', ...
+        fprintf(fid, ['& {\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=',num2str(0.93/numel(exp),'%.2f'),'\\textwidth]{', ...
                      [imgName,'_for_',figName,'_',exp{indColumn},'.png'],'}}\\vspace{0.3ex}\n']);            
     end
    
@@ -661,12 +663,17 @@ fprintf(fid, '\\\\\n');
 fprintf(fid,'\\end{tabular}\n');
 fprintf(fid,'\\end{center}\n');
 fprintf(fid,'\\end{adjustwidth}\n');
-fprintf(fid,'\\end{figure}\n');
+fprintf(fid,'\\end{figure*}\n');
 
 function texPrefix(fid)
 
-fprintf(fid,'\\documentclass{article}\n');
-fprintf(fid,'\\usepackage[english]{babel}\n');
+fprintf(fid,'\\documentclass[10pt,twocolumn,letterpaper]{article}\n\n');
+fprintf(fid,'\\usepackage{cvpr}\n');
+fprintf(fid,'\\usepackage{times}\n');
+fprintf(fid,'\\usepackage{epsfig}\n');
+fprintf(fid,'\\usepackage{amsmath}\n');
+fprintf(fid,'\\usepackage{amssymb}\n');
+fprintf(fid,'\\usepackage{subcaption}\n');
 fprintf(fid,'\\usepackage{multirow}\n');
 fprintf(fid,'\\usepackage{color}\n');
 fprintf(fid,'\\usepackage{graphicx}\n');
@@ -674,10 +681,26 @@ fprintf(fid,'\\usepackage[space]{grffile}\n');
 fprintf(fid,'\\usepackage{array}\n');
 fprintf(fid,'\\newcolumntype{C}[1]{>{\\centering\\arraybackslash}p{#1}}\n');
 fprintf(fid,'\\usepackage{chngpage}\n\n');
+
+fprintf(fid,'%% Include other packages here, before hyperref.\n');
+fprintf(fid,'%% If you comment hyperref and then uncomment it, you should delete\n');
+fprintf(fid,'%% egpaper.aux before re-running latex.  (Or just hit ''q'' on the first latex\n');
+fprintf(fid,'%% run, let it finish, and you should be clear).\n\n');
+fprintf(fid,'\\usepackage[pagebackref=true,breaklinks=true,letterpaper=true,colorlinks,bookmarks=false]{hyperref}\n');
+fprintf(fid,'\\usepackage[font=small,labelfont=bf,tableposition=top]{caption}\n\n');
+
+fprintf(fid,'%%\\cvprfinalcopy %% *** Uncomment this line for the final submission\n');
+fprintf(fid,'\\def\\cvprPaperID{****} %% *** Enter the CVPR Paper ID here\n');
+fprintf(fid,'\\def\\httilde{\\mbox{\\tt\\raisebox{-.5ex}{\\symbol{126}}}}\n');
+fprintf(fid,'%% Pages are numbered in submission mode, and unnumbered in camera-ready\n');
+fprintf(fid,'\\ifcvprfinal\\pagestyle{empty}\\fi\n\n');
+
 fprintf(fid,'\\begin{document}\n\n');
 
 function texSuffix(fid)
-
+fprintf(fid,'{\\small\n');
+fprintf(fid,'  \\bibliographystyle{ieee}\n');
+fprintf(fid,'  \\bibliography{RCN}\n}\n');
 fprintf(fid,'\\end{document}');
 
 
