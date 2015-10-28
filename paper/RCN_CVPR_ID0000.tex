@@ -660,19 +660,18 @@ After outlining our experimental setup, we compare our method with several state
 
 \textbf{Test dataset} For benchmark, we use four datasets. Datasets `Set5' \cite{bevilacqua2012} and `Set14' \cite{zeyde2012single} are often used for benchmark in other works \cite{Timofte,Timofte2013,Dong2014}. Dataset `Urban100', a dataset of urban images recently provided by Huang et al. \cite{Huang-CVPR-2015} is very interesting as it contains many challenging images failed by many of existing methods. Finally, dataset `B100', natural images in the Berkeley Segmentation Dataset, used in Timofte et al. \cite{Timofte} and Yang and Yang \cite{Yang2013} for benchmark, is also employed. 
 \subsection{Training Parameters}
-We provide parameters used to train our final model. We use a network of \textcolor{red}{depth 20}. Training uses batches of size 64. \textcolor{red}{Momentum and weight decay parameters are set to 0.9 and $0.0001$, respectively. TODO: explain in Section 3?}
+We provide parameters used to train our final model. We use a network of \textcolor{red}{depth 20}. Training uses batches of size 64. \textcolor{red}{Momentum and weight decay parameters are set to 0.9 and $0.0001$, respectively. [TODO: explain in last part of Section 3?]}
 
-For weight initialization, we use the method described in He et al. \cite{he2015delving}. This is a theoretically sound procedure for networks utilizing rectified linear units (ReLu).
+For weight initialization, we use the method described in He et al. \cite{he2015delving} for the embedding net and reconstruction net. This is a theoretically sound procedure for networks utilizing rectified linear units (ReLu). And for inference net, we initialize filters $W$ as identity. [TODO : Is it right?]
 
 We train all experiments over \textcolor{red}{80 epochs (9960 iterations with batch size 64)}. Learning rate was initially set to 0.0005 and then decreased by a factor of 10 every 20 epochs. In total, the learning rate was decreased 3 times, and the learning
 is stopped after \textcolor{red}{?} epochs. \textcolor{red}{Training takes roughly 4 hours on GPU Titan X.} 
 
 
-
-This framework crops pixels near image boundary. For our method, this procedure is unnecessary as our network super-resolves an entire image. For fair comparison, however, we also crop pixels to the same amount.
-
 \subsection{Comparisons with State-of-the-Art Methods}
-We provide quantitative and qualitative comparisons. For benchmark, we use pubilshed code for A+\cite{Timofte}, SRCNN\cite{dong2014image}, RFL\cite{schulter2015fast} and  Huang et al.\cite{Huang-CVPR-2015}. We apply bicubic interpolation to color components of an image and sophisticated models to luminance components as in  other methods \cite{chang2004super}, \cite{glasner2009super}, \cite{zeyde2012single}. This is because human is much more sensitive to visually observe details in intensity than in color. \footnotemark{}
+We provide quantitative and qualitative comparisons. For benchmark, we use pubilshed code for A+ \cite{Timofte}, SRCNN \cite{dong2014image}, RFL \cite{schulter2015fast} and  Huang et al. \cite{Huang-CVPR-2015}. We apply bicubic interpolation to color components of an image and sophisticated models to luminance components as in  other methods \cite{chang2004super}, \cite{glasner2009super}, \cite{zeyde2012single}. This is because human is much more sensitive to visually observe details in intensity than in color. 
+
+As  some other compared methods like A+ \cite{Timofte} and  RFL \cite{schulter2015fast} don't predict image boundary, they need to crop pixels near image boundary. For our method, this procedure is unnecessary as our network super-resolves an entire image. For fair comparison, however, we also crop pixels to the same amount. \footnotemark{}
 
 \footnotetext{\textcolor{red}{PSNRs are slightly different from the original paper as they use different evaluation framework }}
 
