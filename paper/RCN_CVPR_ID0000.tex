@@ -80,7 +80,7 @@
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-We propose an image super-resolution method (SR) using a deeply-recursive convolutional network (DRCN). DRCN super-resolves images with a single recursive layer. Our network utilizes very large context without dimensionality reduction such as pooling. As our method reuse the same parameters all times, our network is much smaller than the CNN-based approach with the same receptive field. As optimizing DRCN with standard gradient descent does not easily converge, we propose an SR-specific optimization method using residual-learning and (TODO change term) deep-supervision. We sucessfully learned a SR method with deep recursions (50 times). Our proposed method outperform state-of-the-art methods by a large margin (TODO:number).
+We propose an image super-resolution method (SR) using a deeply-recursive convolutional network (DRCN). DRCN super-resolves images with a single recursive layer. Our network utilizes very large context without dimensionality reduction such as pooling. As our method reuse the same parameters all times, our network is much smaller than the CNN-based approach with the same receptive field. As optimizing DRCN with standard gradient descent does not easily converge, we propose an SR-specific optimization method using residual-learning and (TODO change term) deep-supervision. We successfully learned a SR method with deep recursions (50 times). Our proposed method outperform state-of-the-art methods by a large margin (TODO:number).
 %
 %\pagebreak
 % image super-resolution 
@@ -116,7 +116,7 @@ Increasing depth basically introduces more parameters. Two problems can arise. F
 
 To resolve the issues, we propose a SR method using a deeply-recursive convolutional network (DRCN). DRCN repeatedly applies the same convolutional layer as many times as desired. The number of parameters are kept small while widening receptive fields. Our receptive field reaches 101 by 101 and this is very large compared to patch sizes used in previous methods. 
 
-Overfitting is largely alleviated in DRCN. As the same parameters are used again and again, the network is effectively regularized. Moreoever, our compact model can be economically stored and distributed online.   
+Overfitting is largely alleviated in DRCN. As the same parameters are used again and again, the network is effectively regularized. Moreover, our compact model can be economically stored and distributed online.   
 
 While DRCN has good properties, learning long-range dependencies between pixels is very difficult. Networks do not easily converge. This is due to exploding/vanishing gradients. 
 
@@ -244,7 +244,7 @@ In this section, our proposed method is explained. We first propose a model usin
 
 \begin{figure*}[t]
 	\includegraphics[width=\textwidth]{figs/f1}
-	\caption {Overview of our method. (a): Our model architecture. A given input, low resolution image, passes through embedding network, inference network, and reconstruction network to be super-resovled. (b): Detailed description of embedding network. (c): Detailed description of inference network. (d): Detailed description of reconstruction network.}
+	\caption {Overview of our method. (a): Our model architecture. A given input, low resolution image, passes through embedding network, inference network, and reconstruction network to be super-resolved. (b): Detailed description of embedding network. (c): Detailed description of inference network. (d): Detailed description of reconstruction network.}
 	\label{fig:overview}
 \end{figure*}
 
@@ -258,7 +258,7 @@ It consists of three sub-networks: embedding, inference and reconstruction netwo
 We now look into each sub-networks. \textbf{Embedding net} takes the input image (grayscale or RGB) and represent it as a set of feature maps. Intermediate representation used to pass information to inference net largely depends on how inference net internally represent its feature maps in their hidden layers. Learning this representation is done end-to-end altogether with learning other sub-networks.
 
 
-\textbf{Inference net} is the main component that solves the task, super-resolution. It needs to serve two purposes: analysis and synthesis. Analysis requires large region to understand the given image and synthesis needs a highly non-linear regression function. Both are handled entirely with a single convolutional layer deeply-recursive. Each recursion widens receptive field and increases non-linearities at the same time. As analysis and synthesis are interwined in the recursive layer, division of network capacity between analysis and synthesis is naturally handled while learning the model. 
+\textbf{Inference net} is the main component that solves the task, super-resolution. It needs to serve two purposes: analysis and synthesis. Analysis requires large region to understand the given image and synthesis needs a highly non-linear regression function. Both are handled entirely with a single convolutional layer deeply-recursive. Each recursion widens receptive field and increases non-linearities at the same time. As analysis and synthesis are intertwined in the recursive layer, division of network capacity between analysis and synthesis is naturally handled while learning the model. 
 
 \begin{figure}
 	\includegraphics[width=0.5\textwidth]{figs/f2}
@@ -299,9 +299,9 @@ Reconstruction net $f_3$ takes the input hidden state $H_D$ and outputs the targ
 	f_3(H) &= \hat{{\bf y}}.
 \end{align}
 
-\textbf{Model Properties} Now we have all components for our model $f({\bf y}) = f_3(f_2 (f_1({\bf x})))$. The recursive model has pros and cons. One good thing is that the model requires no new parameters for additional recursions. That means widening receptive field to utilize larger image context can be done with the network capcity fixed. 
+\textbf{Model Properties} Now we have all components for our model $f({\bf y}) = f_3(f_2 (f_1({\bf x})))$. The recursive model has pros and cons. One good thing is that the model requires no new parameters for additional recursions. That means widening receptive field to utilize larger image context can be done with the network capacity fixed. 
 
-While the recursive model is simple and powerful, we find training a deeply-recursive network very difficult. The maximum number of recursions succesful in previous methods is three \cite{Liang_2015_CVPR}.  Among many reasons, two severe problems are \textit{vanishing} and \textit{exploding gradients} \cite{bengio1994learning, pascanu2013difficulty}.   TODO Fixed-vector memory problems???
+While the recursive model is simple and powerful, we find training a deeply-recursive network very difficult. The maximum number of recursions successful in previous methods is three \cite{Liang_2015_CVPR}.  Among many reasons, two severe problems are \textit{vanishing} and \textit{exploding gradients} \cite{bengio1994learning, pascanu2013difficulty}.   TODO Fixed-vector memory problems???
 
 The \textit{exploding gradients} problem refers to the large increase in the norm
 of the gradient during training. Such events are due to
@@ -314,26 +314,26 @@ when long term components go exponentially
 fast to norm 0, making it impossible for the model to
 learn correlation between distant pixels.
 
-In addition to gradient problems, there exists an issue with finding the optimal number of recursions. In theory, very large recursions are always good since the network sees more image region and we hope it learn to keep the important information and discard the unncessary.  But in pratice, a fixed-sized vector carrying all context information until the end of all recursions might lack capacity if recursions are too deep. 
+In addition to gradient problems, there exists an issue with finding the optimal number of recursions. In theory, very large recursions are always good since the network sees more image region and we hope it learn to keep the important information and discard the unnecessary.  But in practice, a fixed-sized vector carrying all context information until the end of all recursions might lack capacity if recursions are too deep. 
 
 To resolve the gradient and capacity issues, we propose an extended model.
 
 \subsection{Extended Model} 
 To overcome the weaknesses of the simple model, we propose two extensions: deep-supervision and residual-learning. Deep-supervision for convolutional network is first proposed in Lee et al  \cite{lee2014deeply}. Their method simultaneously minimizes classification error while improving the directness and transparency of the hidden layer learning process.
 
-\textbf{Deep-Supervision} We deeply-supervise all recursions in order to alleviate the effect of vanishing/exploding gradients. There are two significant differences from our deep-supervision to the original deep-supervision. In \cite{lee2014deeply}, they associate one classifier for each hidden layer. For each additional layer, new classifier has to be introduced and new parameters thereby. If this approach is used, our modified network looks as in Figure \ref{fig: TODO}. We need $D$ different reconstruction networks. This is against our original purpose of using recursive networks: not introducting new parameters while stacking more layers. 
+\textbf{Deep-Supervision} We deeply-supervise all recursions in order to alleviate the effect of vanishing/exploding gradients. There are two significant differences from our deep-supervision to the original deep-supervision. In \cite{lee2014deeply}, they associate one classifier for each hidden layer. For each additional layer, new classifier has to be introduced and new parameters thereby. If this approach is used, our modified network looks as in Figure \ref{fig: TODO}. We need $D$ different reconstruction networks. This is against our original purpose of using recursive networks: not introducing new parameters while stacking more layers. 
 
-As we have assummed that the same representation can be used again and again during covolutions in inference net, much better regularization is to use the same recon. net for all recursions. Our recon. net now outputs $D$ predictions and all predictions are simultaneously supervised during training. 
+As we have assumed that the same representation can be used again and again during convolutions in inference net, much better regularization is to use the same recon. net for all recursions. Our recon. net now outputs $D$ predictions and all predictions are simultaneously supervised during training. 
 
-The second difference of our method to the original deep-supervision is that we use all $D$ intermediate predictions to compute the final output. All predictions are averaged during testing. The optimal weights are automtically learned during training. In contrast,  \cite{lee2014deeply} discard all intermediate classifiers during testing. 
+The second difference of our method to the original deep-supervision is that we use all $D$ intermediate predictions to compute the final output. All predictions are averaged during testing. The optimal weights are automatically learned during training. In contrast,  \cite{lee2014deeply} discard all intermediate classifiers during testing. 
 
-Our deep-supervision naturally eases the difficulty of training recursive networks. Backpropagation goes through small number of layers if supervising signal goes directly from loss layer to early recursion. Summing all gradients backpropagated from different prediction losses give smoothing effect. The effect of vanishing/exploding graidents along one backpropagation path is alleviated.
+Our deep-supervision naturally eases the difficulty of training recursive networks. Backpropagation goes through small number of layers if supervising signal goes directly from loss layer to early recursion. Summing all gradients backpropagated from different prediction losses give smoothing effect. The effect of vanishing/exploding gradients along one backpropagation path is alleviated.
 
-Moreoever, the importance of picking the optimal number of recursions is reduced as our deep-supervision enables utilizing predictions from all intermediate layers. If recursions are too many for the given task, we expect the weight for the intermediate prediction high. By looking at weights of predictions, we can figure out the effectiveness of additional recursions. 
+Moreover, the importance of picking the optimal number of recursions is reduced as our deep-supervision enables utilizing predictions from all intermediate layers. If recursions are too many for the given task, we expect the weight for the intermediate prediction high. By looking at weights of predictions, we can figure out the effectiveness of additional recursions. 
 
 \textbf{Residual-Learning} Now we describe our second extension: residual-learning. If input and output signals are in the same vector space and highly correlated, predicting only the difference is very useful for two reasons. First, network capacity to store the input signal is saved. Second, the exact copy of input signal can be easily lost during many recursions. Instead of learning direct mapping from input to output, we predict the residual only and then input signal is added back for output.
 
-Our residual learning is simple yet very effective. In super-resolution, LR and HR images are vastly similar. In most regions, differences are zero and only small number of locations have non-zero values. Modelling image details is often used in super-resolution methods \cite{Timofte2013, Timofte, bevilacqua2012,bevilacqua2013super}, but we demonstrate that this domain-specific knowledge can significantly improve an general end-to-end learning method like deep-learning, especially if the net is very recursive.
+Our residual learning is simple yet very effective. In super-resolution, LR and HR images are vastly similar. In most regions, differences are zero and only small number of locations have non-zero values. Modeling image details is often used in super-resolution methods \cite{Timofte2013, Timofte, bevilacqua2012,bevilacqua2013super}, but we demonstrate that this domain-specific knowledge can significantly improve an general end-to-end learning method like deep-learning, especially if the net is very recursive.
 As illustrated in Figure \ref{fig: TODO}, the main network now learns very sparse predictions and the required capacity to solve the task gets significantly reduced. 
 
 \textbf{Mathematical Formulation} We revisit the mathematical formulation of our model with two extensions. In the simple model, the prediction is $\hat{{\bf y}} = f_3(H_D)$, where $f_3$ and $H_D$ denote the recon net and the final hidden state of the inference net, respectively. With residual-learning,  
@@ -353,14 +353,14 @@ where $w_d$ denotes the weights of predictions reconstructed from each intermedi
 \begin{figure}
 \begin{center}
 	\includegraphics[width=0.4\textwidth]{figs/f4}
-	\caption{An illlustration of using residual learning. By learning residual parts only, we can get two advantages. First, the problem space is shrinked to be learned more easily. Second, An useful information of input can be conserved intact to the end.}
+	\caption{An illustration of using residual learning. By learning residual parts only, we can get two advantages. First, the problem space is shrinked to be learned more easily. Second, An useful information of input can be conserved intact to the end.}
 \end{center}
 \end{figure}
 
 \begin{figure*}
 \begin{center}
 	\includegraphics[width=\textwidth]{figs/f3}
-	\caption{Deep supervision illlustration. (a): Original form of deep supervision. To supervise every feature maps at $d = 1, ..., D$, we need to have corresponding reconstruction networks for every feature maps at $d = 1, ..., D$, which result in a large number of parameters. (b): Our deep supervision. Unlike in (a), the reconstruction network is shared among feature maps in directed acyclic graph manner. It is possible because the space of feature maps remain same in our method. Furthermore, not onlywe use deep supervision to regularize intermediate feature maps, but we use all the outputs from the intermediate recursion to get the final output by weighted sum. So we can utilize useful information though it emerges from the early stage of recursion.}
+	\caption{Deep supervision illustration. (a): Original form of deep supervision. To supervise every feature maps at $d = 1, ..., D$, we need to have corresponding reconstruction networks for every feature maps at $d = 1, ..., D$, which result in a large number of parameters. (b): Our deep supervision. Unlike in (a), the reconstruction network is shared among feature maps in directed acyclic graph manner. It is possible because the space of feature maps remain same in our method. Furthermore, not only we use deep supervision to regularize intermediate feature maps, but we use all the outputs from the intermediate recursion to get the final output by weighted sum. So we can utilize useful information though it emerges from the early stage of recursion.}
 \end{center}
 \end{figure*}
 
@@ -599,7 +599,7 @@ is stopped after ? epochs. Training takes roughly 4 hours on GPU Titan X.
 
 
 \subsection{Comparisons with State-of-the-Art Methods}
-We provide quantitative and qualitative comparisons. For benchmark, we use pubilshed code for A+ \cite{Timofte}, SRCNN \cite{dong2014image}, RFL \cite{schulter2015fast} and  Huang et al. \cite{Huang-CVPR-2015}. We apply bicubic interpolation to color components of an image and sophisticated models to luminance components as in  other methods \cite{chang2004super}, \cite{glasner2009super}, \cite{zeyde2012single}. This is because human is much more sensitive to visually observe details in intensity than in color. 
+We provide quantitative and qualitative comparisons. For benchmark, we use published code for A+ \cite{Timofte}, SRCNN \cite{dong2014image}, RFL \cite{schulter2015fast} and  Huang et al. \cite{Huang-CVPR-2015}. We apply bicubic interpolation to color components of an image and sophisticated models to luminance components as in  other methods \cite{chang2004super}, \cite{glasner2009super}, \cite{zeyde2012single}. This is because human is much more sensitive to visually observe details in intensity than in color. 
 
 As  some other compared methods like A+ \cite{Timofte} and  RFL \cite{schulter2015fast} don't predict image boundary, they need to crop pixels near image boundary. For our method, this procedure is unnecessary as our network super-resolves an entire image. For fair comparison, however, we also crop pixels to the same amount. \footnotemark{}
 
