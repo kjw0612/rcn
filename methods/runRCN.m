@@ -7,5 +7,3 @@ pInd = getVarIndex(net,'prediction');
 impred = net.vars(pInd).value;
 impred = imlow+impred;
 if gpu, impred = gather(impred); end
-
-

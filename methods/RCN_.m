@@ -7,11 +7,13 @@ else
     gpu = 1;
 end
 
-load(model);
+load(modelPath);
 net = dagnn.DagNN.loadobj(net) ;
 if gpu
     net.move('gpu');
 end
+
+managableMax = 630*630;
 
 dataDir = fullfile('data', datasetName);
 f_lst = dir(fullfile(dataDir, '*.*'));
@@ -28,11 +30,15 @@ for f_iter = 1:numel(f_lst)
     imhigh = modcrop(im, SF);
     imhigh = single(imhigh)/255;
     imlow = imresize(imhigh, 1/SF, 'bicubic');
-    tic;
     imlow = imresize(imlow, size(imhigh), 'bicubic');
     imlow = max(16.0/255, min(235.0/255, imlow));
-    if gpu, imlow = gpuArray(imlow); end;
-    impred = runRCN(net, imlow, gpu);
+    if size(imlow,1)*size(imlow,2) > managableMax
+        impred = runPatchRCN(net, imlow, gpu, 15);
+    else
+        if gpu, imlow = gpuArray(imlow); end;
+        impred = runRCN(net, imlow, gpu);
+    end
+    tic;
     timetable(f_iter,1) = toc;
     imwrite(impred, fullfile(outRoute, [imgName, '.png']));
 end
