@@ -342,11 +342,11 @@ As illustrated in Figure \ref{fig: TODO}, the main network now learns very spars
 \end{equation}
 Each intermediate prediction under deep-supervision is 
 \begin{equation}
-\hat{{\bf y}}^{(d)} = {\bf x} + f_3(g^{(d)}(f_1({\bf x}))).
+\hat{{\bf y}}_{d} = {\bf x} + f_3(g^{(d)}(f_1({\bf x}))).
 \end{equation}
 Now, the final output is the weighted average of all intermediate predictions:
 \begin{equation}
-\hat{{\bf y}}^{(d)} = \sum_{d=1}^{D} w_d \cdot \hat{{\bf y}}^{(d)}.
+\hat{{\bf y}}^{(final)} = \sum_{d=1}^{D} w_d \cdot \hat{{\bf y}}_d.
 \end{equation}
 where $w_d$ denotes the weights of predictions reconstructed from each intermediate hidden state during recursion.
 
@@ -376,13 +376,12 @@ Ratio (PSNR), a widely-used evaluation criteria for SR.
 
 With deep-supervision, we have $D+1$ objectives: supervising $D$ outputs from recursions and the final output. For intermediate outputs, we have the loss function 
 \begin{equation}
-l_1(\theta) = \sum_{d=1}^D \sum_{i=1}^N \frac{1}{2}||\mathbf{y^{(i)}}-f^{(d)}(\mathbf{x^{(i)}})||^{2},
+l_1(\theta) = \sum_{d=1}^D \sum_{i=1}^N \frac{1}{2}||{\bf y}^{(i)} -  \hat{\bf y}_d^{(i)} ||^{2},
 \end{equation}
-where $\theta$ denotes the parameter set and $f^{(d)}$ produces the output from the $d$-th recursion. For the final output, we have 
-\begin{align}
-l_2(\theta) &= \sum_{i=1}^N \frac{1}{2}||\mathbf{y^{(i)}}-f(\mathbf{x^{(i)}})||^{2} \\
-&= \sum_{i=1}^N \frac{1}{2}||\mathbf{y^{(i)}}-   \sum_{d=1}^D  w_d \cdot f^{(d)}(\mathbf{x^{(i)}})||^{2}
-\end{align}
+where $\theta$ denotes the parameter set and $\hat{\bf y}_d^{(i)}$ is the output from the $d$-th recursion. For the final output, we have 
+\begin{equation}
+l_2(\theta) = \sum_{i=1}^N \frac{1}{2}||{\bf y}^{(i)} -  \sum_{d=1}^D  w_d \cdot \hat{\bf y}_d^{(i)} ||^{2}
+\end{equation}
 
 Now we give the final loss function $L(\theta)$. The training is regularized by weight decay ($L_2$ penalty multiplied by $\beta$). 
 \begin{equation}
