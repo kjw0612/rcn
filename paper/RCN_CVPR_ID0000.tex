@@ -80,7 +80,7 @@
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-We propose an image super-resolution method (SR) using a deeply-recursive convolutional network (DRCN). DRCN super-resolves images with a single recursive layer. Our network utilizes very large context without dimensionality reduction such as pooling. As our method reuse the same parameters all times, our network is much smaller than the CNN-based approach with the same receptive field. As optimizing DRCN with standard gradient descent does not easily converge, we propose an SR-specific optimization method using residual-learning and (TODO change term) deep-supervision. We successfully learned a SR method with deep recursions (50 times). Our proposed method outperform state-of-the-art methods by a large margin (TODO:number).
+We propose an image super-resolution method (SR) using a deeply-recursive convolutional network (RCN). RCN super-resolves images with a single recursive layer. Our network utilizes very large context without dimensionality reduction such as pooling. As our method reuse the same parameters, our network is much smaller than the CNN-based approach with the same receptive field. Optimizing deep RCN, however, does not easily converge with gradient descent. To resolve the issue, we propose two extensions: recursive-supervision and residual-learning. We successfully learned a SR method with 25 recursions. Our proposed method outperform state-of-the-art methods by a large margin.
 %
 %\pagebreak
 % image super-resolution 
