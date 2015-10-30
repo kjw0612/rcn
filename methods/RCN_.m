@@ -32,13 +32,13 @@ for f_iter = 1:numel(f_lst)
     imlow = imresize(imhigh, 1/SF, 'bicubic');
     imlow = imresize(imlow, size(imhigh), 'bicubic');
     imlow = max(16.0/255, min(235.0/255, imlow));
+    tic;
     if size(imlow,1)*size(imlow,2) > managableMax
         impred = runPatchRCN(net, imlow, gpu, 15);
     else
         if gpu, imlow = gpuArray(imlow); end;
         impred = runRCN(net, imlow, gpu);
     end
-    tic;
     timetable(f_iter,1) = toc;
     imwrite(impred, fullfile(outRoute, [imgName, '.png']));
 end

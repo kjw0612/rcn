@@ -17,19 +17,21 @@ imGT = modcrop(imGT, SF);
 % =========================================================================
 % Remove border pixels as some methods (e.g., A+) do not predict border pixels
 % =========================================================================
-imSR          = shave(imSR, [SF, SF]);
+imSR        = shave(imSR, [SF, SF]);
 imGT        = shave(imGT, [SF, SF]); 
 
 % Convert to double (with dynamic range 255)
-imSR          = double(imSR); 
+imSR        = double(imSR); 
 imGT        = double(imGT); 
 
 % =========================================================================
 % Compute Peak signal-to-noise ratio (PSNR)
 % =========================================================================
-mse = mean(mean((imSR - imGT).^2, 1), 2);
-psnr = 10*log10(255*255/mse);
-
+% mse = mean(mean((imSR - imGT).^2, 1), 2);
+imdff = imSR - imGT;
+imdff = imdff(:);
+rmse = sqrt(mean(imdff.^2));
+psnr = 20*log10(255/rmse);
 % =========================================================================
 % Compute Structural similarity index (SSIM index)
 % =========================================================================

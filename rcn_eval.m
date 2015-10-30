@@ -45,15 +45,15 @@ end
 % evalSetting(end+1) = evalSet('RCN 256', 'RCN', 'Set5', 3, 'best256.mat');
 % evalSetting(end+1) = evalSet('RCN 256', 'RCN', 'Set14', 3, 'best256.mat');
 % evalSetting(end+1) = evalSet('RCN mtest', 'RCN', 'Urban100', 3, 'best64.mat');
-evalSetting(end+1) = evalSet('RCN 91', 'RCN', 'Set5', 3, 'best_D15_F256_x3.mat');
-evalSetting(end+1) = evalSet('RCN 91', 'RCN', 'Set14', 3, 'best_D15_F256_x3.mat');
-evalSetting(end+1) = evalSet('RCN 91', 'RCN', 'B100', 3, 'best_D15_F256_x3.mat');
-evalSetting(end+1) = evalSet('RCN 91', 'RCN', 'Urban100', 3, 'best_D15_F256_x3.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'Set5', 3, 'best_D15_F256_x3.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'Set14', 3, 'best_D15_F256_x3.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'B100', 3, 'best_D15_F256_x3.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'Urban100', 3, 'best_D15_F256_x3.mat');
 
-evalSetting(end+1) = evalSet('RCN 91', 'RCN', 'Set5', 4, 'best_D15_F256_x4.mat');
-evalSetting(end+1) = evalSet('RCN 91', 'RCN', 'Set14', 4, 'best_D15_F256_x4.mat');
-evalSetting(end+1) = evalSet('RCN 91', 'RCN', 'B100', 4, 'best_D15_F256_x4.mat');
-evalSetting(end+1) = evalSet('RCN 91', 'RCN', 'Urban100', 4, 'best_D15_F256_x4.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'Set5', 4, 'best_D15_F256_x4.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'Set14', 4, 'best_D15_F256_x4.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'B100', 4, 'best_D15_F256_x4.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'Urban100', 4, 'best_D15_F256_x4.mat');
 
 % Setup outDir
 outDir = 'data/result';
@@ -73,7 +73,7 @@ end
 t1opts.dataset = 'Set5';
 t1opts.problem = 'SR';
 t1opts.sf = [3 3 4];
-t1opts.exp = {'Bicubic','A+','SRCNN','RFL','SelfEx','RCN 91'};
+t1opts.exp = {'Bicubic','A+','SRCNN','RFL','SelfEx','RCN'};
 t1opts.printTime = true;
 t1opts.tableName = 'table_1';
 t1opts.fid = fileID;%fopen([t1opts.tableName,'.tex'],'w');
@@ -84,8 +84,8 @@ t1opts.fid = fileID;%fopen([t1opts.tableName,'.tex'],'w');
 t2opts.dataset = {'Set5','Set14','B100','Urban100'};
 t2opts.problem = 'SR';
 t2opts.sf = [3 3 4];
-t2opts.exp = {'Bicubic','A+','SRCNN','RFL','SelfEx','RCN 91'};
-t2opts.printTime = true;
+t2opts.exp = {'Bicubic','A+','SRCNN','RFL','SelfEx','RCN'};
+t2opts.printTime = false;
 t2opts.tableName = 'table_2';
 t2opts.fid = fileID;
 
@@ -105,7 +105,7 @@ f1opts.lineWidth = 8;
 f1opts.lineColor = [255 0 0];
 f1opts.problem = 'SR';
 f1opts.sf = 3;
-f1opts.exp = {'HR','A+','SRCNN','RFL','SelfEx','RCN 91'};
+f1opts.exp = {'HR','A+','SRCNN','RFL','SelfEx','RCN'};
 f1opts.figName = 'fig1';
 f1opts.figDir = 'paper/figs';
 f1opts.fid = fileID;
@@ -127,7 +127,7 @@ f2opts.lineWidth = 8;
 f2opts.lineColor = [255 0 0];
 f2opts.problem = 'SR';
 f2opts.sf = 3;
-f2opts.exp = {'HR','A+','SRCNN','RFL','SelfEx','RCN 91'};
+f2opts.exp = {'HR','A+','SRCNN','RFL','SelfEx','RCN'};
 f2opts.figName = 'fig2';
 f2opts.figDir = 'paper/figs';
 f2opts.fid = fileID;
@@ -147,25 +147,26 @@ fclose(fileID);
 
 %--------------------------------------------------------------------------
 % for supp. 
-% cp = 0;
-% 
-% fileID2 = fopen('paper/supplebook.tex','w');
-% texPrefix(fileID2);
-% f2opts.fid = fileID2;
-% f2opts.figName = 'figSup';
-% dataset = {'Set5','Set14','B100','Urban100'};
-% for d = 1:numel(dataset)
-%     f2opts.dataset = dataset{d};
-%     for i = 1:numel(dir(fullfile('data',f2opts.dataset)))-2
-%         f2opts.imgNum = i;
-%         makeFigure2(f2opts);
-%         cp = cp + 1;
-%         if cp == 5, clearpage(fileID2); cp = 0; end;
-%     end
-% end
-% 
-% texSuffix(fileID2);
-% fclose(fileID2);
+
+cp = 0;
+
+fileID2 = fopen('paper/supplebook.tex','w');
+texPrefix(fileID2);
+f2opts.fid = fileID2;
+f2opts.figName = 'figSup';
+dataset = {'Set5','Set14','B100','Urban100'};
+for d = 1:numel(dataset)
+    f2opts.dataset = dataset{d};
+    for i = 1:numel(dir(fullfile('data',f2opts.dataset)))-2
+        f2opts.imgNum = i;
+        makeFigure2(f2opts);
+        cp = cp + 1;
+        if cp == 5, clearpage(fileID2); cp = 0; end;
+    end
+end
+
+texSuffix(fileID2);
+fclose(fileID2);
 
 %--------------------------------------------------------------------------
 
@@ -467,7 +468,17 @@ for indDataset = 1:numel(dataset)
     fprintf(fid,'\\hline\n');
 end
 fprintf(fid,'\\end{tabular}\n');
-fprintf(fid,['\\caption{Average PSNR/SSIM for scale factor $\\times$',num2str(SF),' for ']);
+fprintf(fid,'\\caption{Average PSNR/SSIM for scale factor');
+for i=1:numel(sf)
+    if i < numel(sf)-1
+        fprintf(fid,['$\\times$',num2str(SF),', ']);
+    elseif i == numel(sf)
+        fprintf(fid,['$\\times$',num2str(SF),' and ']);
+    else
+        fprintf(fid,['$\\times$',num2str(SF)]); 
+    end
+end
+fprintf(fid,' for ');
 for i=1:numel(dataset)    
     if i < numel(dataset)-1
         fprintf(fid,[dataset{i}, ', ']);
@@ -584,7 +595,7 @@ for indRow = 1:4
     fprintf(fid, '\\\\\n');
 end
 fprintf(fid,'\\end{tabular}\n');
-fprintf(fid,['\\caption{Super-resolution results of "',setValidName(imgName,'_'),'"(',datasetName,') with scale factor $\\times$ ',num2str(SF),'. Our result is visually pleasing.}\n']);
+fprintf(fid,['\\caption{Super-resolution results of ``',setValidName(imgName,'_'),'"(',datasetName,') with scale factor $\\times$',num2str(SF),'. Our result is visually pleasing.}\n']);
 fprintf(fid,'\\end{center}\n');
 fprintf(fid,'\\end{adjustwidth}\n');
 fprintf(fid,'\\end{figure*}\n\n');
@@ -709,7 +720,7 @@ for indColumn = 1:numColumn
 end
 fprintf(fid, '\\\\\n');
 fprintf(fid,'\\end{tabular}\n');
-fprintf(fid,['\\caption{Super-resolution results of "',setValidName(imgName,'_'),'"(',datasetName,') with scale factor $\\times$ ',num2str(SF),'. Our result is visually pleasing.}\n']);
+fprintf(fid,['\\caption{Super-resolution results of ``',setValidName(imgName,'_'),'"(',datasetName,') with scale factor $\\times$',num2str(SF),'. Our result is visually pleasing.}\n']);
 fprintf(fid,'\\end{center}\n');
 fprintf(fid,'\\end{adjustwidth}\n');
 fprintf(fid,'\\end{figure*}\n\n');
