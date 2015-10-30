@@ -611,31 +611,31 @@ As  some other compared methods like A+ \cite{Timofte} and  RFL \cite{schulter20
 \footnotesize
 \begin{tabular}{ | c | c | c | c | c | c | c | c | }
 \hline
-\multirow{2}{*}{Dataset} & \multirow{2}{*}{scale} & Bicubic & A+ & SRCNN & RFL & SelfEx & RCN 91\\
- & & PSNR/SSIM/time & PSNR/SSIM/time & PSNR/SSIM/time & PSNR/SSIM/time & PSNR/SSIM/time & PSNR/SSIM/time\\
+\multirow{2}{*}{Dataset} & \multirow{2}{*}{scale} & Bicubic & A+ & SRCNN & RFL & SelfEx & RCN\\
+ & & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM\\
 \hline
 \hline
-\multirow{3}{*}{Set5} & $\times$3 & 30.39/0.8682/0.00 & 32.58/0.9088/0.32 & {\color{blue}32.75}/0.9090/2.23 & 32.43/0.9057/0.49 & 32.58/{\color{blue}0.9093}/33.44 & {\color{red}33.58}/{\color{red}0.9207}/1.49\\
- & $\times$3 & 30.39/0.8682/0.00 & 32.58/0.9088/0.32 & {\color{blue}32.75}/0.9090/2.23 & 32.43/0.9057/0.49 & 32.58/{\color{blue}0.9093}/33.44 & {\color{red}33.58}/{\color{red}0.9207}/1.49\\
- & $\times$4 & 28.42/0.8104/0.00 & 30.28/0.8603/0.24 & {\color{blue}30.48}/{\color{blue}0.8628}/2.19 & 30.14/0.8548/0.38 & 30.31/0.8619/29.18 & {\color{red}31.07}/{\color{red}0.8768}/1.64\\
+\multirow{3}{*}{Set5} & $\times$3 & 30.39/0.8682 & 32.58/0.9088 & {\color{blue}32.75}/0.9090 & 32.43/0.9057 & 32.58/{\color{blue}0.9093} & {\color{red}33.62}/{\color{red}0.9211}\\
+ & $\times$3 & 30.39/0.8682 & 32.58/0.9088 & {\color{blue}32.75}/0.9090 & 32.43/0.9057 & 32.58/{\color{blue}0.9093} & {\color{red}33.62}/{\color{red}0.9211}\\
+ & $\times$4 & 28.42/0.8104 & 30.28/0.8603 & {\color{blue}30.48}/{\color{blue}0.8628} & 30.14/0.8548 & 30.31/0.8619 & {\color{red}31.07}/{\color{red}0.8768}\\
 \hline
 \hline
-\multirow{3}{*}{Set14} & $\times$3 & 27.55/0.7742/0.00 & 29.13/0.8188/0.56 & {\color{blue}29.28}/{\color{blue}0.8209}/4.40 & 29.05/0.8164/0.85 & 29.16/0.8196/74.69 & {\color{red}29.67}/{\color{red}0.8298}/3.25\\
- & $\times$3 & 27.55/0.7742/0.00 & 29.13/0.8188/0.56 & {\color{blue}29.28}/{\color{blue}0.8209}/4.40 & 29.05/0.8164/0.85 & 29.16/0.8196/74.69 & {\color{red}29.67}/{\color{red}0.8298}/3.25\\
- & $\times$4 & 26.00/0.7027/0.00 & 27.32/0.7491/0.38 & {\color{blue}27.49}/0.7503/4.39 & 27.24/0.7451/0.65 & 27.40/{\color{blue}0.7518}/65.08 & {\color{red}27.78}/{\color{red}0.7609}/3.33\\
+\multirow{3}{*}{Set14} & $\times$3 & 27.55/0.7742 & 29.13/0.8188 & {\color{blue}29.28}/{\color{blue}0.8209} & 29.05/0.8164 & 29.16/0.8196 & {\color{red}29.69}/{\color{red}0.8300}\\
+ & $\times$3 & 27.55/0.7742 & 29.13/0.8188 & {\color{blue}29.28}/{\color{blue}0.8209} & 29.05/0.8164 & 29.16/0.8196 & {\color{red}29.69}/{\color{red}0.8300}\\
+ & $\times$4 & 26.00/0.7027 & 27.32/0.7491 & {\color{blue}27.49}/0.7503 & 27.24/0.7451 & 27.40/{\color{blue}0.7518} & {\color{red}27.78}/{\color{red}0.7609}\\
 \hline
 \hline
-\multirow{3}{*}{B100} & $\times$3 & 27.21/0.7385/0.00 & 28.29/0.7835/0.33 & {\color{blue}28.41}/{\color{blue}0.7863}/2.58 & 28.22/0.7806/0.62 & 28.29/0.7840/40.01 & {\color{red}28.71}/{\color{red}0.7951}/2.21\\
- & $\times$3 & 27.21/0.7385/0.00 & 28.29/0.7835/0.33 & {\color{blue}28.41}/{\color{blue}0.7863}/2.58 & 28.22/0.7806/0.62 & 28.29/0.7840/40.01 & {\color{red}28.71}/{\color{red}0.7951}/2.21\\
- & $\times$4 & 25.96/0.6675/0.00 & 26.82/0.7087/0.26 & {\color{blue}26.90}/0.7101/2.51 & 26.75/0.7054/0.48 & 26.84/{\color{blue}0.7106}/35.87 & {\color{red}27.09}/{\color{red}0.7179}/2.20\\
+\multirow{3}{*}{B100} & $\times$3 & 27.21/0.7385 & 28.29/0.7835 & {\color{blue}28.41}/{\color{blue}0.7863} & 28.22/0.7806 & 28.29/0.7840 & {\color{red}28.74}/{\color{red}0.7955}\\
+ & $\times$3 & 27.21/0.7385 & 28.29/0.7835 & {\color{blue}28.41}/{\color{blue}0.7863} & 28.22/0.7806 & 28.29/0.7840 & {\color{red}28.74}/{\color{red}0.7955}\\
+ & $\times$4 & 25.96/0.6675 & 26.82/0.7087 & {\color{blue}26.90}/0.7101 & 26.75/0.7054 & 26.84/{\color{blue}0.7106} & {\color{red}27.09}/{\color{red}0.7179}\\
 \hline
 \hline
-\multirow{3}{*}{Urban100} & $\times$3 & 24.46/0.7349/0.00 & 26.03/0.7973/1.67 & 26.24/0.7989/19.35 & 25.86/0.7900/2.48 & {\color{blue}26.44}/{\color{blue}0.8088}/462.93 & {\color{red}26.96}/{\color{red}0.8227}/11.87\\
- & $\times$3 & 24.46/0.7349/0.00 & 26.03/0.7973/1.67 & 26.24/0.7989/19.35 & 25.86/0.7900/2.48 & {\color{blue}26.44}/{\color{blue}0.8088}/462.93 & {\color{red}26.96}/{\color{red}0.8227}/11.87\\
- & $\times$4 & 23.14/0.6577/0.00 & 24.32/0.7183/1.21 & 24.52/0.7221/18.46 & 24.19/0.7096/1.88 & {\color{blue}24.79}/{\color{red}0.7374}/392.72 & {\color{red}24.81}/{\color{blue}0.7364}/11.93\\
+\multirow{3}{*}{Urban100} & $\times$3 & 24.46/0.7349 & 26.03/0.7973 & 26.24/0.7989 & 25.86/0.7900 & {\color{blue}26.44}/{\color{blue}0.8088} & {\color{red}27.01}/{\color{red}0.8245}\\
+ & $\times$3 & 24.46/0.7349 & 26.03/0.7973 & 26.24/0.7989 & 25.86/0.7900 & {\color{blue}26.44}/{\color{blue}0.8088} & {\color{red}27.01}/{\color{red}0.8245}\\
+ & $\times$4 & 23.14/0.6577 & 24.32/0.7183 & 24.52/0.7221 & 24.19/0.7096 & {\color{blue}24.79}/{\color{red}0.7374} & {\color{red}24.81}/{\color{blue}0.7364}\\
 \hline
 \end{tabular}
-\caption{Average PSNR/SSIM for scale factor $\times$4 for Set5, Set14, B100 and Urban100. {\color{red}Red color} indicates the best performance and {\color{blue}blue color} indicates the second best one.}
+\caption{Average PSNR/SSIM for scale factor$\times$4, $\times$4$\times$4 and  for Set5, Set14, B100 and Urban100. {\color{red}Red color} indicates the best performance and {\color{blue}blue color} indicates the second best one.}
 \end{center}
 \end{table*}
 
@@ -664,7 +664,7 @@ In Figures \ref{fig:c1}, \ref{fig:c2} and \ref{fig:c3} we compare our method wit
 \\
 & RFL (22.35, 0.7425)& SelfEx (22.80, 0.7615)& RCN 91 (23.34, 0.7838)\\
 \end{tabular}
-\caption{Super-resolution results of ``img053"(Urban100) with scale factor $\times$ 3. Our result is visually pleasing.}
+\caption{Super-resolution results of ``img053"(Urban100) with scale factor $\times$3. Our result is visually pleasing.}
 \end{center}
 \end{adjustwidth}
 \end{figure*}
@@ -684,7 +684,7 @@ In Figures \ref{fig:c1}, \ref{fig:c2} and \ref{fig:c3} we compare our method wit
 HR& A+& SRCNN& RFL& SelfEx& RCN 91\\
 (PSNR, SSIM)& (26.08, 0.8682)& (26.39, 0.8709)& (25.95, 0.8629)& (27.12, 0.8919)& (27.30, 0.8923)\\
 \end{tabular}
-\caption{Super-resolution results of ``img058"(Urban100) with scale factor $\times$ 3. Our result is visually pleasing.}
+\caption{Super-resolution results of ``img058"(Urban100) with scale factor $\times$3. Our result is visually pleasing.}
 \end{center}
 \end{adjustwidth}
 \end{figure*}
@@ -705,7 +705,7 @@ HR& A+& SRCNN& RFL& SelfEx& RCN 91\\
 HR& A+& SRCNN& RFL& SelfEx& RCN 91\\
 (PSNR, SSIM)& (32.49, 0.9425)& (32.59, 0.9409)& (32.35, 0.9389)& (33.21, 0.9453)& (34.36, 0.9548)\\
 \end{tabular}
-\caption{Super-resolution results of ``img082"(Urban100) with scale factor $\times$ 3. Our result is visually pleasing.}
+\caption{Super-resolution results of ``img082"(Urban100) with scale factor $\times$3. Our result is visually pleasing.}
 \end{center}
 \end{adjustwidth}
 \end{figure*}
