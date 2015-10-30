@@ -74,7 +74,7 @@ t1opts.dataset = 'Set5';
 t1opts.problem = 'SR';
 t1opts.sf = [3 3 4];
 t1opts.exp = {'Bicubic','A+','SRCNN','RFL','SelfEx','RCN'};
-t1opts.printTime = true;
+t1opts.printTime = false;
 t1opts.tableName = 'table_1';
 t1opts.fid = fileID;%fopen([t1opts.tableName,'.tex'],'w');
 
@@ -471,11 +471,11 @@ fprintf(fid,'\\end{tabular}\n');
 fprintf(fid,'\\caption{Average PSNR/SSIM for scale factor');
 for i=1:numel(sf)
     if i < numel(sf)-1
-        fprintf(fid,['$\\times$',num2str(SF),', ']);
-    elseif i == numel(sf)
-        fprintf(fid,['$\\times$',num2str(SF),' and ']);
+        fprintf(fid,['$\\times$',num2str(sf(i)),', ']);
+    elseif i == numel(sf)-1
+        fprintf(fid,['$\\times$',num2str(sf(i)),' and ']);
     else
-        fprintf(fid,['$\\times$',num2str(SF)]); 
+        fprintf(fid,['$\\times$',num2str(sf(i))]); 
     end
 end
 fprintf(fid,' for ');
