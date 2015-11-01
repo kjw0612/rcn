@@ -145,6 +145,9 @@ texPrefix(fileID);
 makeTable2(t2opts);
 f1opts.dataset = 'Urban100'; f1opts.imgNum = 96;
 makeFigure1(f1opts);
+f1opts.exp = {'HR','SRCNN','SelfEx','RCN'};
+makeFigure1(f1opts);
+f2opts.boxSize = [60 60];
 f2opts.dataset = 'Urban100'; f2opts.imgNum = 82;
 makeFigure2(f2opts);
 f2opts.dataset = 'Urban100'; f2opts.imgNum = 99;
@@ -155,25 +158,27 @@ texSuffix(fileID);
 fclose(fileID);
 
 %--------------------------------------------------------------------------
-% for supp. 
+%%%% for supp. 
 
 % cp = 0;
 % 
 % fileID2 = fopen('paper/supplebook.tex','w');
 % texPrefix(fileID2);
-% f2opts.fid = fileID2;
-% f2opts.figName = 'figSup';
+% fSuppopts.fid = fileID2;
+% fSuppopts.figName = 'figSup';
 % dataset = {'Set5','Set14','B100','Urban100'};
 % for d = 1:numel(dataset)
-%     f2opts.dataset = dataset{d};
-%     if strcmp(f2opts.dataset, 'Urban100')
-%         f2opts.lineWidth = 8;
+%     fSuppopts.dataset = dataset{d};
+%     if strcmp(fSuppopts.dataset, 'Urban100')
+%         fSuppopts.lineWidth = 8;
+%         fSuppopts.boxSize = [90 90];
 %     else
-%         f2opts.lineWidth = 4;
+%         fSuppopts.lineWidth = 4;
+%         fSuppopts.boxSize = [40 40];
 %     end
-%     for i = 1:numel(dir(fullfile('data',f2opts.dataset)))-2
-%         f2opts.imgNum = i;
-%         makeFigure2(f2opts);
+%     for i = 1:numel(dir(fullfile('data',fSuppopts.dataset)))-2
+%         fSuppopts.imgNum = i;
+%         makeFigureSupp(fSuppopts);
 %         cp = cp + 1;
 %         if cp == 6, clearpage(fileID2); cp = 0; end;
 %     end
@@ -541,7 +546,7 @@ else
 end
 imGT = imread(fullfile(gtDir, [imgName,imgExt]));
 imGT = modcrop(imGT, SF);
-
+imSRCNN = []; imAplus = []; imRCN = [];
 if isempty(boxPose)
     for indExp = 1:numel(exp)
         expName = exp{indExp};
@@ -553,6 +558,9 @@ if isempty(boxPose)
         elseif indExp == numel(exp)
             imRCN = imread(fullfile(outDir, outRoute, [imgName,'.png']));
         end
+    end
+    if isempty(imAplus)
+        imAplus = imSRCNN;
     end
     imGTs = shave(imGT,[SF SF]);
     imSRCNN = shave(imSRCNN,[SF SF]);
@@ -592,7 +600,13 @@ fprintf(fid,'\\small\n');
 fprintf(fid,'\\setlength{\\tabcolsep}{5pt}\n');
 fprintf(fid,'\\begin{tabular}{ c');
 for indColumn = 1:numColumn
-    fprintf(fid,' C{3.5cm} ');
+    if numColumn == 2
+        fprintf(fid,' C{4.5cm} ');
+        widthVal = 0.26;
+    else
+        fprintf(fid,' C{3.5cm} ');
+        widthVal = 0.20;
+    end
 end
 fprintf(fid,' }\n');
 fprintf(fid, ['\\multirow{4}{*}{\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=0.27\\textwidth]{', ...
@@ -603,12 +617,12 @@ for indRow = 1:4
     for indColumn = 1:numColumn
         if mod(indRow,2) == 1
             indExp = indExp + 1;
-            fprintf(fid, ['& \\raisebox{-',num2str(boxSize(1)/4-2,'%.1f'),'ex} {\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=0.2\\textwidth]{', ...
+            fprintf(fid, ['& \\raisebox{-',num2str(boxSize(1)/4-2,'%.1f'),'ex} {\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=,',num2str(widthVal,'%.2f'),'\\textwidth]{', ...
                          [imgName,'_for_',figName,'_',exp{indExp},'.png'],'}}\\vspace{0.3ex}\n']);            
         else
             indExp2 = indExp2 + 1;
             if strcmp(exp{indExp2},'HR')
-                fprintf(fid, ['& Original(PSNR, SSIM)']);
+                fprintf(fid, ['& Original (PSNR, SSIM)']);
             else
                 fprintf(fid, ['& ',exp{indExp2},' (',num2str(PSNR_array(indExp2),'%.2f'),', ',num2str(SSIM_array(indExp2),'%.4f'),')']);
             end
@@ -661,7 +675,7 @@ if isempty(boxSize)
     boxSize(1) = ceil(size(imGT,1)/10);
     boxSize(2) = ceil(size(imGT,2)/10);
 end
-
+imSRCNN = []; imAplus = []; imRCN = [];
 if isempty(boxPose)
     for indExp = 1:numel(exp)
         expName = exp{indExp};
@@ -673,6 +687,9 @@ if isempty(boxPose)
         elseif indExp == numel(exp)
             imRCN = imread(fullfile(outDir, outRoute, [imgName,'.png']));
         end
+    end
+    if isempty(imAplus)
+        imAplus = imSRCNN;
     end
     imGTs = shave(imGT,[SF SF]);
     imSRCNN = shave(imSRCNN,[SF SF]);
@@ -839,7 +856,7 @@ end
 fprintf(fid,'\\begin{figure*}\n');
 fprintf(fid,'\\begin{adjustwidth}{0.5cm}{0.5cm}\n');
 fprintf(fid,'\\begin{center}\n');
-fprintf(fid,'\\small\n');
+%fprintf(fid,'\\small\n');
 fprintf(fid,'\\setlength{\\tabcolsep}{3pt}\n');
 fprintf(fid,'\\begin{tabular}{ ');
 for indColumn = 1:numColumn
@@ -853,18 +870,20 @@ for indRow = 1:2
     for indColumn = 1:numColumn
         indExp = indExp + 1;
         if indColumn == 1
-            fprintf(fid, ['{\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=',num2str(0.93/numel(exp),'%.2f'),'\\textwidth]{', ...
+            fprintf(fid, ['{\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=',num2str(0.93/numColumn,'%.2f'),'\\textwidth]{', ...
                          [imgName,'_for_',figName,'_',exp{indExp},'.png'],'}}\n']);
         else
-            fprintf(fid, ['& {\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=',num2str(0.93/numel(exp),'%.2f'),'\\textwidth]{', ...
+            fprintf(fid, ['& {\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=',num2str(0.93/numColumn,'%.2f'),'\\textwidth]{', ...
                          [imgName,'_for_',figName,'_',exp{indExp},'.png'],'}}\n']);            
         end
     end    
     fprintf(fid, '\\\\\n');
     for indColumn = 1:numColumn
         indExp2 = indExp2 + 1;
-        if strcmp(exp{indColumn},'HR')
+        if strcmp(exp{indExp2},'HR')
             fprintf(fid, 'Original');
+        elseif indColumn == 1
+            fprintf(fid, exp{indExp2});
         else
             fprintf(fid, ['& ',exp{indExp2}]);
         end
@@ -872,8 +891,10 @@ for indRow = 1:2
     fprintf(fid, '\\\\\n');
     for indColumn = 1:numColumn
         indExp3 = indExp3 + 1;
-        if strcmp(exp{indColumn},'HR')
+        if strcmp(exp{indExp3},'HR')
             fprintf(fid, '(PSNR, SSIM)');
+        elseif indColumn == 1
+            fprintf(fid, ['(',num2str(PSNR_array(indExp3),'%.2f'),', ',num2str(SSIM_array(indExp3),'%.4f'),')']);
         else
             fprintf(fid, ['& (',num2str(PSNR_array(indExp3),'%.2f'),', ',num2str(SSIM_array(indExp3),'%.4f'),')']);
         end
