@@ -117,29 +117,14 @@ The second proposal is to use skip-connections from input to reconstruction laye
 \section{Related Work}
 \subsection{Single-Image Super-Resolution}
 
-We address the problem of generating a high-resolution (HR) image given a low-resolution (LR) image, commonly referred as single image super-resolution (SISR) \cite{Irani1991}, \cite{freeman2000learning}, \cite{glasner2009super}. SISR is widely used in computer vision applications ranging from security and surveillance imaging to medical imaging where more image details are required on demand.
+Our deep RCN is applied to the problem of generating a high-resolution (HR) image given a low-resolution (LR) image: single-image SR \cite{Irani1991, freeman2000learning,glasner2009super}. Many SR methods have been proposed in the computer vision community. Early methods use very fast interpolations but they give poor results. Some of more powerful methods utilize statistical image priors \cite{sun2008image,Kim2010} or internal patch recurrence \cite{glasner2009super, Huang-CVPR-2015}.
 
-Many SISR methods have been studied in the computer vision community. Interpolation methods are simple and very fast but they give poor results. More powerful methods utilize statistical image priors \cite{sun2008image,Kim2010} or rely on internal patch recurrence \cite{glasner2009super, Huang-CVPR-2015}.
+Recently, sophisticated learning methods are widely used to model a mapping from LR to HR patches. Many methods have paid attention to find better regression functions from LR to HR images. This is achieved with various techniques: neighbor embedding \cite{chang2004super,bevilacqua2012}, sparse coding \cite{yang2010image,zeyde2012single,Timofte2013,Timofte}, convolutional neural network (CNN) \cite{Dong2014} and random forest \cite{schulter2015fast}.
 
-Recently, sophisticated learning methods are widely used to model a mapping from LR to HR patches. Existing methods use various techniques: neighbor embedding \cite{chang2004super,bevilacqua2012}, sparse coding \cite{yang2010image,zeyde2012single,Timofte2013,Timofte}, convolutional neural network (CNN) \cite{Dong2014} and random forest \cite{schulter2015fast}.
+Among several recent learning-based successes,  convolutional neural network (SRCNN) \cite{Dong2014} demonstrated the feasibility of an end-to-end approach to SR. One possibility to improve SRCNN is to simply stack more weight layers as many times as possible. However, this significantly increases more parameters and requires more data unless effective regularization is used.  
 
-While many methods focus on how regression functions from LR to HR are modeled, not much attention has paid to long-range dependencies among pixels. This is closely related to patch sizes and receptive fields used in their methods. In Section (TODO), we discuss pixel interaction in detail.
+In this work, we seek to find a function that effectively model pixel dependencies as long as possible. Our network model recursively widens receptive field without increasing the model capacity and dependency between very distant pixels (compared to existing methods) is utilized. The concept of recursion itself actually is a kind of regularization technique applied to very deep SRCNN. 
 
-
-%[JL TODO] Discuss patch sizes of previous methods.
-
-%Among them, Dong et al. \cite{Dong2014} has demonstrated that a CNN can be used to learn a mapping from LR to HR in an end-to-end manner. Their method, termed SRCNN, does not require any engineered features that are typically necessary in other methods \cite{yang2010image,zeyde2012single,Timofte2013,Timofte}. In addition, it is very fast and accurate.
-
-%\subsection{Convolutional Network  for Image Restoration}
-%
-%We address the problem of generating a high-resolution (HR) image given a low-resolution (LR) image, commonly referred as single image super-resolution (SISR) \cite{Irani1991}, \cite{freeman2000learning}, \cite{glasner2009super}. SISR is widely used in computer vision applications ranging from security and surveillance imaging to medical imaging where more image details are required on demand.
-%
-%Many SISR methods have been studied in the computer vision community. Interpolation methods such as bicubic interpolation and Lanczos resampling \cite{duchon1979lanczos} are simple and very fast but they give poor results. More powerful methods utilize statistical image priors \cite{sun2008image,Kim2010} or rely on internal patch recurrence \cite{glasner2009super}.
-%
-%Recently, sophisticated learning methods are widely used to model a mapping from LR to HR patches. Existing methods use various techniques: neighbor embedding \cite{chang2004super,bevilacqua2012}, sparse coding \cite{yang2010image,zeyde2012single,Timofte2013,Timofte} and convolutional neural network (CNN) \cite{Dong2014}.
-%
-%Among them, Dong et al. \cite{Dong2014} has demonstrated that a CNN can be used to learn a mapping from LR to HR in an end-to-end manner. Their method, termed SRCNN, does not require any engineered features that are typically necessary in other methods \cite{yang2010image,zeyde2012single,Timofte2013,Timofte}. In addition, it is very fast and accurate.
-%
 \subsection{Recursive Neural Network in Computer Vision}
 
 %
@@ -147,50 +132,12 @@ While many methods focus on how regression functions from LR to HR are modeled, 
 
 Recursive neural networks, suitable for temporal and sequential data, have seen limited use on algorithms operating on a single static image.   Socher et al.  \cite{socher2012convolutional} used a convolutional network in a separate stage to first learn features on RGB-Depth data, prior to hierarchical merging. In these models the input dimension is twice that of the output and recursive convolutions are applied only two times. In Eigen et. al \cite{Eigen2014}, recursive layers have the same input and output dimension, but recursive convolutions resulted in worse performances than a single convolution due to overfitting. 
 
-To overcome overfitting, Liang and Hu \cite{Liang_2015_CVPR} uses a recurrent layer that takes feed-forward inputs into all unfolded layers. They show that up to three convolutions performance increases. Their network is for object recognition and the architecture is vastly similar to existing architectures, except each convolution is applied three times. 
+To overcome overfitting, Liang and Hu \cite{Liang_2015_CVPR} uses a recurrent layer that takes feed-forward inputs into all unfolded layers. They show that performance increases up to three convolutions. Their network structure, designed for object recognition, is the same as the existing CNN architectures.
 
-While \cite{Eigen2014} and \cite{Liang_2015_CVPR} simply modify existing architectures to apply convolutions up to three times, our network is completely different from multi-layer approaches. To our knowledge, we demonstrate for the first time that a single recursive layer can entirely solve a non-trivial vision task (SR). 
+While \cite{Eigen2014} and \cite{Liang_2015_CVPR} simply modify existing architectures to apply convolutions up to three times, our network is completely different from multi-layer approaches. To our knowledge, we demonstrate for the first time that a single recursive layer mainly solves a non-trivial vision task (SR). 
 
-In addition, we demonstrate that recursions can be very deep. We apply the same convolution up to TODO 30 times (previous maximum is three). It is an interesting future direction to see if a single-layer approach works for other tasks.  
+In addition, we demonstrate that very deep recursions significantly boost the performance. We apply the same convolution up to 25 times (previous maximum is three). It is an interesting future direction to see if a single-recursive-layer approach can work for other tasks.  
 
-%
-%\subsection{Convolutional Network for Image Super-Resolution}
-%Recently, Dong et al. \cite{Dong2014} have presented a SISR method called SRCNN using a convolutional network. Let us first analyze SRCNN in three aspects: scale, convergence and context.
-%
-%\textbf{Scale} SRCNN is trained for a single scale factor and supposed to work only with the specified scale. Given a user-specified scale, the corresponding network is retrieved for the task. If new scale is on demand, new model has to be trained. Most existing methods including not only SRCNN but also other regression-based methods \cite{Timofte2013, Timofte, Yang2013} are in this paradigm. So, in these frameworks, the general super-resolution task is decomposed into multiple sub-tasks, where each sub-task is a single-scale super-resolution. Each sub-task is solved by a super-resolution machine, trained to be an expert for the corresponding scale. 
-%
-%However, preparing many individual machines for all possible scenarios to cope with multiple scales is inefficient since many systems with the same structure need to be trained and stored.
-%We attempt to reinterpret the task in our work and try to use a single machine to solve all sub-tasks, multi-scale. This turns out to work very well. Our single machine is compared favorably to a single-scale expert for the given sub-task. \textcolor{red}{In addition, scale augmentation actually enriches training data and utilizes the capacity of deep networks.} 
-%
-%\textbf{Convergence}
-%For training, SRCNN directly model high-resolution images so that the convergence rate is very slow. In contrast, our network models the residual images, i.e., the image details. We find convolution network converge much faster with better accuracy during training.
-%
-%\textbf{Context}
-%SRCNN consists of only three layers: patch extraction/representation, non-linear mapping and reconstruction. They use filters with spatial sizes $9\times9$, $1\times1$, $5\times5$, respectively. Number of filters are 64, 32 and 1, where the last layer corresponds to the output (gray-scale image). In more recent work by Dong et al. \cite{dong2014image}, they conclude that deeper networks do not result in better performance.
-%
-%In contrast, we use 20 layers of the same type (64 filters of size $3\times3$ for each layer) except the last layer for image reconstruction. Our network is very deep (20 vs. 3) and information used for reconstruction (receptive field) is much larger ($41\times41$ vs. $13\times13$).
-%
-%\textcolor{red}{With above improvements,} our network delivers better performance than SRCNN. In addition, our output image has the same size as the input image by padding zeros every layer during training whereas no padding is used in training SRCNN. Finally, we use the same learning rates for all layers while SRCNN uses different learning rates for different layers.
-%
-%
-%\begin{table*}[t]
-%	\small
-%	\centering
-%\begin{tabular}
-%{|c|c|c|c|c|c|c|c||c|}
-%\hline 
-% Test / Train & {$\times$2}& {$\times$3}& { $\times$4}& {$\times$2,3}& {$\times$2,4}& { $\times$3,4}& {$\times$2,3,4} & {Bicubic} \\
-%\hline
-%$\times$2  & \color{red} 37.10  & 30.05  & 28.13  & \color{red} 37.09  & \color{red} 37.03  & 32.43  & \color{red}37.06 &33.66   \\
-%$\times$3  & 30.42  & \color{red} 32.89  & 30.50  & \color{red} 33.22  & 31.20  & \color{red} 33.24  & \color{red} 33.27  & 30.39 \\
-%$\times$4  & 28.43  & 28.73  & \color{red} 30.84  & 28.70  & \color{red} 30.86  & \color{red} 30.94  & \color{red} 30.95 & 28.42  \\
-%\hline
-%\end{tabular}
-%	\vspace{1pt}
-%	\caption{Scale Factor Experiment. Several models are trained with different scale sets. Quantitative evaluation (PSNR) on dataset `Set5' is provided for scale factors 2,3 and 4.  {\color{red}Red color} indicates test scale is included during training. Models trained with multiple scales perform well on the trained scales. }
-%	\label{tab:SRCNN_Factor_Test}
-%\end{table*}
-%
 \section{Proposed Method}
 In this section, our proposed method is explained. We first propose a model using recursive convolutions and discuss its limitations. Then we explain our extensions to overcome the issues and the training procedure.
 
