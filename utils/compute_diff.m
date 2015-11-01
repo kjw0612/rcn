@@ -1,4 +1,5 @@
 function [psnr, ssim]  = compute_diff(imGT, imSR, SF)
+imGT = modcrop(imGT, SF);
 % =========================================================================
 % Retrieve only luminance channel
 % =========================================================================
@@ -11,9 +12,6 @@ if size(imGT,3)>1
     imGT = rgb2ycbcr(imGT);
     imGT = imGT(:,:,1);
 end
-
-imGT = modcrop(imGT, SF);
-
 % =========================================================================
 % Remove border pixels as some methods (e.g., A+) do not predict border pixels
 % =========================================================================
