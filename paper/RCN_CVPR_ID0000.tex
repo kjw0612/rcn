@@ -102,7 +102,7 @@ Deep convolutional networks (DCN) succeeding in various computer vision tasks ty
 
 %While recent studies have shown that unpooling recovers some information about the original image (CITE), Alexey paper has shown inverting CNN cannot reconstruct the image perfectly.
 
-For the task of image super-resolution (SR), receptive field corresponds to the amount of contextual information that can be exploited to infer missing high-frequency components. For example, if there exist a pattern with smoothed edges contained in a receptive field, it is plausible the pattern is recognized and edges are sharpened. As SR is an ill-posed inverse problem, collecting and analyzing more neighbor pixels can possibly give more clues on what have been lost by downsampling in which we experimentally confirm later.  
+For the task of image super-resolution (SR), receptive field corresponds to the amount of contextual information that can be exploited to infer missing high-frequency components. For example, if there exist a pattern with smoothed edges contained in a receptive field, it is plausible the pattern is recognized and edges are sharpened. As SR is an ill-posed inverse problem, collecting and analyzing more neighbor pixels can possibly give more clues on what have been lost by downsampling in which we experimentally confirm in this work.  
 
 Image details are important for image restoration problems such as super-resolution and denoising. Therefore, most deep-learning approaches for such problems do not use pooling. This implies enlarging receptive field can only be achieved by introducing a new conv. layer.
 
@@ -114,13 +114,13 @@ Increasing depth basically introduces more parameters. Two problems can arise. F
 %[TODO Mention deep-learning SR methods.] A famous deep-learning SR method SRCNN \cite{Dong2014}, however, use only three layers resulting in a receptive field of 13 by 13. To utilize contextual information spread over very large image regions, many conv. layers need to be stacked in standard CNN settings. If $3 \times 3$ filters are stacked, stacking 10 layers result in $21 \times 21$ receptive field. This is still very small compared to typical image sizes.
 
 
-To resolve the issues, we propose a SR method using a deeply-recursive convolutional network (DRCN). DRCN repeatedly applies the same convolutional layer as many times as desired. The number of parameters are kept small while widening receptive fields. Our receptive field reaches 101 by 101 and this is very large compared to patch sizes used in previous methods. 
+To resolve the issues, we propose a SR method using a deeply-recursive convolutional network (RCN). DRCN repeatedly applies the same convolutional layer as many times as desired. The number of parameters are kept small while widening receptive fields. Our receptive field reaches 101 by 101 and this is very large compared to patch sizes used in previous methods. 
 
-Overfitting is largely alleviated in DRCN. As the same parameters are used again and again, the network is effectively regularized. Moreover, our compact model can be economically stored and distributed online.   
+Overfitting is largely alleviated in RCN. As the same parameters are used again and again, the network is effectively regularized. Moreover, our compact model can be economically stored and distributed online.   
 
 While DRCN has good properties, learning long-range dependencies between pixels is very difficult. Networks do not easily converge. This is due to exploding/vanishing gradients. 
 
-We propose two domain-specific approaches to ease the difficulty of training. First, residual images are modeled. Low-resolution image (input) and high-resolution image (output) share the same information to a large extent. Exact copy of Input, however, is likely to be lost during many forward passes. We explicitly add input to the final reconstruction layer. This is particularly effective when input and output are highly correlated. 
+We propose two approaches to ease the difficulty of training.  
 
 
 % and this phenomena is also observed in recurrent neural networks \cite{pascanu2013difficulty}. Note the difference that our recursive layer do not have any external input/output whereas recurrent neural networks have external input/output for all timesteps. 
@@ -129,7 +129,9 @@ We propose two domain-specific approaches to ease the difficulty of training. Fi
 %
 %One way to resolve the issues is to modify our network so that memory and forget cells as in LSTM are added or gated recurrent units in GRUs are added. This severely complicates the network structure and finding the best structure involves huge efforts (TODO cite odyssey paper). 
 
-Second, all recursions are supervised in the same manner with the same reconstruction network for all levels. This is different from deeply-supervised nets (TODO cite). In deeply-supervised net, layers have different representations across levels of abstraction (edges/parts/objects) and they are supervised in a different manner. With deep-supervision as well as residual-learning we find DRCN converges very well during training. 
+Second, all recursions are supervised in the same manner with the same reconstruction network for all levels. This is different from deeply-supervised nets (TODO cite). In deeply-supervised net, layers have different representations across levels of abstraction (edges/parts/objects) and they are supervised in a different manner. With deep-supervision as well as residual-learning we find RCN converges very well during training. 
+
+First, residual images are modeled. Low-resolution image (input) and high-resolution image (output) share the same information to a large extent. Exact copy of Input, however, is likely to be lost during many forward passes. We explicitly add input to the final reconstruction layer. This is particularly effective when input and output are highly correlated.
 
 %
 %While SRCNN successfully introduced a deep learning technique into the super-resolution (SR) problem, it is shallow in comparison to very recent networks  (four? TODO confirm TODO cite deep net). As witenssed in several computer vision tasks, very deep networks can deliver outstanding performance. We also find that deeper SRCNN delivers better performance. 
