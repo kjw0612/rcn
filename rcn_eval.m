@@ -92,7 +92,22 @@ t2opts.exp = {'Bicubic','A+','SRCNN','RFL','SelfEx','RCN'};
 t2opts.printTime = false;
 t2opts.tableName = 'table_2';
 t2opts.fid = fileID;
-
+%--------------------------------------------------------------------------
+% for front explantory figure
+%
+%--------------------------------------------------------------------------
+ffopts.problem = 'SR';
+ffopts.dataset = 'B100';
+ffopts.imgNum = '78004';
+ffopts.boxSize = [60 60];
+ffopts.boxPose = [];
+ffopts.lineWidth = 4;
+ffopts.lineColor = [255 0 0];
+ffopts.sf = 3;
+ffopts.exp = {'A+', 'SRCNN', 'SelfEx', 'RCN'};
+ffopts.figName = 'figf';
+ffopts.figDir = 'paper/figs';
+ffopts.fid = fileID;
 %--------------------------------------------------------------------------
 % figure type 1. 
 %
@@ -139,53 +154,85 @@ f2opts.fid = fileID;
 fSuppopts = f2opts;
 fSuppopts.figName = 'fig3';
 %--------------------------------------------------------------------------
+%%%% everything for Paper
 
-texPrefix(fileID);
-% makeTable1(t1opts);
-makeTable2(t2opts);
-f1opts.dataset = 'Urban100'; f1opts.imgNum = 96;
-makeFigure1(f1opts);
-f1opts.exp = {'HR','SRCNN','SelfEx','RCN'};
-makeFigure1(f1opts);
-f2opts.boxSize = [60 60];
-f2opts.dataset = 'Urban100'; f2opts.imgNum = 82;
-makeFigure2(f2opts);
-f2opts.dataset = 'Urban100'; f2opts.imgNum = 99;
-makeFigure2(f2opts);
-fSuppopts.boxSize = [90 90];
-makeFigureSupp(fSuppopts);
-texSuffix(fileID);
-fclose(fileID);
+% texPrefix(fileID);
+% % makeTable1(t1opts);
+% makeTable2(t2opts);
+% makeFigureFront(ffopts);
+% f1opts.dataset = 'Urban100'; f1opts.imgNum = 96;
+% makeFigure1(f1opts);
+% f1opts.exp = {'HR','SRCNN','SelfEx','RCN'};
+% makeFigure1(f1opts);
+% f2opts.boxSize = [60 60];
+% f2opts.dataset = 'Urban100'; f2opts.imgNum = 82;
+% makeFigure2(f2opts);
+% f2opts.dataset = 'Urban100'; f2opts.imgNum = 99;
+% makeFigure2(f2opts);
+% fSuppopts.boxSize = [90 90];
+% makeFigureSupp(fSuppopts);
+% texSuffix(fileID);
+% fclose(fileID);
+
+
+%--------------------------------------------------------------------------
+
+% fileID3 = fopen('paper/figuresOnly.tex','w');
+% texPrefix(fileID3);
+% 
+% ffopts.fid = fileID3; 
+% makeFigureFront(ffopts);
+% 
+% f1opts.fid = fileID3;
+% f1opts.dataset = 'Urban100'; f1opts.imgNum = 96;
+% makeFigure1(f1opts);
+% 
+% f1opts.exp = {'HR','SRCNN','SelfEx','RCN'};
+% makeFigure1(f1opts);
+% 
+% f2opts.fid = fileID3;
+% f2opts.boxSize = [60 60];
+% f2opts.dataset = 'Urban100'; f2opts.imgNum = 82;
+% makeFigure2(f2opts);
+% 
+% f2opts.dataset = 'Urban100'; f2opts.imgNum = 99;
+% makeFigure2(f2opts);
+% 
+% fSuppopts.fid = fileID3;
+% fSuppopts.boxSize = [90 90];
+% makeFigureSupp(fSuppopts);
+% texSuffix(fileID3);
+% fclose(fileID3);
 
 %--------------------------------------------------------------------------
 %%%% for supp. 
 
-% cp = 0;
-% 
-% fileID2 = fopen('paper/supplebook.tex','w');
-% texPrefix(fileID2);
-% fSuppopts.fid = fileID2;
-% fSuppopts.figName = 'figSup';
-% dataset = {'Set5','Set14','B100','Urban100'};
-% for d = 1:numel(dataset)
-%     fSuppopts.dataset = dataset{d};
-%     if strcmp(fSuppopts.dataset, 'Urban100')
-%         fSuppopts.lineWidth = 8;
-%         fSuppopts.boxSize = [90 90];
-%     else
-%         fSuppopts.lineWidth = 4;
-%         fSuppopts.boxSize = [40 40];
-%     end
-%     for i = 1:numel(dir(fullfile('data',fSuppopts.dataset)))-2
-%         fSuppopts.imgNum = i;
-%         makeFigureSupp(fSuppopts);
-%         cp = cp + 1;
-%         if cp == 6, clearpage(fileID2); cp = 0; end;
-%     end
-% end
-% 
-% texSuffix(fileID2);
-% fclose(fileID2);
+cp = 0;
+
+fileID2 = fopen('paper/supplebook.tex','w');
+texPrefix(fileID2);
+fSuppopts.fid = fileID2;
+fSuppopts.figName = 'figSup';
+dataset = {'Set5'};%,'Set14','B100','Urban100'};
+for d = 1:numel(dataset)
+    fSuppopts.dataset = dataset{d};
+    if strcmp(fSuppopts.dataset, 'Urban100')
+        fSuppopts.lineWidth = 8;
+        fSuppopts.boxSize = [90 90];
+    else
+        fSuppopts.lineWidth = 4;
+        fSuppopts.boxSize = [40 40];
+    end
+    for i = 1:numel(dir(fullfile('data',fSuppopts.dataset)))-2
+        fSuppopts.imgNum = i;
+        makeFigureSupp(fSuppopts);
+        cp = cp + 1;
+        if cp == 6, clearpage(fileID2); cp = 0; end;
+    end
+end
+
+texSuffix(fileID2);
+fclose(fileID2);
 
 %--------------------------------------------------------------------------
 
@@ -617,7 +664,7 @@ for indRow = 1:4
     for indColumn = 1:numColumn
         if mod(indRow,2) == 1
             indExp = indExp + 1;
-            fprintf(fid, ['& \\raisebox{-',num2str(boxSize(1)/4-2,'%.1f'),'ex} {\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=,',num2str(widthVal,'%.2f'),'\\textwidth]{', ...
+            fprintf(fid, ['& \\raisebox{-',num2str(boxSize(1)/4-2,'%.1f'),'ex} {\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=',num2str(widthVal,'%.2f'),'\\textwidth]{', ...
                          [imgName,'_for_',figName,'_',exp{indExp},'.png'],'}}\\vspace{0.3ex}\n']);            
         else
             indExp2 = indExp2 + 1;
@@ -782,8 +829,6 @@ figName = opts.figName;
 figDir = opts.figDir;
 fid = opts.fid;
 
-
-
 numColumn = numel(exp)/2;
 
 if ~exist(fullfile(figDir,figName),'dir')
@@ -801,6 +846,12 @@ else
 end
 imGT = imread(fullfile(gtDir, [imgName,imgExt]));
 imGT = modcrop(imGT, SF);
+if size(imGT,1) > size(imGT,2)
+    imLong = true;
+else
+    imLong = false;
+end
+
 
 if isempty(boxSize)
     boxSize(1) = ceil(size(imGT,1)/10);
@@ -842,7 +893,7 @@ for indExp = 1:numel(exp)
         if size(imGT,3) == 1, imGT = cat(3,imGT,imGT,imGT); end;
         imSRcolor = modcrop(imGT, SF);
     end
-    imSRcolor = shave(imSRcolor,[SF SF]); % for methods like A+, not predicting boundary.
+    imSRcolor = shave(imSRcolor,[SF SF]); % for methods like A+, not predicting boundary.    
     ShapeInserter = vision.ShapeInserter('LineWidth',lineWidth,'BorderColor','Custom','CustomBorderColor',lineColor);
     boximSRcolor = step(ShapeInserter, imSRcolor, int32(cat(2,fliplr(boxPose),fliplr(boxSize))));
     subimSRcolor = imSRcolor(boxPose(1):boxPose(1)+boxSize(1)-1,boxPose(2):boxPose(2)+boxSize(2)-1,:);
@@ -869,12 +920,23 @@ indExp3 = 0;
 for indRow = 1:2
     for indColumn = 1:numColumn
         indExp = indExp + 1;
-        if indColumn == 1
-            fprintf(fid, ['{\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=',num2str(0.93/numColumn,'%.2f'),'\\textwidth]{', ...
-                         [imgName,'_for_',figName,'_',exp{indExp},'.png'],'}}\n']);
+        if imLong         
+            if indColumn == 1
+                fprintf(fid, ['{\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=',num2str(0.93/2,'%.2f'),'\\textheight]{', ...
+                             [imgName,'_for_',figName,'_',exp{indExp},'.png'],'}}\n']);
+
+            else
+                fprintf(fid, ['& {\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=',num2str(0.93/2,'%.2f'),'\\textheight]{', ...
+                             [imgName,'_for_',figName,'_',exp{indExp},'.png'],'}}\n']);       
+            end
         else
-            fprintf(fid, ['& {\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=',num2str(0.93/numColumn,'%.2f'),'\\textwidth]{', ...
-                         [imgName,'_for_',figName,'_',exp{indExp},'.png'],'}}\n']);            
+            if indColumn == 1
+                fprintf(fid, ['{\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=',num2str(0.93/numColumn,'%.2f'),'\\textwidth]{', ...
+                             [imgName,'_for_',figName,'_',exp{indExp},'.png'],'}}\n']);
+            else
+                fprintf(fid, ['& {\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=',num2str(0.93/numColumn,'%.2f'),'\\textwidth]{', ...
+                             [imgName,'_for_',figName,'_',exp{indExp},'.png'],'}}\n']);       
+            end     
         end
     end    
     fprintf(fid, '\\\\\n');
@@ -907,6 +969,166 @@ fprintf(fid,'\\end{center}\n');
 fprintf(fid,'\\end{adjustwidth}\n');
 fprintf(fid,'\\end{figure*}\n\n');
 
+function makeFigureFront(opts)
+
+dataset = opts.dataset;
+imgNum = opts.imgNum;
+boxSize = opts.boxSize;
+boxPose = opts.boxPose;
+lineWidth = opts.lineWidth;
+lineColor = opts.lineColor;
+problem = opts.problem;
+sf = opts.sf;
+exp = opts.exp;
+figName = opts.figName;
+figDir = opts.figDir;
+fid = opts.fid;
+
+numColumn = numel(exp)/2;
+
+if ~exist(fullfile(figDir,figName),'dir')
+    mkdir(fullfile(figDir,figName));
+end
+datasetName = dataset;
+SF = sf;
+gtDir = fullfile('data',datasetName);
+outDir = fullfile('data','result');
+if isa(imgNum,'char')
+    imgNum = findImgNum(dataset, imgNum);
+end
+
+img_lst = dir(gtDir); img_lst = img_lst(3:end);
+numImg = numel(img_lst);
+[~,imgName,imgExt] = fileparts(img_lst(imgNum).name);
+
+imGT = imread(fullfile(gtDir, [imgName,imgExt]));
+imGT = modcrop(imGT, SF);
+imSRCNN = []; imAplus = []; imRCN = [];
+if isempty(boxPose)
+    for indExp = 1:numel(exp)
+        expName = exp{indExp};
+        outRoute = fullfile(expName, [expName,'_',datasetName,'_x',num2str(SF)]);
+        if strcmp(expName,'SRCNN')
+            imSRCNN = imread(fullfile(outDir, outRoute, [imgName,'.png']));
+        elseif strcmp(expName,'A+')
+            imAplus = imread(fullfile(outDir, outRoute, [imgName,'.png']));
+        elseif indExp == numel(exp)
+            imRCN = imread(fullfile(outDir, outRoute, [imgName,'.png']));
+        end
+    end
+    if isempty(imAplus)
+        imAplus = imSRCNN;
+    end
+    imGTs = shave(imGT,[SF SF]);
+    imSRCNNs = shave(imSRCNN,[SF SF]);
+    imApluss = shave(imAplus,[SF SF]);
+    imRCNs = shave(imRCN,[SF SF]);
+    [boxPose(1),boxPose(2)] = findBestPos(imGTs, imSRCNNs, imApluss, imRCNs, boxSize);
+end
+SSIM_table = zeros(numImg, numel(exp));
+imgNames = cell(numImg,1);
+
+for indImg = 1:numImg
+    [~,imgNames{indImg},imgExt] = fileparts(img_lst(indImg).name);
+    imGT_ = imread(fullfile(gtDir, [imgNames{indImg},imgExt]));            
+
+    for indExp = 1:numel(exp)
+        expName = exp{indExp};
+        outRoute = fullfile(expName, [expName,'_',datasetName,'_x',num2str(SF)]);
+        imSR = imread(fullfile(outDir, outRoute, [imgNames{indImg},'.png']));
+        [~, ssim] = compute_diff(imGT_, imSR, SF);
+        SSIM_table(indImg, indExp) = ssim;
+    end
+end
+
+avgSSIM = mean(SSIM_table,1);
+% stdSSIM = std(SSIM_table,0,1);
+fHand = figure;
+aHand = axes('parent', fHand);
+hold(aHand, 'on');
+colors = summer(numel(avgSSIM));
+for i = 1:numel(avgSSIM)
+    bar(i, avgSSIM(i), 'parent', aHand, 'facecolor', colors(i,:), 'barwidth', 0.8);
+end
+% err = errorbar(avgSSIM, stdSSIM,'r'); set(err,'linestyle','none')
+pos = get(gcf, 'Position');
+set(gcf, 'Position', [pos(1) pos(2) 350 400]); %<- Set size
+set(gca, 'FontSize', 15, 'LineWidth', 1.0);%, 'FontWeight', 'bold'); %<- Set properties
+grid on; 
+legend('A+', 'SRCNN', 'SelfEx', 'RCN(Ours)','Location','northwest');
+set(gca, 'XTick', [], 'XTickLabel', []);
+ylim([min(avgSSIM)-0.001 max(avgSSIM)+0.001]);
+set(gcf, 'PaperPosition', [0 0 5 5]); %Position plot at left hand corner with width 5 and height 5.
+tightfig;
+print(fullfile('paper','figs','figf','frontfig'), '-dpdf', '-r600');
+
+ShapeInserter = vision.ShapeInserter('LineWidth',lineWidth,'BorderColor','Custom','CustomBorderColor',lineColor);
+imGTbox = step(ShapeInserter, imGT, int32(cat(2,fliplr(boxPose),fliplr(boxSize))));
+imSRCNNcolor = colorize(imGT, imSRCNN, SF);
+imRCNcolor = colorize(imGT, imRCN, SF);
+imSRCNNcolor = shave(imSRCNNcolor,[SF SF]); imRCNcolor = shave(imRCNcolor, [SF, SF]);
+subimSRCNNcolor = imSRCNNcolor(boxPose(1):boxPose(1)+boxSize(1)-1,boxPose(2):boxPose(2)+boxSize(2)-1,:);
+subimRCNcolor = imRCNcolor(boxPose(1):boxPose(1)+boxSize(1)-1,boxPose(2):boxPose(2)+boxSize(2)-1,:);
+imGTbox = modcrop(imGTbox,2);
+subimSRCNNcolor = imresize(subimSRCNNcolor,[NaN ceil(size(imGTbox,2)/2)]);
+subimRCNcolor = imresize(subimRCNcolor, [NaN floor(size(imGTbox,2)/2)]);
+bot = cat(2,subimSRCNNcolor, subimRCNcolor);
+whole = cat(1, imGTbox, bot);
+imwrite(whole,fullfile(figDir,figName,[imgName,'_frontfig','.png']));
+
+
+fprintf(fid,'\\begin{figure}\n');
+fprintf(fid,'\\begin{adjustwidth}{0cm}{-0.5cm}\n');
+fprintf(fid,'\\centering\n');
+fprintf(fid,'\\begin{subfigure}{0.12\textwidth}\n');
+fprintf(fid,'\\centering\n');
+fprintf(fid,'{\\graphicspath{{figs/figf/}}\\includegraphics[height=1.5in]{frontfig.pdf}}\n');
+fprintf(fid,'\\end{subfigure}\n');
+fprintf(fid,'\\hfill\n');
+fprintf(fid,'\\begin{subfigure}{0.35\\textwidth}\n');
+fprintf(fid,'\\centering\n');
+fprintf(fid,['{\\graphicspath{{figs/figf/}}\\includegraphics[height=1.5in]{',imgName,'_frontfig.png}}\n']);
+fprintf(fid,'\\end{subfigure}\n');
+fprintf(fid,'\\end{adjustwidth}\n');
+fprintf(fid,'\\end{figure}\n\n');
+
+% fprintf(fid,'\\begin{figure}\n');
+% fprintf(fid,'\\begin{adjustwidth}{0cm}{-0.5cm}\n');
+% fprintf(fid,'\\begin{center}\n');
+% fprintf(fid,'\\footnotesize\n');
+% fprintf(fid,'\\setlength{\\tabcolsep}{-1.5pt}\n');
+% fprintf(fid,'\\begin{tabular}{ c');
+% for indColumn = 1:numColumn
+%     fprintf(fid,' c ');
+%     widthVal = 0.10;
+% end
+% fprintf(fid,' }\n');
+% fprintf(fid, ['\\multirow{4}{*}{\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=0.2\\textwidth]{', ...
+%              'frontfig.pdf}}\n']);
+% indExp = 0;
+% indExp2 = 0;
+% for indRow = 1:4
+%     for indColumn = 1:numColumn
+%         if mod(indRow,2) == 1
+%             indExp = indExp + 1;
+%             fprintf(fid, ['& \\raisebox{-',num2str(boxSize(1)/4-5,'%.1f'),'ex} {\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=',num2str(widthVal,'%.2f'),'\\textwidth]{', ...
+%                          [imgName,'_for_',figName,'_',exp{indExp},'.png'],'}}\\vspace{0.3ex}\n']);            
+%         else
+%             indExp2 = indExp2 + 1;
+%             if strcmp(exp{indExp2},'HR')
+%                 fprintf(fid, ['& Original (SSIM)']);
+%             else
+%                 fprintf(fid, ['& ',exp{indExp2},' (SSIM ',num2str(SSIM_array(indExp2),'%.4f'),')']);
+%             end
+%         end
+%     end    
+%     fprintf(fid, '\\\\\n');
+% end
+% fprintf(fid,'\\end{tabular}\n');
+% fprintf(fid,['\\caption{Super-resolution results of ``',setValidName(imgName,'_'),'"(',datasetName,') with scale factor $\\times$',num2str(SF),'. Our result is visually pleasing.}\n']);
+% fprintf(fid,'\\end{center}\n');
+% fprintf(fid,'\\end{adjustwidth}\n');
+% fprintf(fid,'\\end{figure}\n\n');
 
 function texPrefix(fid)
 
@@ -1013,7 +1235,8 @@ function imgNum = findImgNum(dataset, imgName)
 img_lst = dir(fullfile('data',dataset));
 img_lst = img_lst(3:end);
 for i = 1:numel(img_lst)
-    if strcmp(imgName, img_lst(i).name)
+    [~,name,~] = fileparts(img_lst(i).name);
+    if strcmp(imgName, name)
         imgNum = i;
         break;
     end
