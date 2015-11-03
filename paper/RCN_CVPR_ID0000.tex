@@ -80,14 +80,14 @@
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-We propose an image super-resolution method (SR) using a deeply-recursive convolutional network (RCN). A RCN super-resolves images with a single recursive layer. Our network utilizes very large context without dimensionality reduction such as pooling. As our method reuse the same parameters for most convolutions, network is compactly represented and effectively regularized. Albeit advantages, optimizing a deep RCN does not easily converge with a standard gradient descent method. To resolve the issue, we propose two extensions: recursive-supervision and skip-connection. We successfully learned a SR method with very deep recursions. Our method outperforms previous methods by a large margin.
+We propose an image super-resolution method (SR) using a deeply-recursive convolutional network (DRCN). A DRCN super-resolves images with a single recursive layer. Our network utilizes very large context without dimensionality reduction such as pooling. As our method reuse the same parameters for most convolutions, network is compactly represented and effectively regularized. Albeit advantages, optimizing a DRCN does not easily converge with a standard gradient descent method. To resolve the issue, we propose two extensions: recursive-supervision and skip-connection. We successfully learned a SR method with very deep recursions. Our method outperforms previous methods by a large margin.
 \end{abstract}
 
 %%%%%%%%% Figures Start
 % Figures for the section 'Propose Method'
 \begin{figure*}[t]
 	\includegraphics[width=\textwidth]{figs/f1}
-	\caption {Architecture of our basic model. It consists of three parts: embedding network, inference network and reconstruction network. Inference network has a recursive layer and its unfolded version is in Figure \ref{fig:inference_network}}
+	\caption {Architecture of our basic model. It consists of three parts: embedding network, inference network and reconstruction network. Inference network has a recursive layer and its unfolded version is in Figure \ref{fig:inference_network}.}
 	\label{fig:overview}
 \end{figure*}
 %%%%%%%%% Figures End
@@ -95,7 +95,7 @@ We propose an image super-resolution method (SR) using a deeply-recursive convol
 
 %%%%%%%%% BODY TEXT
 \section{Introduction}
-For image super-resolution (SR), receptive field determines the amount of contextual information that can be exploited to infer missing high-frequency components. For example, if there exists a pattern with smoothed edges contained in a receptive field, it is plausible the pattern is recognized and edges are sharpened. As SR is an ill-posed inverse problem, collecting and analyzing more neighbor pixels can possibly give more clues on what have been lost by downsampling. 
+For image super-resolution (SR), receptive field of a convolutional network determines the amount of contextual information that can be exploited to infer missing high-frequency components. For example, if there exists a pattern with smoothed edges contained in a receptive field, it is plausible the pattern is recognized and edges are sharpened. As SR is an ill-posed inverse problem, collecting and analyzing more neighbor pixels can possibly give more clues on what have been lost by downsampling. 
 
 Deep convolutional networks (DCN) succeeding in various computer vision tasks typically use very large receptive fields  (224x224 common in ImageNet classification \cite{krizhevsky2012imagenet, simonyan2015very}). Receptive field is typically enlarged by a convolution (conv.) or a pooling (pool.).  Both approaches have drawbacks: a conv. layer introduces more parameters and a pool. layer typically discards some pixel-wise information. 
 
@@ -105,19 +105,19 @@ For image restoration problems such as super-resolution and denoising, image det
 
 Increasing depth by adding a new weight layer basically introduces more parameters. Two problems can arise. First, overfitting is highly likely. More data are now required. Second, model becomes too huge to be stored and retrieved.
 
- 
+A similar issue also exists in the context of image deconvolution \cite{xu2014deep}. They demonstrate a large kernel is helpful for image restoration. They use singular value decomposition to approximate a 2D convolution as a weighted sum of separable 1D filters. But as P. Perona showed in \cite{perona1995deformable},  kernel approximation with 32 components can result in 10\% reconstruction error under normal conditions. 
 %[TODO List some efforts put into enlarging patch sizes in traditional SR literature in this paragraph.]
 
 %[TODO Mention deep-learning SR methods.] A famous deep-learning SR method SRCNN \cite{Dong2014}, however, use only three layers resulting in a receptive field of 13 by 13. To utilize contextual information spread over very large image regions, many conv. layers need to be stacked in standard CNN settings. If $3 \times 3$ filters are stacked, stacking 10 layers result in $21 \times 21$ receptive field. This is still very small compared to typical image sizes.
 
 
-To resolve the issues, we propose a SR method using a deeply-recursive convolutional network (RCN). A RCN repeatedly applies the same convolutional layer as many times as desired. The number of parameters are kept small while widening receptive fields. Our receptive field reaches 41 by 41 and this is very large compared to other deep-learning based image restoration methods. 
+To resolve the issues of stacking conv. layers for large receptive field, we propose to use a deeply-recursive convolutional network (DRCN). A DRCN repeatedly applies the same convolutional layer as many times as desired. The number of parameters are kept small while widening receptive fields. Our receptive field reaches 41 by 41 and this is very large compared to existing deep-learning based image restoration methods. 
 
 Overfitting is largely alleviated in our model. As the same parameters are used again and again, the network is effectively regularized. Moreover, our model can be economically stored and distributed online.   
 
-While a recursive approach has good properties, learning long-range dependencies between pixels with a single weight layer is very difficult. A RCN optimized with the widely-used stochastic gradient descent method does not easily converge. This is due to exploding/vanishing gradients. 
+While a recursive approach has good properties, learning long-range dependencies between pixels with a single weight layer is very difficult. A DRCN optimized with the widely-used stochastic gradient descent method does not easily converge. This is due to exploding/vanishing gradients. 
 
-We propose two approaches to ease the difficulty of training. First, all recursions are simultaneously supervised. Feature maps after each recursion are used to reconstruct the target HR image. Reconstruction method (layers dedicated to reconstruction) is the same for all recursions. As each recursion leads to a HR prediction, we combine all predictions resulting from different levels of recursions to deliver the final prediction.  
+We propose two approaches to ease the difficulty of training (Figure \ref{fig:recursive_supervision}(a)). First, all recursions are simultaneously supervised. Feature maps after each recursion are used to reconstruct the target HR image. Reconstruction method (layers dedicated to reconstruction) is the same for all recursions. As each recursion leads to a HR prediction, we combine all predictions resulting from different levels of recursions to deliver the final prediction.  
    
 The second proposal is to use skip-connections from input to reconstruction layers. In SR, low-resolution image (input) and high-resolution image (output) share the same information to a large extent. Exact copy of input, however, is likely to be attenuated during many forward passes. We explicitly connect the input to the layers for output reconstruction. This is particularly effective when input and output are highly correlated.
 
@@ -127,20 +127,17 @@ The second proposal is to use skip-connections from input to reconstruction laye
 
 \subsection{Single-Image Super-Resolution}
 
-Our deep RCN is applied to the problem of generating a high-resolution (HR) image given a low-resolution (LR) image: single-image SR \cite{Irani1991, freeman2000learning,glasner2009super}. Many SR methods have been proposed in the computer vision community. Early methods use very fast interpolations but they give poor results. Some of more powerful methods utilize statistical image priors \cite{sun2008image,Kim2010} or internal patch recurrence \cite{glasner2009super, Huang-CVPR-2015}.
+Our DRCN is applied to the problem of generating a high-resolution (HR) image given a low-resolution (LR) image: single-image SR \cite{Irani1991, freeman2000learning,glasner2009super}. Many SR methods have been proposed in the computer vision community. Early methods use very fast interpolations but they give poor results. Some of more powerful methods utilize statistical image priors \cite{sun2008image,Kim2010} or internal patch recurrence \cite{glasner2009super, Huang-CVPR-2015}.
 
 Recently, sophisticated learning methods are widely used to model a mapping from LR to HR patches. Many methods have paid attention to find better regression functions from LR to HR images. This is achieved with various techniques: neighbor embedding \cite{chang2004super,bevilacqua2012}, sparse coding \cite{yang2010image,zeyde2012single,Timofte2013,Timofte}, convolutional neural network (CNN) \cite{dong2014image} and random forest \cite{schulter2015fast}.
 
 Among several recent learning-based successes,  convolutional neural network (SRCNN) \cite{dong2014image} demonstrated the feasibility of an end-to-end approach to SR. One possibility to improve SRCNN is to simply stack more weight layers as many times as possible. However, this significantly increases more parameters and requires more data unless effective regularization is used.  
 
-In this work, we seek to find a function that effectively model pixel dependencies as long as possible. Our network model recursively widens receptive field without increasing the model capacity and dependency between very distant pixels (compared to existing methods) is utilized. The concept of recursion itself actually is a kind of regularization technique applied to very deep SRCNN. 
+In this work, we seek to find a function that effectively model pixel dependencies as long as possible. Our network model recursively widens receptive field without increasing the model capacity and dependency between very distant pixels (compared to existing methods) is utilized. The concept of recursion itself actually is a kind of regularization technique applied to a convolutional network. 
 
 \subsection{Recursive Neural Network in Computer Vision}
 
-%
-%Recursive convolution is first proposed in \cite{Eigen2014}. (Socher et al. [45]?? Eigen et. al) to understand deep architectures. They used up to three 
-
-Recursive neural networks, suitable for temporal and sequential data, have seen limited use on algorithms operating on a single static image.   Socher et al.  \cite{socher2012convolutional} used a convolutional network in a separate stage to first learn features on RGB-Depth data, prior to hierarchical merging. In these models the input dimension is twice that of the output and recursive convolutions are applied only two times. In Eigen et. al \cite{Eigen2014}, recursive layers have the same input and output dimension, but recursive convolutions resulted in worse performances than a single convolution due to overfitting. 
+Recursive neural networks, suitable for temporal and sequential data, have seen limited use on algorithms operating on a single static image.   Socher et al.  \cite{socher2012convolutional} used a convolutional network in a separate stage to first learn features on RGB-Depth data, prior to hierarchical merging. In these models the input dimension is twice that of the output and recursive convolutions are applied only two times. In Eigen et al. \cite{Eigen2014}, recursive layers have the same input and output dimension, but recursive convolutions resulted in worse performances than a single convolution due to overfitting. 
 
 To overcome overfitting, Liang and Hu \cite{Liang_2015_CVPR} uses a recurrent layer that takes feed-forward inputs into all unfolded layers. They show that performance increases up to three convolutions. Their network structure, designed for object recognition, is the same as the existing CNN architectures.
 
@@ -160,7 +157,7 @@ Our network is different from the above in the sense that we propose a new netwo
 \begin{figure*}[t]
 \begin{center}
 	\includegraphics[width=\textwidth]{figs/f3}
-	\caption{(a): Our final (advanced) model with recursive-supervision and skip-connection. The reconstruction network is shared for recursive predictions. We use all predictions from the intermediate recursion to get the final output. (b): Applying deep-supervision to our simple model \cite{lee2014deeply}. Unlike in (a), they use different reconstruction networks for recursions and more parameters are used.  (c) Expanded structure of (a) without parameter sharing (no recursion). The number of weight parameters is proportional to the depth squared.  }
+	\caption{(a): Our final (advanced) model with recursive-supervision and skip-connection. The reconstruction network is shared for recursive predictions. We use all predictions from the intermediate recursion to get the final output. (b): Applying deep-supervision \cite{lee2014deeply} to our simple model. Unlike in (a), they use different reconstruction networks for recursions and more parameters are used.  (c) An example of expanded structure of (a) without parameter sharing (no recursion). The number of weight parameters is proportional to the depth squared. }
 \label{fig:recursive_supervision}
 \end{center}
 \end{figure*}
@@ -176,7 +173,7 @@ Our network, outlined in Figure \ref{fig:overview}, consists of three sub-networ
 We now look into each sub-network. \textbf{Embedding net} takes the input image (grayscale or RGB) and represent it as a set of feature maps. Intermediate representation used to pass information to inference net largely depends on how inference net internally represent its feature maps in their hidden layers. Learning this representation is done end-to-end altogether with learning other sub-networks.
 
 
-\textbf{Inference net} is the main component that solves the task, super-resolution. Analyzing a large image region is done by a single recursive layer. Each recursion applies the same convolution followed by a rectified linear unit. With convolution filters larger than $1\times 1$, receptive field is widened every recursion.   
+\textbf{Inference net} is the main component that solves the task, super-resolution. Analyzing a large image region is done by a single recursive layer. Each recursion applies the same convolution followed by a rectified linear unit (Figure \ref{fig:inference_network}). With convolution filters larger than $1\times 1$,  widened every recursion.   
 
 While feature maps from the final application of the recursive layer represent the high-resolution image, transformation of them (multi-channel) back into the original image space (1 or 3-channel) is necessary. This is done by \textbf{reconstruction net}.  
 
@@ -202,8 +199,9 @@ for $d = 1, ..., D$.
 
 Inference net $f_2$ is equivalent to the composition of the same elementary function $g$: 
 \begin{equation}
-f_2(H) = g \circ g \circ \cdots \circ g(H) =  g^{D}(H).
+f_2(H) = (g \circ g \circ \cdots \circ) g(H) =  g^{D}(H),
 \end{equation}
+where the operator $\circ$ denotes a function composition and $g^{d}$ denotes the $d$-fold product of $g$.
 
 Reconstruction net $f_3$ takes the input hidden state $H_D$ and outputs the target image (high-resolution). Roughly speaking, reconstruction net is the inverse operation of embedding net. The formula is as follows:
 \begin{align}
@@ -237,7 +235,7 @@ To overcome the weaknesses of the simple model, we propose two extensions: recur
 
 We use all $D$ intermediate predictions to compute the final output. All predictions are averaged during testing. The optimal weights are automatically learned during training. 
 
-There are two significant differences from our recursive-supervision to a deep-supervision proposed in Lee et al. \cite{lee2014deeply}. They associate an unique classifier for each hidden layer. For each additional layer, new classifier has to be introduced and new parameters thereby. If this approach is used, our modified network looks as in Figure \ref{fig:recursive_supervision} (b). Then we need $D$ different reconstruction networks. This is against our original purpose of using recursive networks: not introducing new parameters while stacking more layers. In addition, using different recon. nets no longer effectively regularizes the network.
+There are two significant differences from our recursive-supervision to a deep-supervision proposed in Lee et al. \cite{lee2014deeply}. They associate an unique classifier for each hidden layer. For each additional layer, new classifier has to be introduced and new parameters thereby. If this approach is used, our modified network looks as in Figure \ref{fig:recursive_supervision}(b). Then we need $D$ different reconstruction networks. This is against our original purpose of using recursive networks: not introducing new parameters while stacking more layers. In addition, using different recon. nets no longer effectively regularizes the network.
 
 The second difference is that Lee et al. \cite{lee2014deeply} discard all intermediate classifiers during testing. However, an ensemble of all intermediate predictions significantly boosts the performance. The final output from the ensemble is also supervised.
 
@@ -286,7 +284,7 @@ where $w_d$ denotes the weights of predictions reconstructed from each intermedi
 \footnotesize
 \begin{tabular}{ | c | c | c | c | c | c | c | c | }
 \hline
-\multirow{2}{*}{Dataset} & \multirow{2}{*}{Scale} & Bicubic & A+ & SRCNN & RFL & SelfEx & RCN (Ours)\\
+\multirow{2}{*}{Dataset} & \multirow{2}{*}{Scale} & Bicubic & A+ & SRCNN & RFL & SelfEx & DRCN (Ours)\\
  & & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM\\
 \hline
 \hline
@@ -333,7 +331,7 @@ where $w_d$ denotes the weights of predictions reconstructed from each intermedi
 & \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.2\textwidth]{img096_for_fig1_SelfEx.png}}\vspace{0.3ex}
 & \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.2\textwidth]{img096_for_fig1_RCN.png}}\vspace{0.3ex}
 \\
-& RFL (23.95, 0.8230)& SelfEx (25.46, 0.8635)& RCN (25.86, 0.8867)\\
+& RFL (23.95, 0.8230)& SelfEx (25.46, 0.8635)& DRCN (25.86, 0.8867)\\
 \end{tabular}
 \caption{Super-resolution results of ``img096"(Urban100) with scale factor $\times$3. Our result is visually pleasing.}
 \label{fig:img1}
@@ -354,7 +352,7 @@ where $w_d$ denotes the weights of predictions reconstructed from each intermedi
 & {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_SelfEx.png}}
 & {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_RCN.png}}
 \\
-Original& A+& SRCNN& RFL& SelfEx& RCN\\
+Original& A+& SRCNN& RFL& SelfEx& DRCN\\
 (PSNR, SSIM)& (32.49, 0.9425)& (32.59, 0.9409)& (32.35, 0.9389)& (33.21, 0.9453)& (34.46, 0.9553)\\
 \end{tabular}
 \caption{Super-resolution results of ``img082"(Urban100) with scale factor $\times$3. Our result is visually pleasing.}
@@ -376,7 +374,7 @@ Original& A+& SRCNN& RFL& SelfEx& RCN\\
 & {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img099_for_fig2_SelfEx.png}}
 & {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img099_for_fig2_RCN.png}}
 \\
-Original& A+& SRCNN& RFL& SelfEx& RCN\\
+Original& A+& SRCNN& RFL& SelfEx& DRCN\\
 (PSNR, SSIM)& (24.97, 0.7606)& (25.49, 0.7710)& (24.53, 0.7460)& (25.65, 0.7921)& (26.30, 0.8177)\\
 \end{tabular}
 \caption{Super-resolution results of ``img099"(Urban100) with scale factor $\times$3. Our result is visually pleasing.}
