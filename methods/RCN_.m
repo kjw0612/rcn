@@ -13,7 +13,7 @@ if gpu
     net.move('gpu');
 end
 
-managableMax = 630*630;
+managableMax = 300000;
 
 dataDir = fullfile('data', datasetName);
 f_lst = dir(fullfile(dataDir, '*.*'));

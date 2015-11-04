@@ -1,6 +1,9 @@
 function eval_SR(evalSetting, outDir)
 
 outRoute = fullfile(evalSetting.expName, [evalSetting.expName,'_',evalSetting.dataset,'_x',num2str(evalSetting.sf)]);
+if strcmp(evalSetting.method,'RCNInter')
+    outRoute = fullfile(evalSetting.expName, [evalSetting.expName,'_',evalSetting.dataset,'_x',num2str(evalSetting.sf),'_d',num2str(evalSetting.opts)]);
+end
 outRoute = fullfile(outDir, outRoute);
 
 switch evalSetting.dataset
@@ -37,6 +40,8 @@ else
             SelfEx(evalSetting.dataset, evalSetting.sf, outRoute);
         case 'RCN'
             RCN_(evalSetting.dataset, evalSetting.sf, evalSetting.model, outRoute);
+        case 'RCNInter'
+            RCNInter(evalSetting.dataset, evalSetting.sf, evalSetting.model, evalSetting.opts, outRoute);
         otherwise
             disp('Unknown method name');
     end
