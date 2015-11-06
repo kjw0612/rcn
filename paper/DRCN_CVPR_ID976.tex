@@ -234,7 +234,7 @@ where $w_d$ denotes the weights of predictions reconstructed from each intermedi
 \small
 \begin{tabular}{ | c | c | c | c | c | c | c | c | }
 \hline
-\multirow{2}{*}{Dataset} & \multirow{2}{*}{Scale} & Bicubic & A+ & RFL & SelfEx & SRCNN & DRCN (Ours)\\
+\multirow{2}{*}{Dataset} & \multirow{2}{*}{Scale} & Bicubic & A+\cite{Timofte} & RFL\cite{schulter2015fast} & SelfEx\cite{Huang-CVPR-2015} & SRCNN\cite{dong2014image} & DRCN (Ours)\\
  & & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM\\
 \hline
 \hline
@@ -278,7 +278,7 @@ where $w_d$ denotes the weights of predictions reconstructed from each intermedi
 & {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{img082_for_figDRCN_SelfEx.png}}
 & {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{img082_for_figDRCN_RCN.png}}
 \\
-Ground Truth& A+& SRCNN& RFL& SelfEx& DRCN (Ours)\\
+Ground Truth& A+\cite{Timofte}& SRCNN\cite{dong2014image}& RFL\cite{schulter2015fast}& SelfEx\cite{Huang-CVPR-2015}& DRCN (Ours)\\
 (PSNR, SSIM)& (29.83, 0.9102)& (29.97, 0.9092)& (29.61, 0.9026)& ({\color{blue}{30.73}}, {\color{blue}{0.9193}})& ({\color{red}{32.17}}, {\color{red}{0.9350}})\\
 \end{tabular}
 \caption{Super-resolution results of ``img082"(\textit{Urban100}) with scale factor $\times$4. Line is straightened and sharpened in our result, whereas other methods give blurry lines. Our result seems visually pleasing.}
@@ -300,7 +300,7 @@ Ground Truth& A+& SRCNN& RFL& SelfEx& DRCN (Ours)\\
 & {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{134035_for_figDRCN_SelfEx.png}}
 & {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{134035_for_figDRCN_RCN.png}}
 \\
-Ground Truth& A+& SRCNN& RFL& SelfEx& DRCN (Ours)\\
+Ground Truth& A+\cite{Timofte}& SRCNN\cite{dong2014image}& RFL\cite{schulter2015fast}& SelfEx\cite{Huang-CVPR-2015}& DRCN (Ours)\\
 (PSNR, SSIM)& (23.53, 0.6977)& ({\color{blue}{23.79}}, {\color{blue}{0.7087}})& (23.53, 0.6943)& (23.52, 0.7006)& ({\color{red}{24.36}}, {\color{red}{0.7399}})\\
 \end{tabular}
 \caption{Super-resolution results of ``134035"(\textit{B100}) with scale factor $\times$4. Our result is visually pleasing.}
@@ -322,7 +322,7 @@ Ground Truth& A+& SRCNN& RFL& SelfEx& DRCN (Ours)\\
 & {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{ppt3_for_figDRCN_SelfEx.png}}
 & {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{ppt3_for_figDRCN_RCN.png}}
 \\
-Ground Truth& A+& SRCNN& RFL& SelfEx& DRCN (Ours)\\
+Ground Truth& A+\cite{Timofte}& SRCNN\cite{dong2014image}& RFL\cite{schulter2015fast}& SelfEx\cite{Huang-CVPR-2015}& DRCN (Ours)\\
 (PSNR, SSIM)& (26.09, 0.9342)& (27.01, 0.9365)& (25.91, 0.9254)& ({\color{blue}{27.10}}, {\color{blue}{0.9483}})& ({\color{red}{27.66}}, {\color{red}{0.9608}})\\
 \end{tabular}
 \caption{Super-resolution results of ``ppt3"(\textit{Set14}) with scale factor $\times$3. Our result is visually pleasing.}
