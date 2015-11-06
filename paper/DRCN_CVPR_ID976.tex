@@ -391,6 +391,25 @@ Original& A+& SRCNN& RFL& SelfEx& DRCN (Ours) \\
 {\graphicspath{{figs/graph1/}}\includegraphics[height=4.8cm]{graphOne.pdf}}
 \caption{Recursion versus Performance for the scale factor $\times$3 on the dataset \textit{Set5}. More recursions yielding larger receptive fields lead to better performances. (Graph {\color{red}not complete} yet)}\end{adjustwidth}
 \end{figure}
+
+\begin{table*}
+\begin{center}
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{ | c | c | c | c | c | c | c | }
+\hline
+Scale & Output 1 & $\sum\limits_{d=1}^{3}$ Output $d$ & $\sum\limits_{d=1}^{5}$ Output $d$ & $\sum\limits_{d=1}^{7}$ Output $d$ & $\sum\limits_{d=1}^{9}$ Output $d$ & Ensemble\\
+\hline
+\hline
+$\times$2 & 35.93 & 35.43 & 36.20 & 36.76 & 37.08 & {\color{red}37.35}\\
+$\times$3 & 31.89 & 31.71 & 32.52 & 33.15 & 33.59 & {\color{red}33.76}\\
+$\times$4 & 29.37 & 28.56 & 29.73 & 30.35 & 30.82 & {\color{red}31.27}\\
+\hline
+\end{tabular}
+\caption{Experiment on the effect of ensemble.Quantitative evaluation (PSNR) on dataset Set5 is provided for scale factors $\times2$,$\times3$ and $\times4$. As more outputs are ensembled, the result becomes better. {\color{red}Red color} indicates the best performance.} 
+\end{center}
+\end{table*}
+
 %%%%%%%% Figures End
 
 \subsection{Training}
