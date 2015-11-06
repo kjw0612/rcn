@@ -234,7 +234,7 @@ where $w_d$ denotes the weights of predictions reconstructed from each intermedi
 \small
 \begin{tabular}{ | c | c | c | c | c | c | c | c | }
 \hline
-\multirow{2}{*}{Dataset} & \multirow{2}{*}{Scale} & Bicubic & A+\cite{Timofte} & SRCNN\cite{dong2014image} & RFL\cite{schulter2015fast} & SelfEx\cite{Huang-CVPR-2015} & DRCN (Ours)\\
+\multirow{2}{*}{Dataset} & \multirow{2}{*}{Scale} & Bicubic & A+ \cite{Timofte} & SRCNN \cite{dong2014image} & RFL \cite{schulter2015fast} & SelfEx \cite{Huang-CVPR-2015} & DRCN (Ours)\\
  & & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM\\
 \hline
 \hline
@@ -278,7 +278,7 @@ where $w_d$ denotes the weights of predictions reconstructed from each intermedi
 & {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{img082_for_figDRCN_SelfEx.png}}
 & {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{img082_for_figDRCN_RCN.png}}
 \\
-Ground Truth& A+\cite{Timofte}& SRCNN\cite{dong2014image}& RFL\cite{schulter2015fast}& SelfEx\cite{Huang-CVPR-2015}& DRCN (Ours)\\
+Ground Truth& A+ \cite{Timofte}& SRCNN \cite{dong2014image}& RFL \cite{schulter2015fast}& SelfEx \cite{Huang-CVPR-2015}& DRCN (Ours)\\
 (PSNR, SSIM)& (29.83, 0.9102)& (29.97, 0.9092)& (29.61, 0.9026)& ({\color{blue}{30.73}}, {\color{blue}{0.9193}})& ({\color{red}{32.17}}, {\color{red}{0.9350}})\\
 \end{tabular}
 \caption{Super-resolution results of ``img082"(\textit{Urban100}) with scale factor $\times$4. Line is straightened and sharpened in our result, whereas other methods give blurry lines. Our result seems visually pleasing.}
@@ -300,7 +300,7 @@ Ground Truth& A+\cite{Timofte}& SRCNN\cite{dong2014image}& RFL\cite{schulter2015
 & {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{134035_for_figDRCN_SelfEx.png}}
 & {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{134035_for_figDRCN_RCN.png}}
 \\
-Ground Truth& A+\cite{Timofte}& SRCNN\cite{dong2014image}& RFL\cite{schulter2015fast}& SelfEx\cite{Huang-CVPR-2015}& DRCN (Ours)\\
+Ground Truth& A+ \cite{Timofte}& SRCNN \cite{dong2014image}& RFL \cite{schulter2015fast}& SelfEx \cite{Huang-CVPR-2015}& DRCN (Ours)\\
 (PSNR, SSIM)& (23.53, 0.6977)& ({\color{blue}{23.79}}, {\color{blue}{0.7087}})& (23.53, 0.6943)& (23.52, 0.7006)& ({\color{red}{24.36}}, {\color{red}{0.7399}})\\
 \end{tabular}
 \caption{Super-resolution results of ``134035"(\textit{B100}) with scale factor $\times$4. Our result is visually pleasing.}
@@ -322,7 +322,7 @@ Ground Truth& A+\cite{Timofte}& SRCNN\cite{dong2014image}& RFL\cite{schulter2015
 & {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{ppt3_for_figDRCN_SelfEx.png}}
 & {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{ppt3_for_figDRCN_RCN.png}}
 \\
-Ground Truth& A+\cite{Timofte}& SRCNN\cite{dong2014image}& RFL\cite{schulter2015fast}& SelfEx\cite{Huang-CVPR-2015}& DRCN (Ours)\\
+Ground Truth& A+ \cite{Timofte}& SRCNN \cite{dong2014image}& RFL \cite{schulter2015fast}& SelfEx \cite{Huang-CVPR-2015}& DRCN (Ours)\\
 (PSNR, SSIM)& (26.09, 0.9342)& (27.01, 0.9365)& (25.91, 0.9254)& ({\color{blue}{27.10}}, {\color{blue}{0.9483}})& ({\color{red}{27.66}}, {\color{red}{0.9608}})\\
 \end{tabular}
 \caption{Super-resolution results of ``ppt3"(\textit{Set14}) with scale factor $\times$3. Our result is visually pleasing.}
@@ -336,12 +336,14 @@ Ground Truth& A+\cite{Timofte}& SRCNN\cite{dong2014image}& RFL\cite{schulter2015
 \centering
 {\graphicspath{{figs/graph1/}}\includegraphics[height=4.8cm]{graphOne.pdf}}
 \caption{Recursion versus Performance for the scale factor $\times$3 on the dataset \textit{Set5}. More recursions yielding larger receptive fields lead to better performances. (Graph {\color{red}not complete} yet)}\end{adjustwidth}
+\label{fig:more_recursion}
 \end{figure}
 
 \begin{figure}
 \centering
 {\graphicspath{{figs/graph1/}}\includegraphics[width=5cm]{graphEnsemble}}
-\caption{}
+\caption{Ensemble effect. Prediction made from intermediate recursions are evaluated. There is no single recursion depth that works the best across all scale factors. Ensemble of intermediate predictions significantly improves performance. }
+\label{fig:ensemble}
 \end{figure}
 %%%%%%%% Figures End
 
@@ -372,11 +374,7 @@ Training is carried out by optimizing the regression objective using mini-batch 
 
 
 \section{Experimental Results}
-In this section, we evaluate the performance of our method on several datasets. We first describe datasets used for training and testing our method. Next, our training setup is given. 
-
-We give several experiments for understanding our model properties. The effect of increasing the number of recursions is investigated and TODO add more experiments.  
-
-Finally, we compare our method with several state-of-the-art methods. 
+In this section, we evaluate the performance of our method on several datasets. We first describe datasets used for training and testing our method. Next, our training setup is given. We give several experiments for understanding our model properties. The effect of increasing the number of recursions is investigated. Finally, we compare our method with several state-of-the-art methods. 
 
 \subsection{Datasets}
 For training, we use 91 images proposed in Yang et al. \cite{yang2010image} for all experiments. For testing, we use four datasets. Datasets \textit{Set5} \cite{bevilacqua2012} and \textit{Set14} \cite{zeyde2012single} are often used for benchmark \cite{Timofte,Timofte2013,dong2014image}. Dataset \textit{B100}  consists of natural images in the Berkeley Segmentation Dataset \cite{Martin2001}. Finally, dataset \textit{Urban100}, urban images recently provided by Huang et al. \cite{Huang-CVPR-2015}, is very interesting as it contains many challenging images failed by existing methods.
@@ -397,9 +395,11 @@ For initializing weights in non-recursive layers, we use the method described in
 
 Learning rate is initially set to 0.01 and then decreased by a factor of 10 if the validation error does not decrease for 5 epochs. If learning rate is less than $10^{-6}$, the procedure is terminated. Training roughly takes 6 days on a machine using one Titan X GPU. 
 
+\subsection{Study of Deep Recursions}
+We study the effect of increasing recursion depth. We trained four models with different numbers of recursions: 1, 6, 11, and 16. Four models use the same number of parameters except the weights used for ensemble. In Figure \ref{fig:more_recursion}, it is shown that as more recursions are performed, PSNR measures increase. Increasing recursion depth with a larger image context and more nonlinearities boosts performance. The effect of ensemble is also investigated. We first evaluate intermediate predictions made from recursions (Figure \ref{fig:ensemble}). The ensemble output significantly improves performances of individual predictions. 
 
 \subsection{Comparisons with State-of-the-Art Methods}
-We provide quantitative and qualitative comparisons. For benchmark, we use public code for A+ \cite{Timofte}, SRCNN \cite{dong2014image}, RFL \cite{schulter2015fast} and  SelfEx \cite{Huang-CVPR-2015}. We deal with luminance components only as similarly done in other methods because human vision is much more sensitive to details in intensity than in color
+We provide quantitative and qualitative comparisons. For benchmark, we use public code for A+ \cite{Timofte}, SRCNN \cite{dong2014image}, RFL \cite{schulter2015fast} and  SelfEx \cite{Huang-CVPR-2015}. We deal with luminance components only as similarly done in other methods because human vision is much more sensitive to details in intensity than in color.
 
 As  some methods such as A+ \cite{Timofte} and  RFL \cite{schulter2015fast} do not predict image boundary, they require cropping pixels near borders. For our method, this procedure is unnecessary as our network predicts the full-sized image. For fair comparison, however, we also crop pixels to the same amount. PSNRs can be slightly different from original papers as existing methods use slightly different evaluation frameworks. We use the public evaluation code used in \cite{Huang-CVPR-2015}.
 
