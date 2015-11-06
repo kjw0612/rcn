@@ -45,58 +45,71 @@ end
 % evalSetting(end+1) = evalSet('RCN 256', 'RCN', 'Set5', 3, 'best256.mat');
 % evalSetting(end+1) = evalSet('RCN 256', 'RCN', 'Set14', 3, 'best256.mat');
 % evalSetting(end+1) = evalSet('RCN mtest', 'RCN', 'Urban100', 3, 'best64.mat');
-evalSetting(end+1) = evalSet('RCN', 'RCN', 'Set5', 3, 'sf3/best_D15_F256.mat');
-evalSetting(end+1) = evalSet('RCN', 'RCN', 'Set14', 3, 'sf3/best_D15_F256.mat');
-evalSetting(end+1) = evalSet('RCN', 'RCN', 'B100', 3, 'sf3/best_D15_F256.mat');
-evalSetting(end+1) = evalSet('RCN', 'RCN', 'Urban100', 3, 'sf3/best_D15_F256.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'Set5', 3, 'sf3/best_D20_F256.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'Set14', 3, 'sf3/best_D20_F256.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'B100', 3, 'sf3/best_D20_F256.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'Urban100', 3, 'sf3/best_D20_F256.mat');
 
-evalSetting(end+1) = evalSet('RCN', 'RCN', 'Set5', 4, 'sf4/best_D15_F256.mat');
-evalSetting(end+1) = evalSet('RCN', 'RCN', 'Set14', 4, 'sf4/best_D15_F256.mat');
-evalSetting(end+1) = evalSet('RCN', 'RCN', 'B100', 4, 'sf4/best_D15_F256.mat');
-evalSetting(end+1) = evalSet('RCN', 'RCN', 'Urban100', 4, 'sf4/best_D15_F256.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'Set5', 4, 'sf4/best_D20_F256.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'Set14', 4, 'sf4/best_D20_F256.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'B100', 4, 'sf4/best_D20_F256.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'Urban100', 4, 'sf4/best_D20_F256.mat');
 
-evalSetting(end+1) = evalSet('RCN', 'RCN', 'Set5', 2, 'sf2/best_D15_F256.mat');
-evalSetting(end+1) = evalSet('RCN', 'RCN', 'Set14', 2, 'sf2/best_D15_F256.mat');
-evalSetting(end+1) = evalSet('RCN', 'RCN', 'B100', 2, 'sf2/best_D15_F256.mat');
-evalSetting(end+1) = evalSet('RCN', 'RCN', 'Urban100', 2, 'sf2/best_D15_F256.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'Set5', 2, 'sf2/best_D20_F256.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'Set14', 2, 'sf2/best_D20_F256.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'B100', 2, 'sf2/best_D20_F256.mat');
+evalSetting(end+1) = evalSet('RCN', 'RCN', 'Urban100', 2, 'sf2/best_D20_F256.mat');
 
 evalSetting(end+1) = evalSet('RCNd5', 'RCN', 'Set5', 3, 'sf3/best_D5_F256.mat');
 evalSetting(end+1) = evalSet('RCNd10', 'RCN', 'Set5', 3, 'sf3/best_D10_F256.mat');
-evalSetting(end+1) = evalSet('RCNd20', 'RCN', 'Set5', 3, 'sf3/best_D20_F256.mat');
+evalSetting(end+1) = evalSet('RCNd15', 'RCN', 'Set5', 3, 'sf3/best_D15_F256.mat');
 
 evalSetting(end+1) = evalSet('RCNd5', 'RCN', 'Set14', 3, 'sf3/best_D5_F256.mat');
 evalSetting(end+1) = evalSet('RCNd10', 'RCN', 'Set14', 3, 'sf3/best_D10_F256.mat');
-evalSetting(end+1) = evalSet('RCNd20', 'RCN', 'Set14', 3, 'sf3/best_D20_F256.mat');
+evalSetting(end+1) = evalSet('RCNd15', 'RCN', 'Set14', 3, 'sf3/best_D15_F256.mat');
 
 evalSetting(end+1) = evalSet('RCNd5', 'RCN', 'B100', 3, 'sf3/best_D5_F256.mat');
 evalSetting(end+1) = evalSet('RCNd10', 'RCN', 'B100', 3, 'sf3/best_D10_F256.mat');
-evalSetting(end+1) = evalSet('RCNd20', 'RCN', 'B100', 3, 'sf3/best_D20_F256.mat');
+evalSetting(end+1) = evalSet('RCNd15', 'RCN', 'B100', 3, 'sf3/best_D15_F256.mat');
 
 evalSetting(end+1) = evalSet('RCNd5', 'RCN', 'Urban100', 3, 'sf3/best_D5_F256.mat');
 evalSetting(end+1) = evalSet('RCNd10', 'RCN', 'Urban100', 3, 'sf3/best_D10_F256.mat');
-evalSetting(end+1) = evalSet('RCNd20', 'RCN', 'Urban100', 3, 'sf3/best_D20_F256.mat');
+evalSetting(end+1) = evalSet('RCNd15', 'RCN', 'Urban100', 3, 'sf3/best_D15_F256.mat');
 
-for d = [1 4 7 10 11]
-    evalSetting(end+1) = evalSet('RCNInter', 'RCNInter', 'Set5', 2, 'sf2/best_D15_F256.mat', d);
-    evalSetting(end+1) = evalSet('RCNInter', 'RCNInter', 'Set5', 3, 'sf3/best_D15_F256.mat', d);
-    evalSetting(end+1) = evalSet('RCNInter', 'RCNInter', 'Set5', 4, 'sf4/best_D15_F256.mat', d);
+for d = [1 3 5 7 9 11 13 15]
+    for n = [0 1]
+        evalSetting(end+1) = evalSet('RCNInter', 'RCNInter', 'Set5', 2, 'sf2/best_D20_F256.mat', [1 d n]);
+        evalSetting(end+1) = evalSet('RCNInter', 'RCNInter', 'Set5', 3, 'sf3/best_D20_F256.mat', [1 d n]);
+        evalSetting(end+1) = evalSet('RCNInter', 'RCNInter', 'Set5', 4, 'sf4/best_D20_F256.mat', [1 d n]);
+    end
 end
 
-evalSetting(end+1) = evalSet('RCNInter', 'RCNInter', 'Set5', 2, 'sf2/best_D15_F256.mat', [1:4]);
-evalSetting(end+1) = evalSet('RCNInter', 'RCNInter', 'Set5', 3, 'sf3/best_D15_F256.mat', [1:4]);
-evalSetting(end+1) = evalSet('RCNInter', 'RCNInter', 'Set5', 4, 'sf4/best_D15_F256.mat', [1:4]);
+evalSetting(end+1) = evalSet('VDSR', 'VDSR', 'Set5', 2, 'SFSR_291plus.mat');
+evalSetting(end+1) = evalSet('VDSR', 'VDSR', 'Set5', 3, 'SFSR_291plus.mat');
+evalSetting(end+1) = evalSet('VDSR', 'VDSR', 'Set5', 4, 'SFSR_291plus.mat');
 
-evalSetting(end+1) = evalSet('RCNInter', 'RCNInter', 'Set5', 2, 'sf2/best_D15_F256.mat', [1:7]);
-evalSetting(end+1) = evalSet('RCNInter', 'RCNInter', 'Set5', 3, 'sf3/best_D15_F256.mat', [1:7]);
-evalSetting(end+1) = evalSet('RCNInter', 'RCNInter', 'Set5', 4, 'sf4/best_D15_F256.mat', [1:7]);
+evalSetting(end+1) = evalSet('VDSR', 'VDSR', 'Set14', 2, 'SFSR_291plus.mat');
+evalSetting(end+1) = evalSet('VDSR', 'VDSR', 'Set14', 3, 'SFSR_291plus.mat');
+evalSetting(end+1) = evalSet('VDSR', 'VDSR', 'Set14', 4, 'SFSR_291plus.mat');
 
-evalSetting(end+1) = evalSet('RCNInter', 'RCNInter', 'Set5', 2, 'sf2/best_D15_F256.mat', [1:10]);
-evalSetting(end+1) = evalSet('RCNInter', 'RCNInter', 'Set5', 3, 'sf3/best_D15_F256.mat', [1:10]);
-evalSetting(end+1) = evalSet('RCNInter', 'RCNInter', 'Set5', 4, 'sf4/best_D15_F256.mat', [1:10]);
+evalSetting(end+1) = evalSet('VDSR', 'VDSR', 'B100', 2, 'SFSR_291plus.mat');
+evalSetting(end+1) = evalSet('VDSR', 'VDSR', 'B100', 3, 'SFSR_291plus.mat');
+evalSetting(end+1) = evalSet('VDSR', 'VDSR', 'B100', 4, 'SFSR_291plus.mat');
 
-evalSetting(end+1) = evalSet('RCNInter', 'RCNInter', 'Set5', 2, 'sf2/best_D15_F256.mat', [1:11]);
-evalSetting(end+1) = evalSet('RCNInter', 'RCNInter', 'Set5', 3, 'sf3/best_D15_F256.mat', [1:11]);
-evalSetting(end+1) = evalSet('RCNInter', 'RCNInter', 'Set5', 4, 'sf4/best_D15_F256.mat', [1:11]);
+evalSetting(end+1) = evalSet('VDSR', 'VDSR', 'Urban100', 2, 'SFSR_291plus.mat');
+evalSetting(end+1) = evalSet('VDSR', 'VDSR', 'Urban100', 3, 'SFSR_291plus.mat');
+evalSetting(end+1) = evalSet('VDSR', 'VDSR', 'Urban100', 4, 'SFSR_291plus.mat');
+
+do.dataset = {'Set5','Set14','B100','Urban100'};
+do.sf = [2 3 4];
+depth = 5:20;
+for i = 1:numel(do.dataset)
+    for j = 1:numel(do.sf)
+        for k = 1:numel(depth)
+            evalSetting(end+1) = evalSet(['VDSRd',num2str(depth(k))], 'VDSR', do.dataset{i}, do.sf(j), ['exp_sf[2 3 4]_diff1_depth',num2str(depth(k)),'/best.mat']);
+        end
+    end
+end
 % Setup outDir
 outDir = 'data/result';
 if ~exist('data/result', 'dir'), mkdir('data/result'); end
@@ -126,7 +139,7 @@ t1opts.fid = fileID;%fopen([t1opts.tableName,'.tex'],'w');
 t2opts.dataset = {'Set5','Set14','B100','Urban100'};
 t2opts.problem = 'SR';
 t2opts.sf = [2 3 4];
-t2opts.exp = {'Bicubic','A+','SRCNN','RFL','SelfEx','RCN'};
+t2opts.exp = {'Bicubic','A+','RFL','SelfEx','SRCNN','RCN'};
 t2opts.printTime = false;
 t2opts.tableName = 'table_2';
 t2opts.fid = fileID;
@@ -197,15 +210,17 @@ fSuppopts.figName = 'fig3';
 %
 %--------------------------------------------------------------------------
 
-g1opts.dataset = {'Set5','Set14','B100','Urban100'}; %should be one string like dataset={'Set5'};
+g1opts.dataset = {'Set5'};%,'Set14','B100','Urban100'}; 
 g1opts.sf = [3];
-g1opts.exp = {'RCNd5','RCNd10','RCN','RCNd20'};
+g1opts.exp = {'RCNd10','RCNd15','RCN'};
 g1opts.graphSize = [];
-g1opts.graphX = [5 10 15 20]-4;
-g1opts.graphXname = {'1','6','11','16'};
+g1opts.graphX = [10 15 20]-4;
+g1opts.graphXname = {'6','11','16'};
 g1opts.graphYname = [];
 g1opts.graphName = 'graph1';
 g1opts.graphDir = 'paper/figs';
+g1opts.graphXlabel = 'Recursion';
+g1opts.saved = [];
 g1opts.printOne = true;
 g1opts.printLegend = true;
 g1opts.fid = fileID;
@@ -221,11 +236,9 @@ g1opts.fid = fileID;
 tiopts.dataset = {'Set5'};
 tiopts.problem = 'SR';
 tiopts.sf = [2 3 4];
-tiopts.exp = {'RCNInter','RCNInter','RCNInter','RCNInter','RCNInter','RCNInter','RCNInter','RCNInter','RCNInter','RCN'};
-% 
-%               'RCNInter','RCNInter','RCNInter','RCNInter','RCNInter','RCNInter','RCNInter', ...
-%               'RCN'};
-tiopts.interSetting = {1, 4, 7, 10, 11, [1:4], [1:7], [1:10], [1:11]};
+tiopts.exp = {'RCNInter','RCNInter','RCNInter','RCNInter','RCNInter','RCNInter','RCN'};
+indNormal = 1;
+tiopts.interSetting = {[1 1 indNormal], [1 3 indNormal], [1 5 indNormal], [1 7 indNormal], [1 9 indNormal], [1 11 indNormal]};
 tiopts.printTime = false;
 tiopts.tableName = 'table_inter';
 tiopts.fid = fileID;
@@ -234,8 +247,9 @@ tiopts.fid = fileID;
 
 %%%% everything for paper
 
-texPrefix(fileID);
+% texPrefix(fileID);
 % % makeTable1(t1opts);
+% t2opts.printTime = true;
 % makeTable2(t2opts);
 % % makeFigureFront(ffopts);
 % f1opts.dataset = 'Urban100'; f1opts.imgNum = 96;
@@ -252,38 +266,56 @@ texPrefix(fileID);
 % clf;
 % makeGraph(g1opts);
 % g1opts.printOne = false;
-makeTableInter(tiopts);
-texSuffix(fileID);
-fclose(fileID);
+% makeTableInter(tiopts);
+% texSuffix(fileID);
+% fclose(fileID);
 
 
 %--------------------------------------------------------------------------
-%%%% for only figures in paper
+%%%% for Everything in paper DRCN
 
-fileID3 = fopen('paper/figuresOnly.tex','w');
+fileID3 = fopen('paper/forEverythingDRCN.tex','w');
 texPrefix(fileID3);
 
-% ffopts.fid = fileID3; 
-% makeFigureFront(ffopts);
+t2opts.fid = fileID3;
+makeTable2(t2opts);
 
 f1opts.fid = fileID3;
-f1opts.dataset = 'Urban100'; f1opts.imgNum = 96;
+f1opts.lineWidth = 10;
+f1opts.dataset = 'Urban100'; f1opts.imgNum = 39;
 makeFigure1(f1opts);
 
-f1opts.exp = {'HR','SRCNN','SelfEx','RCN'};
-makeFigure1(f1opts);
+% f1opts.exp = {'HR','SRCNN','SelfEx','RCN'};
+% f1opts.lineWidth = 15;
+% makeFigure1(f1opts);
 
 f2opts.fid = fileID3;
 f2opts.boxSize = [60 60];
+f2opts.lineWidth = 10;
 f2opts.dataset = 'Urban100'; f2opts.imgNum = 82;
 makeFigure2(f2opts);
-
-f2opts.dataset = 'Urban100'; f2opts.imgNum = 99;
+f2opts.dataset = 'Urban100'; f2opts.imgNum = 97;
 makeFigure2(f2opts);
+f2opts.boxSize = [30 30];
+f2opts.lineWidth = 5;
+f2opts.dataset = 'B100'; f2opts.imgNum = '148026';
+makeFigure2(f2opts);
+
 g1opts.fid = fileID3;
 makeGraph(g1opts);
-% tiopts.fid = fileID3;
-% makeTableInter(tiopts);
+
+tiopts.fid = fileID3;
+tiopts.exp = {'RCNInter','RCNInter','RCNInter','RCNInter','RCNInter','RCNInter','RCNInter','RCNInter','RCN'};
+indNormal = 1;
+tiopts.interSetting = {[1 1 indNormal], [1 3 indNormal],  [1 5 indNormal],  [1 7 indNormal],...
+                       [1 9 indNormal], [1 11 indNormal], [1 13 indNormal], [1 15 indNormal]};
+makeTableInter(tiopts);
+tiopts.exp = {'RCNInter','RCNInter','RCNInter','RCNInter','RCNInter','RCNInter','RCNInter','RCNInter','RCN'};
+indNormal = 0;
+tiopts.interSetting = {[1 1 indNormal], [1 3 indNormal],  [1 5 indNormal],  [1 7 indNormal],...
+                       [1 9 indNormal], [1 11 indNormal], [1 13 indNormal], [1 15 indNormal]};
+makeTableInter(tiopts);
+
 texSuffix(fileID3);
 fclose(fileID3);
 
@@ -292,16 +324,19 @@ fclose(fileID3);
 
 % cp = 0;
 % 
-% fileID2 = fopen('paper/supplebook.tex','w');
+% fileID2 = fopen('paper/supplebook_VDSR.tex','w');
 % texPrefix(fileID2);
 % fSuppopts.fid = fileID2;
-% fSuppopts.figName = 'figSup';
+% fSuppopts.figName = 'figSupVDSR';
+% fSuppopts.sf = 3;
+% fSuppopts.exp = {'HR','A+','SRCNN','RFL','SelfEx','VDSR'};
+% fSuppopts.figDir = 'paper/figs';
 % dataset = {'Set5','Set14','B100','Urban100'};
 % for d = 1:numel(dataset)
 %     fSuppopts.dataset = dataset{d};
 %     if strcmp(fSuppopts.dataset, 'Urban100')
-%         fSuppopts.lineWidth = 8;
-%         fSuppopts.boxSize = [90 90];
+%         fSuppopts.lineWidth = 10;
+%         fSuppopts.boxSize = [60 60];
 %     else
 %         fSuppopts.lineWidth = 4;
 %         fSuppopts.boxSize = [30 30];
@@ -318,6 +353,54 @@ fclose(fileID3);
 % fclose(fileID2);
 
 %--------------------------------------------------------------------------
+%%%% for paper 2, VDSR
+%%%% everything for paper
+% fileID2 = fopen('paper/supplebook.tex','w');
+% file2ID = fopen('paper2/forPaper2.tex','w');
+% texPrefix(file2ID);
+% % 
+% % t2opts.fid = file2ID;
+% % t2opts.printTime = true;
+% % t2opts.exp = {'Bicubic','A+','RFL','SelfEx','SRCNN','VDSR'};
+% % makeTable2(t2opts);
+% 
+% f1opts.fid = file2ID;
+% f1opts.figDir = 'paper2/figs';
+% f1opts.lineWidth = 15;
+% f1opts.exp = {'HR','A+','RFL','SelfEx','SRCNN','VDSR'};
+% f1opts.dataset = 'Urban100'; f1opts.imgNum = 39;
+% makeFigure1(f1opts);
+% 
+% f2opts.fid = file2ID;
+% f2opts.figDir = 'paper2/figs';
+% f2opts.boxSize = [50 50];
+% f2opts.lineWidth = 15;
+% f2opts.exp = {'HR','A+','RFL','SelfEx','SRCNN','VDSR'};
+% f2opts.dataset = 'Urban100'; f2opts.imgNum = 2;
+% makeFigure2(f2opts);
+% f2opts.dataset = 'Urban100'; f2opts.imgNum = 82;
+% makeFigure2(f2opts);
+% 
+% g1opts.fid = file2ID;
+% g1opts.dataset = {'Set5','Set14','B100','Urban100'}; 
+% g1opts.sf = [2 3 4];
+% g1opts.exp = {'VDSRd5','VDSRd6','VDSRd7','VDSRd8','VDSRd9','VDSRd10','VDSRd11','VDSRd12','VDSRd13',...
+%               'VDSRd14','VDSRd15','VDSRd16','VDSRd17','VDSRd18','VDSRd19','VDSRd20'};
+% g1opts.graphSize = [];
+% g1opts.graphX = [5:20];
+% g1opts.graphXname = {'5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20'};
+% g1opts.graphYname = [];
+% g1opts.graphXlabel = 'Depth';
+% g1opts.graphName = 'graph1';
+% g1opts.graphDir = 'paper2/figs';
+% g1opts.printOne = false;
+% g1opts.saved = '4data.mat';
+% makeGraph(g1opts);
+% texSuffix(file2ID);
+% fclose(file2ID);
+%--------------------------------------------------------------------------
+
+
 
 function makeTable1(opts)
 
@@ -527,6 +610,8 @@ fprintf(fid,'\\multirow{2}{*}{Dataset} & \\multirow{2}{*}{Scale}');
 for indExp = 1:numel(exp)
     if strcmp('RCN', exp{indExp})
         fprintf(fid,[' & DRCN (Ours)']);
+    elseif strcmp('VDSR', exp{indExp})
+        fprintf(fid,[' & VDSR (Ours)']);
     else
         fprintf(fid,[' & ',exp{indExp}]);
     end
@@ -577,8 +662,10 @@ for indDataset = 1:numel(dataset)
         avgPSNR = mean(PSNR_table,1);
         avgSSIM = mean(SSIM_table,1);
         avgTIME = mean(TIME_table,1);
+        tavgTIME = avgTIME; tavgTIME(1) = 100;
         [~,maxAvgPSNR] = max(avgPSNR,[],2); [~,maxAvgSSIM] = max(avgSSIM,[],2);
         [~,secmaxAvgPSNR] = secmax(avgPSNR,2); [~,secmaxAvgSSIM] = secmax(avgSSIM,2); 
+        [~,minAvgTIME] = max(-1*tavgTIME,[],2); [~,secminAvgTIME] = secmax(-1*tavgTIME,2);
                 
         fprintf(fid,[' & $\\times$', num2str(SF)]);            
         for indExp = 1:numel(exp)
@@ -592,7 +679,13 @@ for indDataset = 1:numel(dataset)
                     fprintf(fid, ['/',num2str(avgSSIM(1, indExp),'%.4f')]);
                 end
                 if printTime
-                    fprintf(fid, ['/',num2str(avgTIME(1, indExp),'%.2f')]);
+                    if indExp == minAvgTIME
+                        fprintf(fid, ['/{\\color{red}',num2str(avgTIME(1, indExp),'%.2f'),'}']);
+                    elseif indExp == secminAvgTIME
+                        fprintf(fid, ['/{\\color{blue}',num2str(avgTIME(1, indExp),'%.2f'),'}']);
+                    else
+                        fprintf(fid, ['/',num2str(avgTIME(1, indExp),'%.2f')]);
+                    end                        
                 end
             elseif indExp == secmaxAvgPSNR
                 fprintf(fid, [' & {\\color{blue}',num2str(avgPSNR(1, indExp),'%.2f'),'}']);
@@ -604,7 +697,13 @@ for indDataset = 1:numel(dataset)
                     fprintf(fid, ['/',num2str(avgSSIM(1, indExp),'%.4f')]);
                 end
                 if printTime
-                    fprintf(fid, ['/',num2str(avgTIME(1, indExp),'%.2f')]);
+                    if indExp == minAvgTIME
+                        fprintf(fid, ['/{\\color{red}',num2str(avgTIME(1, indExp),'%.2f'),'}']);
+                    elseif indExp == secminAvgTIME
+                        fprintf(fid, ['/{\\color{blue}',num2str(avgTIME(1, indExp),'%.2f'),'}']);
+                    else
+                        fprintf(fid, ['/',num2str(avgTIME(1, indExp),'%.2f')]);
+                    end                        
                 end
             else
                 fprintf(fid, [' & ',num2str(avgPSNR(1, indExp),'%.2f')]);
@@ -616,7 +715,13 @@ for indDataset = 1:numel(dataset)
                     fprintf(fid, ['/',num2str(avgSSIM(1, indExp),'%.4f')]);
                 end
                 if printTime
-                    fprintf(fid, ['/',num2str(avgTIME(1, indExp),'%.2f')]);
+                    if indExp == minAvgTIME
+                        fprintf(fid, ['/{\\color{red}',num2str(avgTIME(1, indExp),'%.2f'),'}']);
+                    elseif indExp == secminAvgTIME
+                        fprintf(fid, ['/{\\color{blue}',num2str(avgTIME(1, indExp),'%.2f'),'}']);
+                    else
+                        fprintf(fid, ['/',num2str(avgTIME(1, indExp),'%.2f')]);
+                    end                        
                 end
             end
         end
@@ -625,7 +730,7 @@ for indDataset = 1:numel(dataset)
     fprintf(fid,'\\hline\n');
 end
 fprintf(fid,'\\end{tabular}\n');
-fprintf(fid,'\\caption{Average PSNR/SSIM for scale factor ');
+fprintf(fid,'\\caption{Benchmark results. Average PSNR/SSIM for scale factor ');
 for i=1:numel(sf)
     if i < numel(sf)-1
         fprintf(fid,['$\\times$',num2str(sf(i)),', ']);
@@ -635,7 +740,7 @@ for i=1:numel(sf)
         fprintf(fid,['$\\times$',num2str(sf(i))]); 
     end
 end
-fprintf(fid,' on datasets ');
+fprintf(fid,' on datasets \\textit{');
 for i=1:numel(dataset)    
     if i < numel(dataset)-1
         fprintf(fid,[dataset{i}, ', ']);
@@ -645,7 +750,7 @@ for i=1:numel(dataset)
         fprintf(fid,dataset{i});
     end
 end
-fprintf(fid,'. {\\color{red}Red color} indicates the best performance and {\\color{blue}blue color} indicates the second best one.}\n');
+fprintf(fid,'}. {\\color{red}Red color} indicates the best performance and {\\color{blue}blue color} indicates the second best one.}\n');
 fprintf(fid,'\\end{center}\n\\end{table*}\n\n');  
 
 function makeFigure1(opts)
@@ -672,12 +777,12 @@ datasetName = dataset;
 SF = sf;
 gtDir = fullfile('data',datasetName);
 outDir = fullfile('data','result');
-if isa(imgNum,'string')
-    imgName = imgNum;
-else
-    img_lst = dir(gtDir); img_lst = img_lst(3:end);
-    [~,imgName,imgExt] = fileparts(img_lst(imgNum).name);
+if isa(imgNum,'char')
+    imgNum = findImgNum(dataset, imgNum);
 end
+img_lst = dir(gtDir); img_lst = img_lst(3:end);
+[~,imgName,imgExt] = fileparts(img_lst(imgNum).name);
+
 imGT = imread(fullfile(gtDir, [imgName,imgExt]));
 imGT = modcrop(imGT, SF);
 imSRCNN = []; imAplus = []; imRCN = [];
@@ -746,7 +851,12 @@ for indColumn = 1:numColumn
     end
 end
 fprintf(fid,' }\n');
-fprintf(fid, ['\\multirow{4}{*}{\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=0.27\\textwidth]{', ...
+if size(imGTbox,1) > size(imGTbox,2)
+    GTwidthVal = 0.15;
+else
+    GTwidthVal = 0.25;
+end
+fprintf(fid, ['\\multirow{4}{*}{\\graphicspath{{figs/',figName,'/}}\\includegraphics[width=',num2str(GTwidthVal),'\\textwidth]{', ...
              [imgName,'_GTbox','.png'],'}}\n']);
 indExp = 0;
 indExp2 = 0;
@@ -763,6 +873,8 @@ for indRow = 1:4
             else
                 if strcmp(exp{indExp2},'RCN')
                     fprintf(fid, ['& DRCN (Ours) (']);
+                elseif strcmp(exp{indExp2},'VDSR')
+                    fprintf(fid, ['& VDSR (Ours) (']);
                 else
                     fprintf(fid, ['& ',exp{indExp2},' (']);
                 end
@@ -801,7 +913,7 @@ for indRow = 1:4
 end
 
 fprintf(fid,'\\end{tabular}\n');
-fprintf(fid,['\\caption{Super-resolution results of ``',setValidName(imgName,'_'),'"(',datasetName,') with scale factor $\\times$',num2str(SF),'. Our result is visually pleasing.}\n']);
+fprintf(fid,['\\caption{Super-resolution results of ``',setValidName(imgName,'_'),'"(\\textit{',datasetName,'}) with scale factor $\\times$',num2str(SF),'. Our result is visually pleasing.}\n']);
 fprintf(fid,'\\end{center}\n');
 fprintf(fid,'\\end{adjustwidth}\n');
 fprintf(fid,'\\end{figure*}\n\n');
@@ -821,8 +933,6 @@ figName = opts.figName;
 figDir = opts.figDir;
 fid = opts.fid;
 
-
-
 numColumn = numel(exp);
 
 if ~exist(fullfile(figDir,figName),'dir')
@@ -832,12 +942,11 @@ datasetName = dataset;
 SF = sf;
 gtDir = fullfile('data',datasetName);
 outDir = fullfile('data','result');
-if isa(imgNum,'string')
-    imgName = imgNum;
-else
-    img_lst = dir(gtDir); img_lst = img_lst(3:end);
-    [~,imgName,imgExt] = fileparts(img_lst(imgNum).name);
+if isa(imgNum,'char')
+    imgNum = findImgNum(dataset, imgNum);
 end
+img_lst = dir(gtDir); img_lst = img_lst(3:end);
+[~,imgName,imgExt] = fileparts(img_lst(imgNum).name);
 imGT = imread(fullfile(gtDir, [imgName,imgExt]));
 imGT = modcrop(imGT, SF);
 
@@ -923,6 +1032,8 @@ for indColumn = 1:numColumn
         fprintf(fid, 'Original');
     elseif strcmp(exp{indColumn},'RCN')
         fprintf(fid, ['& DRCN (Ours)']);
+    elseif strcmp(exp{indColumn},'VDSR')
+        fprintf(fid, ['& VDSR (Ours) ']);
     else
         fprintf(fid, ['& ',exp{indColumn}]);
     end
@@ -964,7 +1075,7 @@ for indColumn = 1:numColumn
 end
 fprintf(fid, '\\\\\n');
 fprintf(fid,'\\end{tabular}\n');
-fprintf(fid,['\\caption{Super-resolution results of ``',setValidName(imgName,'_'),'"(',datasetName,') with scale factor $\\times$',num2str(SF),'. Our result is visually pleasing.}\n']);
+fprintf(fid,['\\caption{Super-resolution results of ``',setValidName(imgName,'_'),'"(\\textit{',datasetName,'}) with scale factor $\\times$',num2str(SF),'. Our result is visually pleasing.}\n']);
 fprintf(fid,'\\end{center}\n');
 fprintf(fid,'\\end{adjustwidth}\n');
 fprintf(fid,'\\end{figure*}\n\n');
@@ -1059,6 +1170,9 @@ for indExp = 1:numel(exp)
     imwrite(catimSRcolor,fullfile(figDir,figName,[imgName,'_for_',figName,'_',expName,'.png']));
 end
 
+[~,maxPSNR] = max(PSNR_array,[],1); [~,maxSSIM] = max(SSIM_array,[],1);
+[~,secmaxPSNR] = secmax(PSNR_array,1); [~,secmaxSSIM] = secmax(SSIM_array,1); 
+
 fprintf(fid,'\\begin{figure*}\n');
 fprintf(fid,'\\begin{adjustwidth}{0.5cm}{0.5cm}\n');
 fprintf(fid,'\\begin{center}\n');
@@ -1097,29 +1211,62 @@ for indRow = 1:2
     fprintf(fid, '\\\\\n');
     for indColumn = 1:numColumn
         indExp2 = indExp2 + 1;
+        if indColumn ~= 1
+            fprintf(fid, '& ');
+        end
         if strcmp(exp{indExp2},'HR')
             fprintf(fid, 'Original');
-        elseif indColumn == 1
-            fprintf(fid, exp{indExp2});
+        elseif strcmp(exp{indExp2},'RCN')
+            fprintf(fid, 'DRCN (Ours)');
+        elseif strcmp(exp{indExp2},'VDSR')
+            fprintf(fid, 'VDSR (Ours)');
         else
-            fprintf(fid, ['& ',exp{indExp2}]);
+            fprintf(fid, exp{indExp2});
         end
     end
     fprintf(fid, '\\\\\n');
     for indColumn = 1:numColumn
         indExp3 = indExp3 + 1;
+        if indColumn ~= 1 
+            fprintf(fid, '& ');
+        end
         if strcmp(exp{indExp3},'HR')
             fprintf(fid, '(PSNR, SSIM)');
-        elseif indColumn == 1
-            fprintf(fid, ['(',num2str(PSNR_array(indExp3),'%.2f'),', ',num2str(SSIM_array(indExp3),'%.4f'),')']);
         else
-            fprintf(fid, ['& (',num2str(PSNR_array(indExp3),'%.2f'),', ',num2str(SSIM_array(indExp3),'%.4f'),')']);
+            if indExp3 == maxPSNR
+                fprintf(fid,['({\\color{red}{',num2str(PSNR_array(indExp3),'%.2f'),'}}, ']);
+                if indExp3 == maxSSIM
+                    fprintf(fid,['{\\color{red}{',num2str(SSIM_array(indExp3),'%.4f'),'}})']);
+                elseif indExp3 == secmaxSSIM
+                    fprintf(fid,['{\\color{blue}{',num2str(SSIM_array(indExp3),'%.4f'),'}})']);
+                else
+                    fprintf(fid,[num2str(SSIM_array(indExp3),'%.4f'),')']);
+                end
+            elseif indExp3 == secmaxPSNR
+                fprintf(fid,['({\\color{blue}{',num2str(PSNR_array(indExp3),'%.2f'),'}}, ']);
+                if indExp3 == maxSSIM
+                    fprintf(fid,['{\\color{red}{',num2str(SSIM_array(indExp3),'%.4f'),'}})']);
+                elseif indExp3 == secmaxSSIM
+                    fprintf(fid,['{\\color{blue}{',num2str(SSIM_array(indExp3),'%.4f'),'}})']);
+                else
+                    fprintf(fid,[num2str(SSIM_array(indExp3),'%.4f'),')']);
+                end
+            else
+                fprintf(fid,['(',num2str(PSNR_array(indExp3),'%.2f'),', ']);
+                if indExp3 == maxSSIM
+                    fprintf(fid,['{\\color{red}{',num2str(SSIM_array(indExp3),'%.4f'),'}})']);
+                elseif indExp3 == secmaxSSIM
+                    fprintf(fid,['{\\color{blue}{',num2str(SSIM_array(indExp3),'%.4f'),'}})']);
+                else
+                    fprintf(fid,[num2str(SSIM_array(indExp3),'%.4f'),')']);
+                end
+            end
         end
     end
     fprintf(fid, '\\\\\n');
 end
 fprintf(fid,'\\end{tabular}\n');
-fprintf(fid,['\\caption{Super-resolution results of ``',setValidName(imgName,'_'),'"(',datasetName,') with scale factor $\\times$',num2str(SF),'. Our result is visually pleasing.}\n']);
+fprintf(fid,['\\caption{Super-resolution results of ``',setValidName(imgName,'_'),'"(\\textit{',datasetName,'}) with scale factor $\\times$',num2str(SF),'.}\n']);
 fprintf(fid,'\\end{center}\n');
 fprintf(fid,'\\end{adjustwidth}\n');
 fprintf(fid,'\\end{figure*}\n\n');
@@ -1261,24 +1408,25 @@ printTime = opts.printTime;
 fprintf(fid,'\\begin{table*}\n\\begin{center}\n');
 fprintf(fid,'\\setlength{\\tabcolsep}{5pt}\n');
 if numel(exp) >= 5
-    fprintf(fid,'\\footnotesize\n');
+    fprintf(fid,'\\normal\n');
 else
-    fprintf(fid,'\\small\n');
+    fprintf(fid,'\\normal\n');
 end
 fprintf(fid,'\\begin{tabular}{ |');
 for indColumn = 1:numel(exp)+1
     fprintf(fid,' c |');
 end
 fprintf(fid,' }\n\\hline\n');
-fprintf(fid,'Scale');
+fprintf(fid,'D');
 for indExp = 1:numel(exp)
     if strcmp('RCN', exp{indExp})
         fprintf(fid,[' & Ensemble']);
     else
         if numel(interSetting{indExp}) > 1
-            fprintf(fid,[' & $\\sum\\limits_{d=1}^{',num2str(interSetting{indExp}(end)),'}$ Output $d$']);
+            %fprintf(fid,[' & $\\sum\\limits_{d=1}^{',num2str(interSetting{indExp}(2)),'}$ Output $d$']);
+            fprintf(fid, [' & ',num2str(interSetting{indExp}(2))]);
         else
-            fprintf(fid,[' & Output ',num2str(interSetting{indExp})]);
+            fprintf(fid,[' & Output ',num2str(interSetting{indExp}(2))]);
         end
     end
 end
@@ -1381,7 +1529,12 @@ for indDataset = 1:numel(dataset)
 end
 fprintf(fid,'\\end{tabular}\n');
 fprintf(fid,['\\caption{Experiment on the effect of ensemble.',...
-    ' Quantitative evaluation (PSNR) on dataset ‘Set5’ is provided for scale factors 2,3 and 4. {\\color{red}Red color} indicates the best performance.}\n']);
+    ' Quantitative evaluation (PSNR) on dataset Set5 is provided for scale factors $\\times2$,$\\times3$ and $\\times4$.',...
+    ' As more outputs are ensembled, the result becomes better.']);
+    if interSetting{1}(3) == 1
+        fprintf(fid, ' Sum of weight are normalized.');        
+    end
+fprintf(fid,' {\\color{red}Red color} indicates the best performance.}\n');
 fprintf(fid,'\\end{center}\n\\end{table*}\n\n');  
 
 function makeGraph(opts)
@@ -1398,6 +1551,8 @@ graphDir = opts.graphDir;
 printOne = opts.printOne;
 printLegend = opts.printLegend;
 fid = opts.fid;
+Xlabel = opts.graphXlabel;
+saved = opts.saved;
 
 if ~exist(fullfile(graphDir,graphName),'dir')
     mkdir(fullfile(graphDir,graphName));
@@ -1410,34 +1565,41 @@ end
 PSNR_table = cell(numel(dataset),numel(sf));
 SSIM_table = cell(numel(dataset),numel(sf));
 
-for indDataset = 1:numel(dataset)
-    datasetName = dataset{indDataset};
-    gtDir = fullfile('data',datasetName);
-    outDir = fullfile('data','result');
-    img_lst = dir(gtDir); img_lst = img_lst(3:end);
-    numImg = numel(img_lst);
+if exist(saved,'file')
+    load(saved);
+else
+    for indDataset = 1:numel(dataset)
+        datasetName = dataset{indDataset};
+        gtDir = fullfile('data',datasetName);
+        outDir = fullfile('data','result');
+        img_lst = dir(gtDir); img_lst = img_lst(3:end);
+        numImg = numel(img_lst);
 
-    for indSF = 1:numel(sf)
-        SF = sf(indSF);
-        PSNR_table{indSF} = zeros(numImg, numel(exp));
-        SSIM_table{indSF} = zeros(numImg, numel(exp));
-        imgNames = cell(numImg,1);
+        for indSF = 1:numel(sf)
+            SF = sf(indSF);
+            PSNR_table{indDataset,indSF} = zeros(numImg, numel(exp));
+            SSIM_table{indDataset,indSF} = zeros(numImg, numel(exp));
+            imgNames = cell(numImg,1);
 
-        for indImg = 1:numImg
-            [~,imgNames{indImg},imgExt] = fileparts(img_lst(indImg).name);
-            imGT = imread(fullfile(gtDir, [imgNames{indImg},imgExt]));            
+            for indImg = 1:numImg
+                [~,imgNames{indImg},imgExt] = fileparts(img_lst(indImg).name);
+                imGT = imread(fullfile(gtDir, [imgNames{indImg},imgExt]));            
 
-            for indExp = 1:numel(exp)
-                expName = exp{indExp};
-                outRoute = fullfile(expName, [expName,'_',datasetName,'_x',num2str(SF)]);
-                imSR = imread(fullfile(outDir, outRoute, [imgNames{indImg},'.png']));
-                %elapsedTime = load(fullfile(outDir, outRoute, 'elapsed_time.mat'));
+                for indExp = 1:numel(exp)
+                    expName = exp{indExp};
+                    outRoute = fullfile(expName, [expName,'_',datasetName,'_x',num2str(SF)]);
+                    imSR = imread(fullfile(outDir, outRoute, [imgNames{indImg},'.png']));
+                    %elapsedTime = load(fullfile(outDir, outRoute, 'elapsed_time.mat'));
 
-                [psnr, ssim] = compute_diff(imGT, imSR, SF);
-                PSNR_table{indDataset,indSF}(indImg, indExp) = psnr;
-                SSIM_table{indDataset,indSF}(indImg, indExp) = ssim;
+                    [psnr, ssim] = compute_diff(imGT, imSR, SF);
+                    PSNR_table{indDataset,indSF}(indImg, indExp) = psnr;
+                    SSIM_table{indDataset,indSF}(indImg, indExp) = ssim;
+                end
             end
         end
+    end
+    if ~isempty(saved)
+        save(saved,'PSNR_table','SSIM_table');
     end
 end
 if printOne
@@ -1459,14 +1621,16 @@ if printOne
             ylabel('PSNR (dB)');
             grid on;
             set(gcf, 'PaperPosition', [0, 0, 5, 5]);
-            legendInfo{indDataset,indSF} = ['on ',dataset{indDataset},' \times',num2str(sf(indSF))];
-            if printOne && indSF==numel(sf) && numel(sf)~=1            
-                legend(legendInfo, 'Location', 'east'); 
-            end;
-            tightfig;
-            print(fullfile('paper','figs',graphName,'graphOne'), '-dpdf', '-r600');
+            if numel(sf)~=1
+                legendInfo{indDataset} = [dataset{indDataset},' \times',num2str(sf(indSF))];
+            else
+                legendInfo{indDataset} = [dataset{indDataset}];
+            end
         end
     end
+    legend(legendInfo, 'Location', 'best', 'FontSize', 13); 
+    tightfig;
+    print(fullfile(graphDir,graphName,'graphOne'), '-dpdf', '-r600');
 else
     for indSF = 1:numel(sf)
         clf;
@@ -1479,16 +1643,23 @@ else
             xlim([min(graphX),max(graphX)]);
             ax.XTick = graphX;
             ax.XTickLabel = graphXname;
-            ax.FontSize = 18;
+            ax.FontSize = 13;
             ax.LineWidth = lw;
+            hold on;
             %ax.FontWeight = 'bold';
-            xlabel('Recursion');
+            xlabel(Xlabel);
             ylabel('PSNR (dB)');
             grid on;
             set(gcf, 'PaperPosition', [0, 0, 5, 5]);
-            tightfig;        
+%             if numel(sf)~=1
+%                 legendInfo{indDataset} = [dataset{indDataset},' \times',num2str(sf(indSF))];
+%             else
+                legendInfo{indDataset} = [dataset{indDataset}];
+%             end
         end
-        print(fullfile('paper','figs',graphName,['graph',num2str(sf(indSF))]), '-dpdf', '-r600');
+        legend(legendInfo, 'Location', 'west', 'FontSize', 10);
+        tightfig;
+        print(fullfile(graphDir,graphName,['graph',num2str(sf(indSF))]), '-dpdf', '-r600');
     end
 end
 
@@ -1496,7 +1667,7 @@ if printOne
     fprintf(fid,'\\begin{figure}\n');
     fprintf(fid,'\\begin{adjustwidth}{0cm}{-0.0cm}\n');
     fprintf(fid,'\\centering\n');
-    fprintf(fid,['{\\graphicspath{{figs/',graphName,'/}}\\includegraphics[height=4.8cm]{graphOne.pdf}}\n']);
+    fprintf(fid,['{\\graphicspath{{figs/',graphName,'/}}\\includegraphics[height=5.0cm]{graphOne.pdf}}\n']);
     fprintf(fid,'\\caption{Recursion versus Performance for the scale factor ');
     for i=1:numel(sf)
         if i < numel(sf)-1
@@ -1511,6 +1682,7 @@ if printOne
         fprintf(fid,[' on the dataset ']);
     else
         fprintf(fid,[' on datasets \\textit{']);
+    end
     for i=1:numel(dataset)
         if i < numel(dataset)-1
             fprintf(fid,[dataset{i},', ']);
@@ -1520,7 +1692,7 @@ if printOne
             fprintf(fid,[dataset{i},'}.\n']);
         end
     end
-    fprintf(fid,'More recursions yielding larger receptive fields lead to better performances. (Graph {\\color{red}not complete} yet)\n');
+    fprintf(fid,'More recursions yielding larger receptive fields lead to better performances. (Graph {\\color{red}not complete} yet)}\n');
     fprintf(fid,'\\end{adjustwidth}\n');        
     fprintf(fid,'\\end{figure}\n\n');
 else

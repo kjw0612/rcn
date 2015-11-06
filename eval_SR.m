@@ -42,6 +42,8 @@ else
             RCN_(evalSetting.dataset, evalSetting.sf, evalSetting.model, outRoute);
         case 'RCNInter'
             RCNInter(evalSetting.dataset, evalSetting.sf, evalSetting.model, evalSetting.opts, outRoute);
+        case 'VDSR'
+            VDSR(evalSetting.dataset, evalSetting.sf, evalSetting.model, outRoute);
         otherwise
             disp('Unknown method name');
     end
