@@ -234,7 +234,7 @@ where $w_d$ denotes the weights of predictions reconstructed from each intermedi
 \small
 \begin{tabular}{ | c | c | c | c | c | c | c | c | }
 \hline
-\multirow{2}{*}{Dataset} & \multirow{2}{*}{Scale} & Bicubic & A+ & RFL & SelfEx & SRCNN & DRCN (Ours)\\
+\multirow{2}{*}{Dataset} & \multirow{2}{*}{Scale} & Bicubic & A+\cite{Timofte} & RFL\cite{schulter2015fast} & SelfEx\cite{Huang-CVPR-2015} & SRCNN\cite{dong2014image} & DRCN (Ours)\\
  & & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM & PSNR/SSIM\\
 \hline
 \hline
@@ -266,24 +266,22 @@ where $w_d$ denotes the weights of predictions reconstructed from each intermedi
 
 %%%%% Figures Start
 \begin{figure*}
-\begin{adjustwidth}{0cm}{-0.5cm}
+\begin{adjustwidth}{0.5cm}{0.5cm}
 \begin{center}
 \small
-\setlength{\tabcolsep}{5pt}
-\begin{tabular}{ c C{3.5cm}  C{3.5cm}  C{3.5cm}  }
-\multirow{4}{*}{\graphicspath{{figs/fig1/}}\includegraphics[width=0.27\textwidth]{img096_GTbox.png}}
-& \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.20\textwidth]{img096_for_fig1_HR.png}}\vspace{0.3ex}
-& \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.20\textwidth]{img096_for_fig1_A+.png}}\vspace{0.3ex}
-& \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.20\textwidth]{img096_for_fig1_SRCNN.png}}\vspace{0.3ex}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{  c  c  c  c  c  c  }
+{\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{img082_for_figDRCN_HR.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{img082_for_figDRCN_A+.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{img082_for_figDRCN_SRCNN.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{img082_for_figDRCN_RFL.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{img082_for_figDRCN_SelfEx.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{img082_for_figDRCN_RCN.png}}
 \\
-& Original (PSNR, SSIM)& A+ (23.99, 0.8320)& SRCNN (24.74, 0.8459)\\
-& \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.20\textwidth]{img096_for_fig1_RFL.png}}\vspace{0.3ex}
-& \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.20\textwidth]{img096_for_fig1_SelfEx.png}}\vspace{0.3ex}
-& \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.20\textwidth]{img096_for_fig1_RCN.png}}\vspace{0.3ex}
-\\
-& RFL (23.95, 0.8230)& SelfEx (25.46, 0.8635)& DRCN (Ours) (26.25, 0.8933)\\
+Ground Truth& A+\cite{Timofte}& SRCNN\cite{dong2014image}& RFL\cite{schulter2015fast}& SelfEx\cite{Huang-CVPR-2015}& DRCN (Ours)\\
+(PSNR, SSIM)& (29.83, 0.9102)& (29.97, 0.9092)& (29.61, 0.9026)& ({\color{blue}{30.73}}, {\color{blue}{0.9193}})& ({\color{red}{32.17}}, {\color{red}{0.9350}})\\
 \end{tabular}
-\caption{Super-resolution results of ``img096" (Urban100) with scale factor $\times$3. Patterned lines are straightened and sharpened in our result, whereas other methods give blurry lines. Our result seems visually pleasing.}
+\caption{Super-resolution results of ``img082"(\textit{Urban100}) with scale factor $\times$4. Line is straightened and sharpened in our result, whereas other methods give blurry lines. Our result seems visually pleasing.}
 \label{fig:img1}
 \end{center}
 \end{adjustwidth}
@@ -295,17 +293,17 @@ where $w_d$ denotes the weights of predictions reconstructed from each intermedi
 \small
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{  c  c  c  c  c  c  }
-{\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_HR.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_A+.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_SRCNN.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_RFL.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_SelfEx.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_RCN.png}}
+{\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{134035_for_figDRCN_HR.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{134035_for_figDRCN_A+.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{134035_for_figDRCN_SRCNN.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{134035_for_figDRCN_RFL.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{134035_for_figDRCN_SelfEx.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{134035_for_figDRCN_RCN.png}}
 \\
-Original& A+& SRCNN& RFL& SelfEx& DRCN (Ours) \\
-(PSNR, SSIM)& (32.49, 0.9425)& (32.59, 0.9409)& (32.35, 0.9389)& (33.21, 0.9453)& (34.77, 0.9563)\\
+Ground Truth& A+\cite{Timofte}& SRCNN\cite{dong2014image}& RFL\cite{schulter2015fast}& SelfEx\cite{Huang-CVPR-2015}& DRCN (Ours)\\
+(PSNR, SSIM)& (23.53, 0.6977)& ({\color{blue}{23.79}}, {\color{blue}{0.7087}})& (23.53, 0.6943)& (23.52, 0.7006)& ({\color{red}{24.36}}, {\color{red}{0.7399}})\\
 \end{tabular}
-\caption{Super-resolution results of ``img082"(Urban100) with scale factor $\times$3. Our result is visually pleasing.}
+\caption{Super-resolution results of ``134035"(\textit{B100}) with scale factor $\times$4. Our result is visually pleasing.}
 \label{fig:img2}
 \end{center}
 \end{adjustwidth}
@@ -317,17 +315,17 @@ Original& A+& SRCNN& RFL& SelfEx& DRCN (Ours) \\
 \small
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{  c  c  c  c  c  c  }
-{\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img099_for_fig2_HR.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img099_for_fig2_A+.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img099_for_fig2_SRCNN.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img099_for_fig2_RFL.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img099_for_fig2_SelfEx.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img099_for_fig2_RCN.png}}
+{\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{ppt3_for_figDRCN_HR.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{ppt3_for_figDRCN_A+.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{ppt3_for_figDRCN_SRCNN.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{ppt3_for_figDRCN_RFL.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{ppt3_for_figDRCN_SelfEx.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{ppt3_for_figDRCN_RCN.png}}
 \\
-Original& A+& SRCNN& RFL& SelfEx& DRCN (Ours) \\
-(PSNR, SSIM)& (24.97, 0.7606)& (25.49, 0.7710)& (24.53, 0.7460)& (25.65, 0.7921)& (26.42, 0.8238)\\
+Ground Truth& A+\cite{Timofte}& SRCNN\cite{dong2014image}& RFL\cite{schulter2015fast}& SelfEx\cite{Huang-CVPR-2015}& DRCN (Ours)\\
+(PSNR, SSIM)& (26.09, 0.9342)& (27.01, 0.9365)& (25.91, 0.9254)& ({\color{blue}{27.10}}, {\color{blue}{0.9483}})& ({\color{red}{27.66}}, {\color{red}{0.9608}})\\
 \end{tabular}
-\caption{Super-resolution results of ``img099"(Urban100) with scale factor $\times$3. Our result is visually pleasing.}
+\caption{Super-resolution results of ``ppt3"(\textit{Set14}) with scale factor $\times$3. Our result is visually pleasing.}
 \label{fig:img3}
 \end{center}
 \end{adjustwidth}
