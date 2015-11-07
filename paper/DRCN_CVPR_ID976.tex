@@ -80,7 +80,7 @@
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-We propose an image super-resolution method (SR) using a deeply-recursive convolutional network (DRCN). Our network has a very deep recursive layer (up to 16 recursions). Increasing recursion depth can improve the performance without introducing new parameters for additional convolutions. Albeit advantages, learning a DRCN is very hard with a standard gradient descent method due to exploding/vanishing gradients. To ease the difficulty of training, we propose two extensions: recursive-supervision and skip-connection. Our method outperforms previous methods by a large margin.
+We propose an image super-resolution method (SR) using a deeply-recursive convolutional network (DRCN). Our network has a very deep recursive layer (up to 16 recursions). Increasing recursion depth can improve performance without introducing new parameters for additional convolutions. Albeit advantages, learning a DRCN is very hard with a standard gradient descent method due to exploding/vanishing gradients. To ease the difficulty of training, we propose two extensions: recursive-supervision and skip-connection. Our method outperforms previous methods by a large margin.
 \end{abstract}
 
 %%%%%%%%% Figures Start
@@ -190,7 +190,7 @@ Reconstruction net $f_3$ takes the input hidden state $H_D$ and outputs the targ
 of the gradient during training. Such events are due to
 the multiplicative nature of chained gradients. Long term components can grow exponentially for deep recursions. The
 \textit{vanishing gradients} problem refers to the opposite behavior. Long term components approach exponentially
-fast to the zero vector. Due to this, learning the relation between distant pixels is very hard. Another known issue is that storing an exact copy of information through many recursions is very difficult. In training recurrent neural networks, relatively complex units such as LSTM TODO cite or GRU are used for long-term memory. In SR, output is vastly similar to input and recursive layer needs to keep the exact copy of input image for many recursions. These issues are also observed when we train our basic recursive model and we did not succeed in training a deeply-recursive network. 
+fast to the zero vector. Due to this, learning the relation between distant pixels is very hard. Another known issue is that storing an exact copy of information through many recursions is not easy. In SR, output is vastly similar to input and recursive layer needs to keep the exact copy of input image for many recursions. These issues are also observed when we train our basic recursive model and we did not succeed in training a deeply-recursive network. 
 
 In addition to gradient problems, there exists an issue with finding the optimal number of recursions. If recursions are too deep for a given task, we need to reduce the number of recursions. Finding the optimal number requires training many networks with different recursion depths.   
 
@@ -214,7 +214,7 @@ We add a layer skip \cite{bishop2006pattern} from input to the reconstruction ne
 
 Our skip-connection is simple yet very effective. In super-resolution, LR and HR images are vastly similar. In most regions, differences are zero and only small number of locations have non-zero values. For this reason, several super-resolution methods \cite{Timofte2013, Timofte, bevilacqua2012,bevilacqua2013super} predict image details only. Similarly, we find that this domain-specific knowledge significantly improves our learning procedure. 
 
-\textbf{Mathematical Formulation} Each intermediate prediction under recursive-supervision (Figure \ref{fig:recursive_supervision}) is 
+\textbf{Mathematical Formulation} Each intermediate prediction under recursive-supervision (Figure \ref{fig:recursive_supervision}(a)) is 
 \begin{equation}
 \hat{{\bf y}}_{d} = f_3({\bf x}, g^{(d)}(f_1({\bf x}))),
 \end{equation}
@@ -266,25 +266,22 @@ where $w_d$ denotes the weights of predictions reconstructed from each intermedi
 
 %%%%% Figures Start
 \begin{figure*}
-\begin{adjustwidth}{0cm}{-0.5cm}
+\begin{adjustwidth}{0.5cm}{0.5cm}
 \begin{center}
 \small
-\setlength{\tabcolsep}{5pt}
-\begin{tabular}{ c C{3.5cm}  C{3.5cm}  C{3.5cm}  }
-\multirow{4}{*}{\graphicspath{{figs/fig1/}}\includegraphics[width=0.27\textwidth]{img096_GTbox.png}}
-& \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.20\textwidth]{img096_for_fig1_HR.png}}\vspace{0.3ex}
-& \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.20\textwidth]{img096_for_fig1_A+.png}}\vspace{0.3ex}
-& \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.20\textwidth]{img096_for_fig1_SRCNN.png}}\vspace{0.3ex}
-\\
-& Original (PSNR, SSIM)& A+ (23.99, 0.8320)& SRCNN (24.74, 0.8459)\\
-& \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.20\textwidth]{img096_for_fig1_RFL.png}}\vspace{0.3ex}
-& \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.20\textwidth]{img096_for_fig1_SelfEx.png}}\vspace{0.3ex}
-& \raisebox{-13.0ex} {\graphicspath{{figs/fig1/}}\includegraphics[width=0.20\textwidth]{img096_for_fig1_RCN.png}}\vspace{0.3ex}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{  c  c  c  c  c  c  }
+{\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{img082_for_figDRCN_HR.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{img082_for_figDRCN_A+.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{img082_for_figDRCN_SRCNN.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{img082_for_figDRCN_RFL.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{img082_for_figDRCN_SelfEx.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{img082_for_figDRCN_RCN.png}}
 \\
 Ground Truth& A+ \cite{Timofte}& SRCNN \cite{dong2014image}& RFL \cite{schulter2015fast}& SelfEx \cite{Huang-CVPR-2015}& DRCN (Ours)\\
 (PSNR, SSIM)& (29.83, 0.9102)& (29.97, 0.9092)& (29.61, 0.9026)& ({\color{blue}{30.73}}, {\color{blue}{0.9193}})& ({\color{red}{32.17}}, {\color{red}{0.9350}})\\
 \end{tabular}
-\caption{Super-resolution results of ``img096" (Urban100) with scale factor $\times$3. Patterned lines are straightened and sharpened in our result, whereas other methods give blurry lines. Our result seems visually pleasing.}
+\caption{Super-resolution results of ``img082"(\textit{Urban100}) with scale factor $\times$4. Line is straightened and sharpened in our result, whereas other methods give blurry lines. Our result seems visually pleasing.}
 \label{fig:img1}
 \end{center}
 \end{adjustwidth}
@@ -296,17 +293,17 @@ Ground Truth& A+ \cite{Timofte}& SRCNN \cite{dong2014image}& RFL \cite{schulter2
 \small
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{  c  c  c  c  c  c  }
-{\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_HR.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_A+.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_SRCNN.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_RFL.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_SelfEx.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img082_for_fig2_RCN.png}}
+{\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{134035_for_figDRCN_HR.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{134035_for_figDRCN_A+.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{134035_for_figDRCN_SRCNN.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{134035_for_figDRCN_RFL.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{134035_for_figDRCN_SelfEx.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{134035_for_figDRCN_RCN.png}}
 \\
 Ground Truth& A+ \cite{Timofte}& SRCNN \cite{dong2014image}& RFL \cite{schulter2015fast}& SelfEx \cite{Huang-CVPR-2015}& DRCN (Ours)\\
 (PSNR, SSIM)& (23.53, 0.6977)& ({\color{blue}{23.79}}, {\color{blue}{0.7087}})& (23.53, 0.6943)& (23.52, 0.7006)& ({\color{red}{24.36}}, {\color{red}{0.7399}})\\
 \end{tabular}
-\caption{Super-resolution results of ``img082"(Urban100) with scale factor $\times$3. Our result is visually pleasing.}
+\caption{Super-resolution results of ``134035" (\textit{B100}) with scale factor $\times$4. Our result shows a clear separation between branches while in other methods, branches are not well separated.  }
 \label{fig:img2}
 \end{center}
 \end{adjustwidth}
@@ -318,36 +315,44 @@ Ground Truth& A+ \cite{Timofte}& SRCNN \cite{dong2014image}& RFL \cite{schulter2
 \small
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{  c  c  c  c  c  c  }
-{\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img099_for_fig2_HR.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img099_for_fig2_A+.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img099_for_fig2_SRCNN.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img099_for_fig2_RFL.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img099_for_fig2_SelfEx.png}}
-& {\graphicspath{{figs/fig2/}}\includegraphics[width=0.15\textwidth]{img099_for_fig2_RCN.png}}
+{\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{ppt3_for_figDRCN_HR.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{ppt3_for_figDRCN_A+.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{ppt3_for_figDRCN_SRCNN.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{ppt3_for_figDRCN_RFL.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{ppt3_for_figDRCN_SelfEx.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{ppt3_for_figDRCN_RCN.png}}
 \\
 Ground Truth& A+ \cite{Timofte}& SRCNN \cite{dong2014image}& RFL \cite{schulter2015fast}& SelfEx \cite{Huang-CVPR-2015}& DRCN (Ours)\\
 (PSNR, SSIM)& (26.09, 0.9342)& (27.01, 0.9365)& (25.91, 0.9254)& ({\color{blue}{27.10}}, {\color{blue}{0.9483}})& ({\color{red}{27.66}}, {\color{red}{0.9608}})\\
 \end{tabular}
-\caption{Super-resolution results of ``img099"(Urban100) with scale factor $\times$3. Our result is visually pleasing.}
+\caption{Super-resolution results of ``ppt3" (\textit{Set14}) with scale factor $\times$3. Texts in DRCN are sharp while, in other methods, character edges are blurry.}
 \label{fig:img3}
 \end{center}
 \end{adjustwidth}
 \end{figure*}
 
-\begin{figure}
-\begin{adjustwidth}{0cm}{-0.0cm}
-\centering
-{\graphicspath{{figs/graph1/}}\includegraphics[height=4.8cm]{graphOne.pdf}}
-\caption{Recursion versus Performance for the scale factor $\times$3 on the dataset \textit{Set5}. More recursions yielding larger receptive fields lead to better performances. (Graph {\color{red}not complete} yet)}\end{adjustwidth}
-\label{fig:more_recursion}
-\end{figure}
+\begin{figure*}
+\begin{adjustwidth}{0.5cm}{0.5cm}
+\begin{center}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{  c  c  c  c  c  c  }
+{\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{58060_for_figDRCN_HR.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{58060_for_figDRCN_A+.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{58060_for_figDRCN_SRCNN.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{58060_for_figDRCN_RFL.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{58060_for_figDRCN_SelfEx.png}}
+& {\graphicspath{{figs/figDRCN/}}\includegraphics[width=0.15\textwidth]{58060_for_figDRCN_RCN.png}}
+\\
+Ground Truth& A+ \cite{Timofte}& SRCNN \cite{dong2014image}& RFL \cite{schulter2015fast}& SelfEx \cite{Huang-CVPR-2015}& DRCN (Ours)\\
+(PSNR, SSIM)& (24.24, 0.8176)& ({\color{blue}{24.48}}, {\color{blue}{0.8267}})& (24.24, 0.8137)& (24.16, 0.8145)& ({\color{red}{24.76}}, {\color{red}{0.8385}})\\
+\end{tabular}
+\caption{Super-resolution results of ``58060" (\textit{B100}) with scale factor $\times$2. A three-line stripe in ground truth is also observed in DRCN, whereas it is not clearly seen in results of other methods.}
+\label{fig:img4}
+\end{center}
+\end{adjustwidth}
+\end{figure*}
 
-\begin{figure}
-\centering
-{\graphicspath{{figs/graph1/}}\includegraphics[width=5cm]{graphEnsemble}}
-\caption{Ensemble effect. Prediction made from intermediate recursions are evaluated. There is no single recursion depth that works the best across all scale factors. Ensemble of intermediate predictions significantly improves performance. }
-\label{fig:ensemble}
-\end{figure}
 %%%%%%%% Figures End
 
 \subsection{Training}
@@ -381,6 +386,23 @@ In this section, we evaluate the performance of our method on several datasets. 
 
 \subsection{Datasets}
 For training, we use 91 images proposed in Yang et al. \cite{yang2010image} for all experiments. For testing, we use four datasets. Datasets \textit{Set5} \cite{bevilacqua2012} and \textit{Set14} \cite{zeyde2012single} are often used for benchmark \cite{Timofte,Timofte2013,dong2014image}. Dataset \textit{B100}  consists of natural images in the Berkeley Segmentation Dataset \cite{Martin2001}. Finally, dataset \textit{Urban100}, urban images recently provided by Huang et al. \cite{Huang-CVPR-2015}, is very interesting as it contains many challenging images failed by existing methods.
+
+
+\begin{figure}
+\begin{adjustwidth}{0cm}{-0.0cm}
+\centering
+{\graphicspath{{figs/graph1/}}\includegraphics[width=0.4\textwidth]{graphOne.pdf}}
+\caption{Recursion versus Performance for the scale factor $\times$3 on the dataset \textit{Set5}. More recursions yielding larger receptive fields lead to better performances.}\end{adjustwidth}
+\label{fig:more}
+\end{figure}
+
+\begin{figure}
+\centering
+{\graphicspath{{figs/graph1/}}\includegraphics[width=0.45\textwidth]{graphEnsemble}}
+\caption{Ensemble effect. Prediction made from intermediate recursions are evaluated. There is no single recursion depth that works the best across all scale factors. Ensemble of intermediate predictions significantly improves performance. }
+\label{fig:ensemble}
+\end{figure}
+
 \subsection{Training Setup}
 %
 %Training deep models often fail to converge. He et al. \cite{he2015delving} uses a theoretically sound initialization method which helps very deep models converge when training from scratch and they succeed in training 30 weight layers. They, however, report no benefit from training extremely deep models for their problem. In our work, adding layers are beneficial in general. For large scale factors, deep models exploiting contextual information spread in very large field are dominant. 
@@ -392,14 +414,14 @@ For training, we use 91 images proposed in Yang et al. \cite{yang2010image} for 
 %
 %
 
-We use 16 recursions unless stated otherwise. When unfolded, the longest chain from the input to the output passes 20 conv. layers (receptive field of 41 by 41). We set the momentum parameter to 0.9 and weight decay to 0.0001. Training images are split into 41 by 41 patches with stride 21 and 64 patches are used as a mini-batch for stochastic gradient descent. 
+We use 16 recursions unless stated otherwise. When unfolded, the longest chain from the input to the output passes 20 conv. layers (receptive field of 41 by 41). We set the momentum parameter to 0.9 and weight decay to 0.0001. We use 256 filters of the size $3 \times 3$ for all weight layers. Training images are split into 41 by 41 patches with stride 21 and 64 patches are used as a mini-batch for stochastic gradient descent. 
 
 For initializing weights in non-recursive layers, we use the method described in He et al. \cite{he2015delving}. For recursive convolutions, we set all weights to zero except self-connections (connection to the same neuron in the next layer) \cite{socher2012semantic, le2015simple}.  Biases are set to zero.
 
 Learning rate is initially set to 0.01 and then decreased by a factor of 10 if the validation error does not decrease for 5 epochs. If learning rate is less than $10^{-6}$, the procedure is terminated. Training roughly takes 6 days on a machine using one Titan X GPU. 
 
 \subsection{Study of Deep Recursions}
-We study the effect of increasing recursion depth. We trained four models with different numbers of recursions: 1, 6, 11, and 16. Four models use the same number of parameters except the weights used for ensemble. In Figure \ref{fig:more_recursion}, it is shown that as more recursions are performed, PSNR measures increase. Increasing recursion depth with a larger image context and more nonlinearities boosts performance. The effect of ensemble is also investigated. We first evaluate intermediate predictions made from recursions (Figure \ref{fig:ensemble}). The ensemble output significantly improves performances of individual predictions. 
+We study the effect of increasing recursion depth. We trained four models with different numbers of recursions: 1, 6, 11, and 16. Four models use the same number of parameters except the weights used for ensemble. In Figure {\color{red}8}, it is shown that as more recursions are performed, PSNR measures increase. Increasing recursion depth with a larger image context and more nonlinearities boosts performance. The effect of ensemble is also investigated. We first evaluate intermediate predictions made from recursions (Figure \ref{fig:ensemble}). The ensemble output significantly improves performances of individual predictions. 
 
 \subsection{Comparisons with State-of-the-Art Methods}
 We provide quantitative and qualitative comparisons. For benchmark, we use public code for A+ \cite{Timofte}, SRCNN \cite{dong2014image}, RFL \cite{schulter2015fast} and  SelfEx \cite{Huang-CVPR-2015}. We deal with luminance components only as similarly done in other methods because human vision is much more sensitive to details in intensity than in color.
@@ -407,7 +429,7 @@ We provide quantitative and qualitative comparisons. For benchmark, we use publi
 As  some methods such as A+ \cite{Timofte} and  RFL \cite{schulter2015fast} do not predict image boundary, they require cropping pixels near borders. For our method, this procedure is unnecessary as our network predicts the full-sized image. For fair comparison, however, we also crop pixels to the same amount. PSNRs can be slightly different from original papers as existing methods use slightly different evaluation frameworks. We use the public evaluation code used in \cite{Huang-CVPR-2015}.
 
 In Table \ref{tbl:benchmark}, we provide a summary of quantitative evaluation on several datasets. 
-Our method outperforms all existing methods in all datasets and scale factors (both PSNR and SSIM). In Figures \ref{fig:img1}, \ref{fig:img2} and \ref{fig:img3}, example images are given. Our method produces relatively sharp edges respective to patterns. In contrast, edges in other images are blurred.
+Our method outperforms all existing methods in all datasets and scale factors (both PSNR and SSIM). In Figures \ref{fig:img1}, \ref{fig:img2}, \ref{fig:img3} and \ref{fig:img4}, example images are given. Our method produces relatively sharp edges respective to patterns. In contrast, edges in other images are blurred. Our method takes a second to process a $288 \times 288$ image on a GPU Titan X.
 
 \section{Conclusion}
 In this work, we have presented a super-resolution method using a deeply-recursive convolutional network. Our network efficiently reuses weight parameters while exploiting a large image context. To ease the difficulty of training the model, we use recursive-supervision and skip-connection. We have demonstrated that our method outperforms existing methods by a large margin on benchmarked images. In the future, one can try more recursions in order to use image-level context. We believe our approach is readily applicable to other image restoration problems such as denoising and compression artifact removal.
